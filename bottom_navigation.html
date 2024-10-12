@@ -1,0 +1,97 @@
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <div class="nav-item">
+        <a href="{{ url_for('home') }}">
+            <div class="nav-icon nav-home">
+                <img src="https://img.icons8.com/ios-filled/50/000000/home.png" alt="Home Icon" />
+            </div>
+            <span>Home</span>
+        </a>
+    </div>
+    <div class="nav-item">
+        <a href="{{ url_for('view_favorites') }}">
+            <div class="nav-icon nav-favorites">
+                <img src="https://img.icons8.com/ios-filled/50/000000/star--v1.png" alt="Favorites Icon" />
+            </div>
+            <span>Favorites</span>
+        </a>
+    </div>
+    <div class="nav-item">
+        <a href="{{ url_for('discounts') }}">
+            <div class="nav-icon nav-discounts">
+                <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Discounts Icon" />
+            </div>
+            <span>Discounts</span>
+        </a>
+    </div>
+    <div class="nav-item">
+        <a href="{{ url_for('view_cart') }}">
+            <div class="nav-icon nav-cart">
+                <img src="https://img.icons8.com/ios-filled/50/000000/shopping-cart.png" alt="Cart Icon" />
+            </div>
+            <!-- Display Cart count -->
+            <span>Cart ({{ cart_count }})</span>
+        </a>
+    </div>
+</div>
+
+<style>
+    .bottom-nav {
+        position: fixed; /* Fixes the navbar at the bottom of the viewport */
+        bottom: 0;
+        width: 100%; /* Ensures it spans the full width of the screen */
+        background-color: #f8f9fa; /* Sets a light gray background color */
+        box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow effect above the navbar */
+        display: flex; /* Uses Flexbox for layout */
+        justify-content: space-around; /* Arranges the items evenly */
+        padding: 10px 0; /* Adds vertical padding for spacing */
+        z-index: 1000; /* Ensures the navbar stays on top of other elements */
+    }
+    .nav-item {
+        flex-grow: 1; /* Makes each item take an equal amount of space */
+        text-align: center; /* Centers the text inside the item */
+    }
+    .nav-item a {
+        text-decoration: none; /* Removes the default underline from links */
+        color: #000; /* Sets the text color to black */
+        font-weight: bold; /* Makes the text bold */
+        display: flex; /* Uses Flexbox for layout */
+        flex-direction: column; /* Arranges icon and text vertically */
+        align-items: center; /* Centers the icon and text */
+        width: auto; /* Allows the width to adjust based on content */
+        padding: 5px 0; /* Reduces vertical padding to decrease button size */
+        margin: 0 100px; /* Adds horizontal margin for spacing between buttons */
+        box-sizing: border-box; /* Ensures padding is included in the width */
+    }
+    /* Ensure visited links remain black */
+    .nav-item a:visited {
+        color: #000; /* Keeps visited links black */
+    }
+    .nav-icon {
+        width: 50px; /* Sets the width of the icon container */
+        height: 50px; /* Sets the height of the icon container */
+        border-radius: 10px; /* Gives rounded corners to the icon area */
+        display: flex; /* Uses Flexbox for layout */
+        justify-content: center; /* Centers the icon horizontally */
+        align-items: center; /* Centers the icon vertically */
+        margin-bottom: 5px; /* Adds space between the icon and text */
+        background-color: #f8f9fa; /* Sets a light gray background for the icon area */
+    }
+    .nav-item img {
+        width: 30px; /* Sets the width of the icons */
+        height: 30px; /* Sets the height of the icons */
+    }
+    .nav-item span {
+        font-size: 14px; /* Sets the font size for the navigation labels */
+    }
+    /* Hover effect: green background, white icon */
+    .nav-item a:hover .nav-icon {
+        background-color: #28a745; /* Changes the background color to green on hover */
+    }
+    .nav-item a:hover img {
+        filter: brightness(0) invert(1); /* Makes the icon white on hover */
+    }
+    .nav-item a:hover {
+        color: #000; /* Keeps the text color black when hovered */
+    }
+</style>
