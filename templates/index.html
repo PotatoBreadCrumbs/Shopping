@@ -66,12 +66,45 @@
             border-radius: 10px;
             padding: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            vertical-align: top;
+            position: relative;
+            display: inline-block;
+            justify-content: space-between; /* Distribute space evenly */
+            align-items: center;
+            text-decoration: none;
+            -webkit-transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backface-visibility: hidden;
         }
+
+        .category-card::after{
+            position: absolute;
+            z-index: -1;
+            width: 50%;
+            height: 100%;
+            border-radius: 5px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+            opacity: 0.5;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .category-card:hover{
+            transform: scale(1.05,1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+            transition: transform 0.3s ease-in-out;
+        }
+        .category-card:hover::after{
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); 
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        
         .category-card img {
-            width: 100px;
+            width: 130px;
             height: 100px;
             object-fit: cover;
             margin-bottom: 10px;
+            object-fit: cover; /* Ensures the image fits inside the container while maintaining aspect ratio */
         }
         .category-card h4 {
             font-size: 16px;
@@ -80,7 +113,24 @@
         }
         .category-card p {
             color: #666;
+            
         }
+        .category-card:hover h4, .category-card:hover p {
+            transform: scale(1.05);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .category-card:hover img {
+            transform: scale(1.05);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .category-card h4, .category-card p, .category-card img {
+            transition: transform 0.3s ease-in-out;
+        }   
+
+
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -271,62 +321,62 @@
 
         <!-- First Category Section -->
         <div class="category-container">
-            <div class="category-card">
-                <a href="/products/Vegetables"><img src="/static/img/vegetables.jpg" alt="Vegetables"></a>
+            <a href="/products/Vegetables" class="category-card">
+                <img src="/static/img/vegetables.png" style="height: 160px;" alt="Vegetables">
                 <h4>Vegetables</h4>
                 <p>220 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Meats"><img src="/static/img/meats.jpg" alt="Meats"></a>
+            </a>
+            <a href="/products/Meats" class="category-card">
+                <img src="/static/img/meats.png" style="height: 150px; width: 150px; margin-bottom: 18px;" alt="Meats">
                 <h4>Meats</h4>
                 <p>10 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Fruits"><img src="/static/img/fruits.jpg" alt="Fruits"></a>
+            </a>
+            <a href="/products/Fruits" class="category-card">
+                <img src="/static/img/fruits.png" style="width: 150px; height: 120px; margin-bottom: 48px;" alt="Fruits">
                 <h4>Fruits</h4>
                 <p>40 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Drinks"><img src="/static/img/drinks.jpg" alt="Drinks"></a>
+            </a>
+            <a href="/products/Drinks" class="category-card">
+                <img src="/static/img/drinks.png" style="height: 150px; width: 150px; margin-bottom: 18px;" alt="Drinks">
                 <h4>Drinks</h4>
                 <p>23 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Frozen"><img src="/static/img/frozen.jpg" alt="Frozen"></a>
+            </a>
+            <a href="/products/Frozen" class="category-card">
+                <img src="/static/img/frozen.png" style="width: 160px; height: 140px; margin-bottom: 28px;" alt="Frozen">
                 <h4>Frozen</h4>
                 <p>3 Items</p>
-            </div>
+            </a>
         </div>
-
+        
         <!-- Second Category Section -->
         <div class="category-container">
-            <div class="category-card">
-                <a href="/products/Dairy"><img src="/static/img/milk.png" style="padding: 2px 2px alt="Dairy"></a>
+            <a href="/products/Dairy" class="category-card">
+                <img src="/static/img/milk.png" style="width: 150px; height: 150px;" alt="Dairy">
                 <h4>Dairy</h4>
-               
-            </div>
-            <div class="category-card">
-                <a href="/products/Bread"><img src="/static/img/bread.jpg" alt="Bread"></a>
+                <p>X Items</p>
+            </a>
+            <a href="/products/Bread" class="category-card">
+                <img src="/static/img/bread.png" style="width: 150px; height: 120px; margin-bottom: 23px; margin-top: 15px;" alt="Bread">
                 <h4>Bread</h4>
-             
-            </div>
-            <div class="category-card">
-                <a href="/products/Canned"><img src="/static/img/canned_foods.jpg" alt="Canned Foods"></a>
+                <p>X Items</p>
+            </a>
+            <a href="/products/Canned" class="category-card">
+                <img src="/static/img/canned_foods.png" style="width: 160px; height: 130px; margin-bottom: 28px;" alt="Canned Foods">
                 <h4>Canned Foods</h4>
-               
-            </div>
-            <div class="category-card">
-                <a href="/products/Snacks"><img src="/static/img/snacks.jpg" alt="Snacks"></a>
+                <p>X Items</p>
+            </a>
+            <a href="/products/Snacks" class="category-card">
+                <img src="/static/img/snacks.png" style="width: 160px; height: 130px; margin-bottom: 28px;" alt="Snacks">
                 <h4>Snacks</h4>
                 <p>50 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/PersonalCare"><img src="/static/img/personal_care.jpg" alt="Personal Care"></a>
+            </a>
+            <a href="/products/PersonalCare" class="category-card">
+                <img src="/static/img/personal_care2.png" style="width: 140px; height: 120px; margin-bottom: 35px;" alt="Personal Care">
                 <h4>Personal Care</h4>
                 <p>30 Items</p>
-            </div>
+            </a>
         </div>
-    </div>
+        
 
     <!-- Footer with Payment Methods and Social Icons -->
     <div class="footer">
