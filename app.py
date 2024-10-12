@@ -356,7 +356,18 @@ def update_quantity(index, operation):
 @app.route('/cart')
 @login_required
 def view_cart():
-    return render_template('cart.html')  # Ensure this template is correctly set up
+    cart = session.get('cart', [])
+
+    # Convert price to float
+    for item in cart:
+        try:
+            item['price'] = float(item['price'])  # Ensure price is a float
+        except ValueError:
+            item['price'] = 0.00  # Handle invalid prices
+
+    total_amount = sum(item['price'] * item['quantity'] for item in cart)
+    
+    return render_template('cart.html', cart=cart, total_amount=total_amount)
 
 
 
@@ -503,9 +514,19 @@ def process_checkout():
     session['cart_count'] = 0
 
     return redirect(url_for('home'))
+@app.route('/remove_item/<int:index>', methods=['POST'])
+@login_required
+def remove_item(index):
+    if 'cart' in session:
+        try:
+            session['cart'].pop(index)
+            session.modified = True
+            flash("Item removed from cart.", "success")
+        except IndexError:
+            flash("Item not found in the cart.", "danger")
+    
+    return redirect(url_for('view_cart')) 
 
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
-    response = requests.get(url)
+
