@@ -1,6 +1,6 @@
 # Shopping
 Edited app.py Oct 12th/
-- re_wrote @app.route('/cart') function
+- re-wrote @app.route('/cart') function
 - added @app.route('/remove_item) function
   
 Edited cart.html Oct 12th/
@@ -10,7 +10,7 @@ Edited cart.html Oct 12th/
 - added summary container
 - added summary container label
 - edit total price
-- rewrote pricing body
+- re-wrote pricing body
 - edit quantity functions
 - implemented item removal/trash can
 - implemented summary section
