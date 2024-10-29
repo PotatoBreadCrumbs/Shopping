@@ -5,28 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - FreshFoods190</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        body {
-            background-color: #f7f7f7;
+       body {
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #007f0e 50%, #d38e1b 50%);
         }
 
         .register-container {
-            background-color: white;
+            background-color: #f7f7f7;  
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
+            display: flexbox;
         }
 
         .register-container h1 {
             text-align: center;
             margin-bottom: 30px;
-            color: #4caf50;
+            color: green;
         }
 
         .form-control {
@@ -39,6 +46,11 @@
             width: 100%;
             margin-bottom: 20px;
         }
+        
+        .btn-register:hover {
+            background-color: #00A600;
+            color: #fff;
+        }
 
         .text-center {
             text-align: center;
@@ -47,32 +59,328 @@
         .login-link {
             margin-top: 15px;
         }
+
+        .checklist{
+            color: #000;
+            list-style: none;
+            display: inline-block;
+            vertical-align: middle;  /* Align the image vertically with the text */
+            margin-right: 20px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: -15px;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-top: -15px;
+            margin-bottom: 10px;
+        }
+        #x-mark1, #x-mark2, #x-mark3, #x-mark4, #x-mark5{
+            height: 18px;
+            width: 18px;
+        }
+        #xm{
+            height: 18px;
+            width: 18px;
+        }
+        #cm{
+            max-height: 18px;
+            max-width: 18px;
+        }
+        .log-in-link{
+            color: green;
+        }
+        .cl-error{
+            color: #8D9C98;
+        }
+        .cl-success{
+            color: #000;
+        }
+        
+        .box{
+            position: relative;
+            padding: 14px calc(8px * 2);
+            border: 2px solid green;
+            border-radius: 3px;
+            text-align: left;
+            line-height: 20px;
+            animation: popOverIn .5s ease-in-out 1 forwards;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+        .field{
+            position: relative;
+            height: 50px;
+            width: 100%;
+            
+        }
+        .show{
+            position:absolute;
+            top: 37%;
+            right: 1px;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .row{
+            position: relative;
+        }
+
+        .row .user-pass{
+            position: absolute;
+            width: 40px;
+            height: 67%;
+            color: #fff;
+            font-size: 22px;
+            background: #00A600;
+            border: 1px solid #00A600;
+            border-radius: 5px 0 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row input{
+            height: 100%;
+            width: 100%;
+            outline: none;
+            padding-left: 55px;
+            border-radius: 5px;
+            border: 1px solid lightgrey;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+            
+        
     </style>
 </head>
 <body>
+    <div class="register-container">
+        <div class="logo-container">
+            <img src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+        </div>
+        <h1>Sign Up</h1>
+        <form method="POST" action="{{ url_for('register') }}" class = registrationForm>
+            {{ form.hidden_tag() }}
+    
+            <div class="form-group">
+                
+                
 
-<div class="register-container">
-    <h1>Create an Account</h1>
-    <form method="POST" action="{{ url_for('register') }}">
-        <!-- CSRF token for form protection -->
-        {{ form.hidden_tag() }}
+                <!--Email/Username-->
+                <strong style="margin: -10px;">Email</strong>
+                <div class="row">
+                <img src="/static/img/user.svg" alt="" class="user-pass">
+                {{ form.username(class="form-control", placeholder="Username") }}
+                </div>
 
-        <!-- here we setting username -->
-        {{ form.username.label }}
-        {{ form.username(class="form-control", placeholder="Username") }}
+                <!--Password-->
+    
+                <strong style="margin: -10px;"> Password </strong>
+                <div class="row">
+                    <img src="/static/img/lock.svg" alt="" class="user-pass">
+                    {{ form.password(class="form-control", placeholder="Password", id="password", oninput="toggleChecklist()") }}
+                    <img src="/static/img/show1.svg" alt="" class="show">
+                    
+                </div>
+                <p id="responseMessage"></p>
+            </div>
+                <!-- Checklist positioned below password field -->
 
-        <!-- and password form here -->
-        {{ form.password.label }}
-        {{ form.password(class="form-control", placeholder="Password") }}
-
-        <!-- the button to register below -->
-        {{ form.submit(class="btn btn-register") }}
-    </form>
-
-    <div class="text-center login-link">
-        Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+                    
+                <ul id="passwordChecklist" class="checklist box" hidden>
+                    <li style="list-style: none;"><strong>Your password must contain:</strong>
+                    </li>
+                    <li id="length" class="cl-error">
+                        <img src='/static/img/cancel-svgrepo-com.svg' alt="xmark" id="x-mark1"> At least 8 characters
+                    </li>
+                    <li id="uppercase" class="cl-error">
+                        <img src='/static/img/cancel-svgrepo-com.svg' alt="xmark" id="x-mark2"> Uppercase letters (A-Z)
+                    </li>
+                    <li id="lowercase" class="cl-error">
+                        <img src='/static/img/cancel-svgrepo-com.svg' alt="xmark" id="x-mark3"> Lowercase letters (a-z)
+                    </li>
+                    <li id="number" class="cl-error">
+                        <img src='/static/img/cancel-svgrepo-com.svg' alt="xmark" id="x-mark4"> Numbers (0-9)
+                    </li>
+                    <li id="special" class="cl-error">
+                        <img src='/static/img/cancel-svgrepo-com.svg' alt="xmark" id="x-mark5"> At least one special character (@$!%*?&_-)
+                    </li>
+                </ul>
+    
+            <button type="submit" class="btn btn-register">Sign Up</button>
+        </form>
+    
+        <div class="text-center login-link">
+            Already have an account? <a class="log-in-link" href="{{ url_for('login') }}">Log in</a>
+        </div>
     </div>
-</div>
+
+<script>
+    // Get the elements
+const password = document.getElementById('password');
+const passwordMatchMessage = document.getElementById('passwordMatch');
+let eyeIcon = document.getElementsByClassName('show');
+const cl1 = document.getElementById('length');
+const cl2 = document.getElementById('uppercase');
+const cl3 = document.getElementById('lowercase');
+const cl4 = document.getElementById('number');
+const cl5 = document.getElementById('special');
+const mark1 = document.getElementById('x-mark1');
+const mark2 = document.getElementById('x-mark2');
+const mark3 = document.getElementById('x-mark3');
+const mark4 = document.getElementById('x-mark4');
+const mark5 = document.getElementById('x-mark5');
+const checkmark = '/static/img/checkmark-svgrepo-com(3).svg';
+const xmark = '/static/img/cancel-svgrepo-com.svg';
+
+let input = false;
+
+
+const requirements = {
+            lengthReq: false,
+            uppercaseReq: false,
+            lowercaseReq: false,
+            numberReq: false,
+            specialCharReq: false
+        };
+
+
+//Show pw on click
+eyeIcon[0].onclick = function(){
+    if(password.type == "password"){
+        password.type = "text"
+        eyeIcon[0].src = "/static/img/hide1.svg"
+    }else{
+        password.type = "password";
+        eyeIcon[0].src = "/static/img/show1.svg"
+    }
+}
+
+
+// Function to check password criteria
+function checkPasswordCriteria() {
+    const pwdValue = password.value;
+
+    // Check if length is at least 8 characters
+    if (pwdValue.length >= 8) {
+        mark1.src = checkmark;
+        mark1.id = 'cm'
+        cl1.classList.add('cl-success');
+        cl1.classList.remove('cl-error');
+        
+    } else {
+        mark1.src = xmark;
+        mark1.id = 'xm'
+        cl1.classList.add('cl-error');
+        cl1.classList.remove('cl-success');
+    }
+
+    // Check if there is at least one uppercase letter
+    if (/[A-Z]/.test(pwdValue)) {
+        mark2.src = checkmark;
+        cl2.classList.add('cl-success');
+        cl2.classList.remove('cl-error');
+    } else {
+        mark2.src = xmark;
+        cl2.classList.add('cl-error');
+        cl2.classList.remove('cl-success');
+    }
+
+    // Check if there is at least one lowercase letter
+    if (/[a-z]/.test(pwdValue)) {
+        mark3.src = checkmark;
+        cl3.classList.add('cl-success');
+        cl3.classList.remove('cl-error');
+    } else {
+        mark3.src = xmark;
+        cl3.classList.add('cl-error');
+        cl3.classList.remove('cl-success');
+    }
+
+    // Check if there is at least one number
+    if (/\d/.test(pwdValue)) {
+        mark4.src = checkmark;
+        cl4.classList.add('cl-success');
+        cl4.classList.remove('cl-error');
+    } else {
+        mark4.src = xmark;
+        cl4.classList.add('cl-error');
+        cl4.classList.remove('cl-success');
+    }
+
+    // Check if there is at least one special character
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwdValue)) {
+        mark5.src = checkmark;
+        cl5.classList.add('cl-success');
+        cl5.classList.remove('cl-error');
+    } else {
+        mark5.src = xmark;
+        cl5.classList.add('cl-error');
+        cl5.classList.remove('cl-success');
+    }
+}
+
+async function validateForm() {
+    const formData = new FormData(document.getElementById('registrationForm'));
+
+    // Send data to Python backend
+    const response = await fetch('/validate', {
+        method: 'POST',
+        body: formData
+    });
+    
+    // Process response from Python
+    const result = await response.json();
+
+    alert("PW is not Valid");
+
+    // Display validation message from backend
+    document.getElementById('responseMessage').textContent = "Password needs to be stronger";
+}
+
+function toggleChecklist() {
+        const pcl = document.getElementById('passwordChecklist');
+        /*let displaySettings = pcl.style.display;
+        let inputMade = true;
+
+        pcl.style.display = 'inline-block';*/
+        pcl.style.marginLeft = '20px';
+        pcl.removeAttribute('hidden');
+
+        /**
+         * Force a browser re-paint so the browser will realize the
+         * element is no longer `hidden` and allow transitions.
+         */
+        const reflow = element.offsetHeight;
+
+        // Trigger our CSS transition
+        
+    }
+
+
+
+// Add event listeners
+password.addEventListener('input', checkPasswordCriteria);
+password.addEventListener('blur', toggleChecklist); // Hide if empty on blur
+document.getElementById("registrationForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevents the default form submission
+    
+    validateForm(); // Calls the validation function
+});
+
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
