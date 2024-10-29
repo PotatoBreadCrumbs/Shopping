@@ -5,7 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError, Length, Regexp, EqualTo
 import json
 import os
 
@@ -64,7 +64,12 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[
+    DataRequired(),
+    Length(min=8),
+    Regexp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]'),
+
+    ])
     submit = SubmitField('Sign Up')
 
 # Form for the logout button 
@@ -176,18 +181,38 @@ def register():
     
     return render_template('register.html', form=form)
 
-@app.route('/reset_password', methods=['GET', 'POST'])
+@app.route('/validate', methods=['POST'])
+def validate():
+    # Access form data from JavaScript
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    # Perform validation (this is a basic example)
+    if len(password) < 8:
+        return jsonify({"message": "Password must be at least 8 characters long."})
+    if not any(char.isupper() for char in password):
+        return jsonify({"message": "Password must contain an uppercase letter."})
+    if not any(char.isdigit() for char in password):
+        return jsonify({"message": "Password must contain a number."})
+    
+    
+    # If all checks pass
+    return jsonify({"message": "Form is valid!"})
+
+
+@app.route('/reset_password/new', methods=['GET', 'POST'])
 def reset_password():
     if request.method == 'POST':
         email = request.form.get('email')
-        
+        users = read_users()
         # Logic to verify the email and send a reset password link(not implemented fully will do so later)
-        if email:
-            flash('Password reset instructions have been sent to your email.', 'info')
-        else:
-            flash('Invalid email address!', 'danger')
+        for i in users:
+             if email == users[i]['email']:
+                flash('Password reset instructions have been sent to your email.', 'info')
+                return redirect(url_for('redirect'))
+        flash('Invalid email address!', 'danger')
         return redirect(url_for('login'))
-
+        
     # sets the GET request, which render the forgot password page
     return render_template('forgot_password.html')
 
