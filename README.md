@@ -21,6 +21,8 @@ New cart and checkout changes (Oct 30th)
 
 app.py minor changes which fixes all the numbers and calculations issues on cart and checkout (Oct 30th)
 - not up to date with any other changes/additions made by others
-  
+
+static/img update (Oct 30th)
+- uploaded a new delete icon
   
 
