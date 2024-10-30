@@ -16,7 +16,23 @@
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
+            max-height: 650px; 
+            overflow-y: auto; 
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
+        /* Sticky footer section inside cart summary */
+        .summary-footer {
+            position: sticky;
+            bottom: 0;
+            background-color: #ffffff;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 100%; 
+        }
+        
         .checkout-details {
             width: 55%;
             background: #ffffff;
@@ -24,11 +40,19 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        /* Adjusted the image size */
         .checkout-item img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             object-fit: cover;
             margin-right: 10px;
+            border-radius: 4px;
+        }
+        /* Optional: Further refinement for better layout */
+        .checkout-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
         }
         .btn-quantity {
             background-color: #eee;
@@ -48,6 +72,19 @@
             border-radius: 4px;
             font-size: 1.2rem;
         }
+        .return-cart-btn {
+            background-color: #6c757d;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        .return-cart-btn:hover {
+            background-color: #5a6268;
+        }
         .payment-image {
             border-radius: 8px;
             max-width: 100%;
@@ -61,7 +98,7 @@
         <div class="cart-summary">
             <h3>My Cart</h3>
             {% for item in cart_items %}
-                <div class="d-flex align-items-center mb-3">
+                <div class="checkout-item">
                     <img src="{{ item['image'] }}" alt="{{ item['name'] }}" class="checkout-item-img">
                     <div>
                         <h6>{{ item['name'] }}</h6>
@@ -70,22 +107,23 @@
                     </div>
                 </div>
             {% endfor %}
+            <div class="summary-footer">
             <hr>
-            <p><strong>Subtotal:</strong> ${{ "%.2f" % subtotal }}</p>
-            <p><strong>Sales Tax (8.875%):</strong> ${{ "%.2f" % sales_tax }}</p>
+            <!-- Subtotal with total quantity in parentheses -->
+            <p><strong>Subtotal ({{ total_quantity }} items):</strong> ${{ "%.2f" % subtotal }}</p>
+            <p><strong>Sales Tax (8.625%):</strong> ${{ "%.2f" % sales_tax }}</p>
             <p><strong>Total:</strong> ${{ "%.2f" % total_cost }}</p>
+        </div>
         </div>
 
         <!-- Checkout Details -->
         <div class="checkout-details">
             <h3>Payment and Shipping</h3>
-            <!-- Payment Image Placeholder -->
             <div class="text-center mb-4">
                 <img src="/static/images/payment-placeholder.png" alt="Payment" class="payment-image">
             </div>
 
             <form action="{{ url_for('process_checkout') }}" method="POST">
-                <!-- Payment Information -->
                 <div class="payment-section">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name on Card</label>
@@ -107,7 +145,6 @@
                     </div>
                 </div>
 
-                <!-- Shipping Information -->
                 <div class="shipping-section mb-4">
                     <div class="mb-3">
                         <label for="address" class="form-label">Shipping Address</label>
@@ -125,12 +162,14 @@
                     </div>
                 </div>
 
-                <!-- Place Order Button -->
                 <button type="submit" class="btn place-order-btn">Place your Order - ${{ "%.2f" % total_cost }}</button>
             </form>
+            <!-- Return to Cart Button -->
+            <a href="{{ url_for('view_cart') }}" class="btn return-cart-btn">Return to Cart</a>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

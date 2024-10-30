@@ -38,10 +38,7 @@
         .quantity-controls {
             display: flex;
             align-items: center;
-            width: 100%;
-        }
-        .quantity-controls form {
-            margin: 0 5px;
+            gap: 10px;
         }
         .btn-quantity {
             background-color: #28a745;
@@ -58,16 +55,18 @@
             background: none;
             border: none;
             cursor: pointer;
-            margin-left: 10px;
         }
         .remove-item-btn img {
             width: 25px;
             height: 25px;
         }
+        .remove-item-btn:hover img {
+            content: url("/static/img/delete.png");
+            transform: scale(1.1);
+        }
         .total-price {
-            margin-left: auto;
             font-weight: bold;
-            padding-left: 20px;
+            margin-left: 10px;
         }
         .summary-container {
             width: 35%;
@@ -75,13 +74,9 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
             border-radius: 10px;
-            position: relative;
-            z-index: 10;
-        }
-        .summary-container img {
-            width: 100%;
-            height: auto;
-            margin-bottom: 20px;
+            position: sticky;
+            top: 20px;
+            max-height: 300px; /* Set max height to avoid overflowing the page */
         }
         .summary-container .summary-item {
             display: flex;
@@ -104,35 +99,33 @@
                         <div class="cart-item">
                             <img src="{{ item['image'] }}" alt="{{ item['name'] }}">
 
-                            <div>
-                                <h5>{{ item['name'] }}</h5>
+                            <div class="d-flex flex-column w-100">
+                                <div>
+                                    <h5>{{ item['name'] }}</h5>
+                                    <p>Price: ${{ '%.2f' | format(item['price']) }}</p>
+                                </div>
 
-                                <!-- Price is now formatted correctly -->
-                                <p>Price: ${{ '%.2f' | format(item['price']) }}</p>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="quantity-controls">
+                                        <form action="{{ url_for('update_quantity', index=loop.index0, operation='decrease') }}" method="POST">
+                                            <button type="submit" class="btn-quantity" {% if item['quantity'] <= 1 %}disabled{% endif %}>-</button>
+                                        </form>
+                                        <span>{{ item['quantity'] }}</span>
+                                        <form action="{{ url_for('update_quantity', index=loop.index0, operation='increase') }}" method="POST">
+                                            <button type="submit" class="btn-quantity">+</button>
+                                        </form>
+                                        <!-- Trash can button -->
+                                        <form action="{{ url_for('remove_item', index=loop.index0) }}" method="POST">
+                                            <button type="submit" class="remove-item-btn" title="Remove item">
+                                                <img src="/static/img/trash-can-delete-icon.png" alt="Remove item">
+                                            </button>
+                                        </form>
+                                    </div>
 
-                                <div class="quantity-controls">
-                                    <form action="{{ url_for('update_quantity', index=loop.index0, operation='decrease') }}" method="POST">
-                                        <button type="submit" class="btn-quantity" {% if item['quantity'] <= 1 %}disabled{% endif %}>-</button>
-                                    </form>
-                                    <span>{{ item['quantity'] }}</span>
-                                    <form action="{{ url_for('update_quantity', index=loop.index0, operation='increase') }}" method="POST">
-                                        <button type="submit" class="btn-quantity">+</button>
-                                    </form>
-                                    
-                                    <!-- Total price formatted to two decimal points and shifted to the right -->
-                                    <p class="total-price" style="margin-left: auto;">Total: ${{ '%.2f' | format(item['price'] * item['quantity']) }}</p>
-
-                                    
-
+                                    <!-- Total price aligned next to the trash can -->
+                                    <p class="total-price">Total: ${{ '%.2f' | format(item['price'] * item['quantity']) }}</p>
                                 </div>
                             </div>
-
-                            <!-- Trash can button to remove item from cart -->
-                            <form action="{{ url_for('remove_item', index=loop.index0) }}" method="POST">
-                                <button type="submit" class="remove-item-btn" title="Remove item">
-                                    <img src="/static/img/trash-can-delete-icon.png" alt="Remove item" style="width: 25px;">
-                                </button>
-                            </form>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -149,18 +142,15 @@
                     <span>${{ '%.2f' | format(total_amount) }}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Tax (0.08625%):</span>
+                    <span class="label">Tax (8.625%):</span>
                     <span>${{ '%.2f' | format(total_amount * 0.08625) }}</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Final Price:</span>
-                    <span>${{ '%.2f' | format(total_amount + (total_amount *0.08625)) }}</span>
-                 <!-- Ensure the button is underneath the final price -->
-                 <div style="margin-top: 50px;">
-                 <a href="{{ url_for('checkout') }}" class="btn btn-success w-100">Proceed to Checkout</a>
-                   
-                    </div>
-                  </div>
+                    <span>${{ '%.2f' | format(total_amount + (total_amount * 0.08625)) }}</span>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('checkout') }}" class="btn btn-success w-100">Proceed to Checkout</a>
                 </div>
             </div>
         </div>
