@@ -16,5 +16,11 @@ Edited cart.html Oct 12th/
 - implemented summary section
 - implemented checkout button & function
   
+New cart and checkout changes (Oct 30th)
+- will need to add top nav bar on the cart page
+
+app.py minor changes which fixes all the numbers and calculations issues on cart and checkout (Oct 30th)
+- not up to date with any other changes/additions made by others
+  
   
 
