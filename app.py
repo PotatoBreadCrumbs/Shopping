@@ -484,9 +484,10 @@ def checkout():
     
     # Calculate subtotal
     subtotal = sum(float(item['price']) * item['quantity'] for item in cart_items)
+    total_quantity = sum(item['quantity'] for item in cart_items)
     
-    # Calculate sales tax (8.875% example)
-    sales_tax_rate = 0.08875
+    # Calculate sales tax (8.625% example)
+    sales_tax_rate = 0.08625
     sales_tax = subtotal * sales_tax_rate
     
     # Calculate total cost
