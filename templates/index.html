@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore Categories - GreenGrocer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f7f7f7;
@@ -59,16 +60,45 @@
             padding: 0 20px;
         }
         .category-card {
-            background-color: white;
+            background-color: #d9d9d9;
             width: 180px;
             margin: 15px;
             text-align: center;
             border-radius: 10px;
             padding: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            vertical-align: top;
+            position: relative;
+            display: inline-block;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            -webkit-transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backface-visibility: hidden;
+        }
+        .category-card::after {
+            position: absolute;
+            z-index: -1;
+            width: 50%;
+            height: 100%;
+            border-radius: 5px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+            opacity: 0.5;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .category-card:hover {
+            transform: scale(1.05,1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+            transition: transform 0.3s ease-in-out;
+        }
+        .category-card:hover::after {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); 
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
         .category-card img {
-            width: 100px;
+            width: 130px;
             height: 100px;
             object-fit: cover;
             margin-bottom: 10px;
@@ -81,55 +111,18 @@
         .category-card p {
             color: #666;
         }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: #fff;
-            box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
+        .category-card:hover h4, .category-card:hover p {
+            transform: scale(1.05);
+            transition: transform 0.5s ease-in-out;
         }
-        .nav-item {
-            flex-grow: 1;
-            text-align: center;
+        .category-card:hover img {
+            transform: scale(1.05);
+            transition: transform 0.5s ease-in-out;
         }
-        .nav-item a {
-            text-decoration: none;
-            color: #000;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .nav-icon {
-            background-color: #007bff;
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        .nav-icon img {
-            width: 30px;
-            height: 30px;
-            filter: invert(1);
-        }
-        .nav-item span {
-            font-size: 14px;
-        }
-        .footer {
-            margin-top: 40px;
-            background-color: #fff;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .category-card h4, .category-card p, .category-card img {
+            transition: transform 0.3s ease-in-out;
+        }          
+
         .footer .social-icons img {
             margin-left: 15px;
             width: 30px;
@@ -146,190 +139,376 @@
             font-size: 1rem;
             display: flex;
             align-items: center;
+            
+        }
+        .s-footer{
+            border-top: 1px solid #7c7c7c;
+            border-bottom: 1.5px solid #7c7c7c;
+            background-color: var(--colors--grey-800-new);
+            width: 100%; /* Ensures the footer takes up full width, instead of 100vw */
+            
+            height: 45vh;
+            margin-top: 4vw;
+            display: flex;
+            justify-content: center; /* Center content horizontally */
+            font-weight: 500;
+        }
+        *{
+            box-sizing: border-box;
+        }
+        .s-footer-con-1{
+            border-right: 1px solid #3a3a3e;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 47vw;
+            padding-top: 2vw;
+            padding-bottom: 2vw;
+            padding-left: 2vw;
+            display: flex;
+        }
+        
+        
+        .footer-link-title-con {
+            z-index: 1;
+            margin-bottom: auto;
+            position: relative;
+        }
+        .footer-symbol-con {
+            filter: invert();
+            width: 7.1rem;
+            margin-left: -1rem;
+        }
+        .foter-links-con {
+            z-index: 1;
+            flex-direction: column;
+            height: 85%;
+            display: flex;
+            position: relative;
+        } 
+        .footer-symbol-con {
+            filter: invert();
+            width: 7.1rem;
+            margin-left: -1rem;
+        }
+        .footer-logotype-con {
+            width: 9rem;
+            margin-top: -60px;
+            margin-left: -25px;
+            position: absolute;
+        }
+        .footer-about-txt {
+        max-width: 14.7rem;
+        margin-right: 1rem;
+        }
+        .s-footer-con-2 {
+            flex-direction: column;
+            justify-content: space-between;
+            width: 100%;
+            display: flex;
+        }
+        .s-footer-2-main {
+            justify-content: space-between;
+            height: 100%;
+            display: flex;
+        }
+        .s-footer-2-block {
+            flex-direction: column;
+            justify-content: center;
+            width: 22.2%;
+            height: 100%;
+            padding-top: 20 px;
+            padding-left: 2rem;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+        .footer-link{
+            text-decoration: none;
+            line-height: 50px;
+            color: #3a3a3e;
+        }
+
+        .footer-link:hover{
+            text-decoration: underline;
+        }
+
+        .link-header{
+        font-weight: 500;
+        font-size: x-large;
+        }
+
+        .footer-logotype{
+            width: 300px;
+            height: 125px;
+            overflow: hidden;
+        }
+
+        .icons-container{
+            overflow:hidden;
+            width:auto;
+            display:inline;
+            padding-top: 25px;
+        }
+
+        .icon{
+            float:column;
+            margin-top:50px;
+        }
+
+
+        .icon span, p, a{
+            display: inline;
+            text-decoration: none;
+            color: #3a3a3e;
+        }
+
+        #addy, #contact, #email{
+            font-weight: 600;
+            font-size: large;
+            margin-left: 10px;
+        }
+
+
+        .icon a:hover{
+            text-decoration: underline;
+        }
+
+        .copyright{
+            color: #8D9C98;
+        }
+
+        .header.nav-flex{
+            display: flex;
+            position: static;
+            float: none;
         }
     </style>
 </head>
+
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Add custom CSS to style the dropdown button -->
-<style>
-    .custom-dropdown-button {
-        background-color: #198754; /* Light Green */
-        color: white;
-        border-color: #198754; /* Matching border color */
-    }
+    <!-- Navbar with custom dropdown inside the search bar -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="navbar-brand">
+            <a href="{{ url_for('home') }}">
+                <img src="/static/img/GreenGrocer.png" alt="GreenGrocer Logo" style="width: 250px; height: auto;">
+            </a>
+        </div>
 
-    .custom-dropdown-button:hover {
-        background-color: #228B22; /* Darker Green on hover */
-        color: white;
-        border-color: #228B22; /* Matching border color on hover */
-    }
-    
-</style>
+        <div class="search-bar" style="display: flex; align-items: center; max-width: 50%;">
+            <div class="input-group" style="width: 900px;">
+                <div class="input-group-prepend">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="categoryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 5px 0 0 5px;">
+                        All Categories
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton">
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('All Categories')">All Categories</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Vegetables')">Vegetables</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Fruits')">Fruits</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Meats')">Meats</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Frozen')">Frozen</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Dairy')">Dairy</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Bread')">Bread</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Canned')">Canned</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Snacks')">Snacks</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Drinks')">Drinks</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Personal Care')">Personal Care</a></li>
+                    </ul>
+                </div>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search for items..." aria-label="Search for items" style="width: 200px;">
+                <button class="btn btn-success" style="padding: 10px 20px; border-radius: 0 5px 5px 0;" onclick="searchItems()">
+                    <i class="fas fa-search" style="color: white; font-size: 16px;"></i>
+                </button>
+            </div>
+        </div>
 
-<!-- Navbar with custom dropdown button -->
-<nav class="navbar d-flex justify-content-between">
-    <div class="navbar-brand">
-        <a href="{{ url_for('home') }}">
-            <img src="/static/img/GreenGrocer.png" alt="GreenGrocer Logo" style="width: 250px; height: auto;">
-        </a>
-    </div>
-    <div class="search-bar">
-        <div class="dropdown">
-            <button class="btn custom-dropdown-button dropdown-toggle" type="button" id="categoryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
-                All Categories
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton">
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Vegetables')">Vegetables</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Fruits')">Fruits</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Meats')">Meats</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Frozen')">Frozen</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Dairy')">Dairy</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Bread')">Bread</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Canned')">Canned</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Snacks')">Snacks</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Drinks')">Drinks</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Personal Care')">Personal Care</a></li>
+        <!-- User Dropdown -->
+        <div class="nav-item dropdown ms-3">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"> 
+                {{ username }}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
+                <form action="{{ url_for('logout') }}" method="POST" class="signout-btn d-flex">
+                    {{ form.hidden_tag() }} <!-- CSRF token -->
+                    <button class="dropdown-item w-100 text-start" type="submit">Sign Out</button>
+                </form>
             </ul>
         </div>
-        <input type="text" id="searchInput" placeholder="Search for items..." style="padding: 10px 5px; font-size: 1rem; width: 650px;">
-        <button class="btn btn-success" style="padding: 8px 20px; font-size: 1rem; margin-left: 5px;" onclick="searchItems()">Search</button>
-    <i class="fas fa-search me-2"></i>
-        </button>
-    </div>
-    <div class="nav-item dropdown" style="position: relative; left: -20px;">
-        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"> 
-            {{username}}
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
-            <li>
-                <form action="{{ url_for('logout') }}" method="POST" class="signout-btn">
-                    {{ form.hidden_tag() }} <!-- CSRF token -->
-                    <button class="dropdown-item" type="submit">Sign Out</button>
-                </form>
-            </li>
-        </ul>
-    </div>
-    
-    
 
-    <div class="ms-3">
-        <button class="accessibility-btn" onclick="toggleAccessibilitySettings()">
-            <img src="static/img/AccessabilityButton.png" alt="Accessibility Icon" style="width: 60px; height: 60px;">
-        </button>
-    </div>
-     </div>
-</nav>
+        <!-- Accessibility Button -->
+        <div class="ms-3">
+            <button class="accessibility-btn" onclick="toggleAccessibilitySettings()">
+                <img src="/static/img/AccessabilityButton.png" alt="Accessibility Icon" style="width: 60px; height: 60px;">
+            </button>
+        </div>
+    </nav>
 
-<!-- JavaScript to handle the search functionality -->
-<script>
-    let selectedCategory = 'All Categories';
+    <!-- JavaScript to handle the search functionality -->
+    <script>
+        let selectedCategory = 'All Categories';
 
-    function selectCategory(category) {
-        selectedCategory = category;
-        document.getElementById('categoryDropdownButton').textContent = category;
-    }
-
-    function searchItems() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        
-        // Product to category mapping
-        const productMapping = {
-            "chicken": "Meats", "beef": "Meats", "pork": "Meats", "turkey": "Meats", "bacon": "Meats", "lamb": "Meats",
-            "apple": "Fruits", "banana": "Fruits", "orange": "Fruits", "grape": "Fruits", "pineapple": "Fruits",
-            "carrot": "Vegetables", "broccoli": "Vegetables", "lettuce": "Vegetables", "spinach": "Vegetables",
-            "milk": "Dairy", "cheese": "Dairy", "yogurt": "Dairy", "butter": "Dairy", "cream": "Dairy", "eggs": "Dairy",
-            "bread": "Bread", "bagel": "Bread", "bun": "Bread", "croissant": "Bread", "muffin": "Bread", "roll": "Bread",
-            "soda": "Drinks", "coffee": "Drinks", "tea": "Drinks", "juice": "Drinks", "water": "Drinks", "smoothie": "Drinks",
-            "ice cream": "Frozen", "frozen pizza": "Frozen", "frozen vegetables": "Frozen", "frozen fries": "Frozen",
-            "beans": "Canned", "canned soup": "Canned", "canned tomatoes": "Canned", "canned corn": "Canned",
-            "chips": "Snacks", "cookies": "Snacks", "popcorn": "Snacks", "crackers": "Snacks", "pretzels": "Snacks",
-            "shampoo": "Personal Care", "toothpaste": "Personal Care", "soap": "Personal Care", "lotion": "Personal Care"
-        };
-
-        // Determine the mapped category of the query
-        const mappedCategory = productMapping[query];
-
-        // Check if the query is mapped to a category and matches the selected category
-        if (mappedCategory) {
-            if (selectedCategory === 'All Categories' || selectedCategory === mappedCategory) {
-                window.location.href = `/products/${mappedCategory}?query=${query}`;
-            } else {
-                alert(`"${query}" is not available in the selected category "${selectedCategory}".`);
-            }
-        } else {
-            alert("No items found for the entered product name.");
+        function selectCategory(category) {
+            selectedCategory = category;
+            document.getElementById('categoryDropdownButton').textContent = category;
         }
-    }
-</script>
 
+        function searchItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+
+            const productMapping = {
+                "chicken": "Meats", "beef": "Meats", "pork": "Meats", "turkey": "Meats", "bacon": "Meats", "lamb": "Meats",
+                "apple": "Fruits", "banana": "Fruits", "orange": "Fruits", "grape": "Fruits", "pineapple": "Fruits",
+                "carrot": "Vegetables", "broccoli": "Vegetables", "lettuce": "Vegetables", "spinach": "Vegetables",
+                "milk": "Dairy", "cheese": "Dairy", "yogurt": "Dairy", "butter": "Dairy", "cream": "Dairy", "eggs": "Dairy",
+                "bread": "Bread", "bagel": "Bread", "bun": "Bread", "croissant": "Bread", "muffin": "Bread", "roll": "Bread",
+                "soda": "Drinks", "coffee": "Drinks", "tea": "Drinks", "juice": "Drinks", "water": "Drinks", "smoothie": "Drinks",
+                "ice cream": "Frozen", "frozen pizza": "Frozen", "frozen vegetables": "Frozen", "frozen fries": "Frozen",
+                "beans": "Canned", "canned soup": "Canned", "canned tomatoes": "Canned", "canned corn": "Canned",
+                "chips": "Snacks", "cookies": "Snacks", "popcorn": "Snacks", "crackers": "Snacks", "pretzels": "Snacks",
+                "shampoo": "Personal Care", "toothpaste": "Personal Care", "soap": "Personal Care", "lotion": "Personal Care"
+            };
+
+            const mappedCategory = productMapping[query];
+
+            if (mappedCategory) {
+                if (selectedCategory === 'All Categories' || selectedCategory === mappedCategory) {
+                    window.location.href = `/products/${mappedCategory}?query=${query}`;
+                } else {
+                    alert(`"${query}" is not available in the selected category "${selectedCategory}".`);
+                }
+            } else {
+                alert("No items found for the entered product name.");
+            }
+        }
+    </script>
 
     <div class="container mt-5">
         <h2 class="text-center">Explore Categories</h2>
-
-        <!-- First Category Section -->
         <div class="category-container">
-            <div class="category-card">
-                <a href="/products/Vegetables"><img src="/static/img/vegetables.jpg" alt="Vegetables"></a>
+            <a href="/products/Vegetables" class="category-card">
+                <img src="/static/img/vegetables.png" style="height: 160px;" alt="Vegetables">
                 <h4>Vegetables</h4>
-                <p>220 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Meats"><img src="/static/img/meats.jpg" alt="Meats"></a>
+            </a>
+            <a href="/products/Meats" class="category-card">
+                <img src="/static/img/meats.png" style="height: 150px; width: 150px; margin-bottom: 18px;" alt="Meats">
                 <h4>Meats</h4>
-                <p>10 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Fruits"><img src="/static/img/fruits.jpg" alt="Fruits"></a>
+            </a>
+            <a href="/products/Fruits" class="category-card">
+                <img src="/static/img/fruits.png" style="width: 150px; height: 120px; margin-bottom: 48px;" alt="Fruits">
                 <h4>Fruits</h4>
-                <p>40 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Drinks"><img src="/static/img/drinks.jpg" alt="Drinks"></a>
+            </a>
+            <a href="/products/Drinks" class="category-card">
+                <img src="/static/img/drinks.png" style="height: 150px; width: 150px; margin-bottom: 18px;" alt="Drinks">
                 <h4>Drinks</h4>
-                <p>23 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/Frozen"><img src="/static/img/frozen.jpg" alt="Frozen"></a>
+            </a>
+            <a href="/products/Frozen" class="category-card">
+                <img src="/static/img/frozen.png" style="width: 160px; height: 140px; margin-bottom: 28px;" alt="Frozen">
                 <h4>Frozen</h4>
-                <p>3 Items</p>
-            </div>
+            </a>
         </div>
 
-        <!-- Second Category Section -->
         <div class="category-container">
-            <div class="category-card">
-                <a href="/products/Dairy"><img src="/static/img/milk.png" style="padding: 2px 2px alt="Dairy"></a>
+            <a href="/products/Dairy" class="category-card">
+                <img src="/static/img/milk.png" style="width: 150px; height: 150px;" alt="Dairy">
                 <h4>Dairy</h4>
-               
-            </div>
-            <div class="category-card">
-                <a href="/products/Bread"><img src="/static/img/bread.jpg" alt="Bread"></a>
+            </a>
+            <a href="/products/Bread" class="category-card">
+                <img src="/static/img/bread.png" style="width: 150px; height: 120px; margin-bottom: 23px; margin-top: 15px;" alt="Bread">
                 <h4>Bread</h4>
-             
-            </div>
-            <div class="category-card">
-                <a href="/products/Canned"><img src="/static/img/canned_foods.jpg" alt="Canned Foods"></a>
+            </a>
+            <a href="/products/Canned" class="category-card">
+                <img src="/static/img/canned_foods.png" style="width: 160px; height: 130px; margin-bottom: 28px;" alt="Canned Foods">
                 <h4>Canned Foods</h4>
-               
-            </div>
-            <div class="category-card">
-                <a href="/products/Snacks"><img src="/static/img/snacks.jpg" alt="Snacks"></a>
+            </a>
+            <a href="/products/Snacks" class="category-card">
+                <img src="/static/img/snacks.png" style="width: 160px; height: 130px; margin-bottom: 28px;" alt="Snacks">
                 <h4>Snacks</h4>
-                <p>50 Items</p>
-            </div>
-            <div class="category-card">
-                <a href="/products/PersonalCare"><img src="/static/img/personal_care.jpg" alt="Personal Care"></a>
+            </a>
+            <a href="/products/PersonalCare" class="category-card">
+                <img src="/static/img/personalcare.png" style="width: 140px; height: 120px; margin-bottom: 35px;" alt="Personal Care">
                 <h4>Personal Care</h4>
-                <p>30 Items</p>
-            </div>
+            </a>
         </div>
     </div>
 
-    <!-- Footer with Payment Methods and Social Icons -->
-    <div class="footer">
+    <footer class="s-footer">
+        <div class="s-footer-con-1">
+          <a href="/" aria-current="page" class="footer-symbol-con w-inline-block w--current">
+            <div class="footer-symbol" data-w-id="cbd10d6b-2b20-7d1b-48f5-7fc31c7db77b" data-animation-type="lottie" data-src="https://cdn.prod.website-files.com/628bd935bf709b13cada8065/628bd935bf709b2a13da813c_BQN_logo10.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="3.716666666666667" data-duration="0"></div>
+          </a>
+          <a href="/" aria-current="page" class="footer-logotype-con w-inline-block w--current">
+            <img src="/static/img/GreenGrocer-removebg-preview.png" loading="lazy" alt="Bequant logotype" class="footer-logotype"/>
+          </a>
+          <div class="icons-container">
+          <div class="icon"><img src="/static/img/maps-and-flags.png" alt="location">
+            <span><p id="addy">Address: </p> <a href="https://maps.app.goo.gl/G8ToFV1162qN6mPY9" id="gm">1234 California ave</a></span>
+          </div>
+          <div class="icon"><img src="/static/img/telephone.png" alt="phone">
+            <span><p id="contact">Call Us: </p> 123-456-7890</span>
+          </div>
+          <div class="icon"><img src="/static/img/mail.png" alt="mail">
+            <span><p id="email">Email: </p> greengrocer@contact.com</span>
+          </div>
+          </div>
+          <div class="copyright"><span id="cr">&#169; 2024 GreenGrocer, All Rights Reserved</span> 
+          </div>
+        </div>
+        
+    
+        <div class="s-footer-con-2">
+          <div class="s-footer-2-main">
+            <div class="s-footer-2-block _1">
+              <div class="footer-link-title-con write">
+                <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd093" class="link-header">Account</div>
+              </div>
+              <div class="foter-links-con write">
+                <div class="footer-link-con _1"><a href="/tcp-optimization" class="footer-link">Wishlist</a></div>
+                <div class="footer-link-con _1"><a href="cart.html" class="footer-link">Cart</a></div>
+                <div class="footer-link-con _1"><a href="/network-visibility" class="footer-link">Track order</a></div>
+                <div class="footer-link-con _1"><a href="/bqn-platform" class="footer-link">Shipping Details</a></div>
+              </div>
+              <div class="footer-block-bg write"></div>
+            </div>
+            <div class="s-footer-2-block">
+              <div class="footer-link-title-con write">
+                <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0a3" class="link-header">Useful Links</div>
+              </div>
+              <div class="foter-links-con write">
+                <div class="footer-link-con _2"><a href="/customers" class="footer-link">About Us</a></div>
+                <div class="footer-link-con _2"><a href="/newsroom" class="footer-link">Contact</a></div>
+                <div class="footer-link-con _2"><a href="/buy" class="footer-link">Hot Deals</a></div>
+                <div class="footer-link-con _2"><a href="/about" class="footer-link">Promotions</a></div>
+                <div class="footer-link-con _2"><a href="/contact" class="footer-link">New Products</a></div>
+              </div>
+              <div class="footer-block-bg"></div>
+            </div>
+            <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0b3" class="s-footer-2-block">
+              <div class="footer-link-title-con write">
+                <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0b5" class="link-header">Help Center</div>
+              </div>
+              <div class="foter-links-con write">
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Payments</a></div>
+                <div class="footer-link"><a href="https://twitter.com/bequant_es" target="_blank" class="footer-link">Refunds</a></div>
+                <div class="footer-link"><a href="https://www.facebook.com/bequant/" target="_blank" class="footer-link">Checkout</a></div>
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Shipping</a></div>
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Q&A</a></div>
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Privacy Policy</a></div>
+              </div>
+              <div class="footer-block-bg"></div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      
+    
+     <!-- Footer with Payment Methods and Social Icons-->
+     <div class="footer">
         <div class="payment-methods">
             <img src="https://img.icons8.com/fluency/48/000000/visa.png" alt="Visa">
             <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="MasterCard">
@@ -350,41 +529,10 @@
                 <img src="https://img.icons8.com/fluency/48/000000/twitter.png" alt="Twitter">
             </a>
         </div>
+    <!-- Include the bottom navigation -->
+    {% include 'bottom_navigation.html' %}
+            </a>
+        </div>
     </div>
-
-   <!-- Bottom Navigation -->
-<div class="bottom-nav">
-    <div class="nav-item">
-        <a href="{{ url_for('home') }}">
-            <div class="nav-icon nav-home">
-                <img src="https://img.icons8.com/ios-filled/50/000000/home.png" alt="Home Icon" />
-            </div>
-            <span>Home</span>
-        </a>
-    </div>
-    <div class="nav-item">
-        <a href="{{ url_for('view_favorites') }}">
-            <div class="nav-icon nav-favorites">
-                <img src="https://img.icons8.com/ios-filled/50/000000/star--v1.png" alt="Favorites Icon" />
-            </div>
-            <span>Favorites</span>
-        </a>
-    </div>
-    <div class="nav-item">
-        <a href="{{ url_for('discounts') }}">
-            <div class="nav-icon nav-discounts">
-                <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Discounts Icon" />
-            </div>
-            <span>Discounts</span>
-        </a>
-    </div>
-    <div class="nav-item">
-        <a href="{{ url_for('view_cart') }}">
-            <div class="nav-icon nav-cart">
-                <img src="https://img.icons8.com/ios-filled/50/000000/shopping-cart.png" alt="Cart Icon" />
-            </div>
-            <!-- Display Cart count -->
-            <span>Cart ({{ cart_count }})</span>
-        </a>
-    </div>
-</div>
+</body>
+</html>
