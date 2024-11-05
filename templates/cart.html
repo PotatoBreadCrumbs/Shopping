@@ -8,6 +8,12 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-image: url('/static/img/veggie_background2.0.jpg'); /* Replace white background with an image */
+            background-size: cover; /* Fills the viewport while keeping the image's aspect ratio */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed; /* Keeps the background fixed during scrolling */
+            color: #333;
         }
         .cart-container {
             display: flex;
@@ -20,13 +26,13 @@
         .cart-items {
             width: 60%;
         }
-        .cart-item {
+        .cart-item, .save-item {
             display: flex;
             align-items: center;
             padding: 15px;
             border-bottom: 1px solid #ddd;
         }
-        .cart-item img {
+        .cart-item img, .save-item img {
             width: 100px;
             height: 100px;
             object-fit: contain;
@@ -40,7 +46,7 @@
             align-items: center;
             gap: 10px;
         }
-        .btn-quantity {
+        .btn-quantity, .btn-save-later, .btn-move-to-cart {
             background-color: #28a745;
             color: white;
             border: none;
@@ -48,7 +54,7 @@
             padding: 5px 10px;
             cursor: pointer;
         }
-        .btn-quantity:hover {
+        .btn-quantity:hover, .btn-save-later:hover, .btn-move-to-cart:hover {
             background-color: #218838;
         }
         .remove-item-btn {
@@ -76,18 +82,28 @@
             border-radius: 10px;
             position: sticky;
             top: 20px;
-            max-height: 300px; /* Set max height to avoid overflowing the page */
         }
-        .summary-container .summary-item {
+        .summary-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
-        .summary-container .summary-item .label {
+        .summary-item .label {
             font-weight: bold;
+        }
+        .save-for-later {
+            margin-top: 30px;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .save-for-later h3 {
+            margin-bottom: 15px;
         }
     </style>
 </head>
+{% include 'topheader.html' %}
 <body>
     <div class="container">
         <div class="cart-container">
@@ -114,7 +130,6 @@
                                         <form action="{{ url_for('update_quantity', index=loop.index0, operation='increase') }}" method="POST">
                                             <button type="submit" class="btn-quantity">+</button>
                                         </form>
-                                        <!-- Trash can button -->
                                         <form action="{{ url_for('remove_item', index=loop.index0) }}" method="POST">
                                             <button type="submit" class="remove-item-btn" title="Remove item">
                                                 <img src="/static/img/trash-can-delete-icon.png" alt="Remove item">
@@ -122,16 +137,19 @@
                                         </form>
                                     </div>
 
-                                    <!-- Total price aligned next to the trash can -->
                                     <p class="total-price">Total: ${{ '%.2f' | format(item['price'] * item['quantity']) }}</p>
                                 </div>
+
+                                <!-- Save for Later Button -->
+                                <form action="{{ url_for('save_for_later', index=loop.index0) }}" method="POST">
+                                    <button type="submit" class="btn-save-later">Save for Later</button>
+                                </form>
                             </div>
                         </div>
                     {% endfor %}
                 {% else %}
                     <p>Your cart is empty.</p>
                 {% endif %}
-                <a href="/" class="btn btn-primary mt-3">Continue Shopping</a>
             </div>
 
             <!-- Summary Section -->
@@ -150,13 +168,37 @@
                     <span>${{ '%.2f' | format(total_amount + (total_amount * 0.08625)) }}</span>
                 </div>
                 <div class="mt-4">
-                    <a href="{{ url_for('checkout') }}" class="btn btn-success w-100">Proceed to Checkout</a>
+                    <a href="{{ url_for('checkout') }}" class="btn btn-primary w-100">Proceed to Checkout</a>
+                    <a href="/" class="btn btn-success mt-3 w-100">Continue Shopping</a>
                 </div>
             </div>
         </div>
+
+        <!-- Save for Later Section -->
+        <div class="save-for-later">
+            <h3>Save for Later</h3>
+            {% if session.saved_items %}
+                {% for item in session.saved_items %}
+                    <div class="save-item">
+                        <img src="{{ item['image'] }}" alt="{{ item['name'] }}">
+                        <div>
+                            <h6>{{ item['name'] }}</h6>
+                            <p>Price: ${{ item['price'] }}</p>
+                        </div>
+                        <form action="{{ url_for('move_to_cart', index=loop.index0) }}" method="POST">
+                            <button type="submit" class="btn-move-to-cart">Move to Cart</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No items saved for later.</p>
+            {% endif %}
+        </div>
     </div>
 
+   <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
     <!-- Include the bottom navigation -->
     {% include 'bottom_navigation.html' %}
+    {% include 'footer.html' %}
 </body>
 </html>
