@@ -1,15 +1,183 @@
-<!-- faq.html -->
-<h2>Frequently Asked Questions (FAQ)</h2>
-<div>
-    <h4>What is GreenGrocer?</h4>
-    <p>GreenGrocer is an online marketplace for fresh produce and grocery items delivered to your door.</p>
 
-    <h4>How do I place an order?</h4>
-    <p>Select items from our categories, add them to your cart, and checkout using your preferred payment method.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - GreenGrocer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        /* Basic page and font styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .header {
+            background-color: #4caf50;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .header input[type="text"] {
+            width: 250px;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+        }
+        .faq-container {
+            display: flex;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        /* Sidebar styling */
+        .faq-sidebar {
+            width: 25%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        .faq-sidebar h5 {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .faq-sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .faq-sidebar li {
+            padding: 10px 0;
+            border-bottom: 1px dotted #ccc;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .faq-sidebar li:hover {
+            color: #4caf50;
+        }
+        /* Content styling */
+        .faq-content {
+            width: 75%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .accordion {
+            margin-top: 20px;
+        }
+        .accordion-item {
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        .accordion-button {
+            background-color: #1e7824;
+            font-weight: bold;
+            color: #ffffff;
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-button:hover {
+            background-color: #1e7824;
+        }
+        .accordion-button.active {
+            background-color: #4caf50;
+            color: #fff;
+        }
+        .accordion-content {
+            display: none;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
 
-    <h4>What payment methods are accepted?</h4>
-    <p>We accept major credit cards, PayPal, and more.</p>
+<body>
+{% include 'topheader.html' %}
 
-    <h4>Can I track my order?</h4>
-    <p>Yes, order tracking is available once your order has been shipped.</p>
+<div class="faq-container">
+    <!-- Sidebar for categories -->
+    <div class="faq-sidebar">
+        <h5>Topics</h5>
+        <ul>
+            <li>About GreenGrocer</li>
+            <li>Ordering</li>
+            <li>Payment</li>
+            <li>Account</li>
+        </ul>
+    </div>
+
+    <!-- FAQ Content with Accordion -->
+    <div class="faq-content">
+        <h2>Frequently Asked Questions</h2>
+        <div class="accordion">
+            <!-- Accordion Item 1 -->
+            <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    What is GreenGrocer?
+                </button>
+                <div class="accordion-content">
+                    <p>GreenGrocer is an online marketplace for fresh produce and grocery items delivered to your door.</p>
+                </div>
+            </div>
+            <!-- Accordion Item 2 -->
+            <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    How do I place an order?
+                </button>
+                <div class="accordion-content">
+                    <p>Select items from our categories, add them to your cart, and checkout using your preferred payment method.</p>
+                </div>
+            </div>
+            <!-- Accordion Item 3 -->
+            <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    What payment methods are accepted?
+                </button>
+                <div class="accordion-content">
+                    <p>We accept major credit cards, PayPal, and more.</p>
+                </div>
+            </div>
+            <!-- Accordion Item 4 -->
+            <div class="accordion-item">
+                <button class="accordion-button" onclick="toggleAccordion(this)">
+                    Can I track my order?
+                </button>
+                <div class="accordion-content">
+                    <p>Yes, order tracking is available once your order has been shipped.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    function toggleAccordion(button) {
+        const content = button.nextElementSibling;
+        button.classList.toggle('active');
+        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+
+{% include 'bottom_navigation.html' %}
+
+</body>
+</html>
