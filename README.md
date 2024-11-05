@@ -43,7 +43,10 @@ static update (Nov 5th)
 - uploaded checkout img delivery
 
 
-* code for background to be implemented on every HTML (check discord for code section and only need to change img location accoridnly) *
+* code for background to be implemented on every HTML (check discord for code section and only need to change img location accordingly) * (Nov 5th)
+
+updated project documents
+- all documents have been updated including presentation
   
   
 
