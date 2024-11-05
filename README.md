@@ -42,6 +42,7 @@ static update (Nov 5th)
 - uploaded background img 2.0
 - uploaded checkout img delivery
 
+
 * code for background to be implemented on every HTML (check discord for code section and only need to change img location accoridnly) *
   
   
