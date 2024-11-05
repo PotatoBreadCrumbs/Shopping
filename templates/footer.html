@@ -5,242 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreenGrocer Footer</title>
     <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Add your CSS styles here */
-
+        /* Reset box-sizing */
         * {
             box-sizing: border-box;
         }
+        body {
+            font-family: 'Quicksand', sans-serif; /* Set Quicksand as the default font */
+        }
 
         .s-footer {
-            border-top: 1px solid #7c7c7c;
-            border-bottom: 1.5px solid #7c7c7c;
-            background-color: var(--colors--grey-800-new);
-            width: 100%; 
-            height: 45vh;
-            margin-top: 4vw;
+            background: linear-gradient(to right, orange, green); /* Gradient background */
+            width: 100%;
+            padding: 20px; /* General padding */
             display: flex;
-            justify-content: center; 
-            font-weight: 500;
-        }
-
-        .s-footer-con-1 {
-            border-right: 1px solid #3a3a3e;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 47vw;
-            padding-top: 2vw;
-            padding-bottom: 2vw;
-            padding-left: 2vw;
-            display: flex;
-        }
-
-        .footer-link-title-con {
-            z-index: 1;
-            margin-bottom: auto;
-            position: relative;
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center all items horizontally */
+            margin-top: 280px; /* Add some space above */
         }
 
         .footer-symbol-con {
-            filter: invert();
-            width: 7.1rem;
-            margin-left: -1rem;
-        }
-
-        .foter-links-con {
-            z-index: 1;
-            flex-direction: column;
-            height: 85%;
             display: flex;
-            position: relative;
+            align-items: center; /* Center the logo vertically */
+            margin-bottom: 0px; /* Space below the logo */
         }
 
-        .footer-logotype-con {
-            width: 9rem;
-            margin-top: -60px;
-            margin-left: -25px;
-            position: absolute;
+        .footer-logotype {
+            max-width: 250px;
+            max-height: 125px;
+            margin-left: 10px; /* Space between symbol and logotype */
         }
 
         .icons-container {
-            overflow: hidden;
-            width: auto;
-            display: inline;
-            padding-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px; /* Reduced gap for closer icons */
         }
 
         .icon {
-            margin-top: 50px;
-        }
-
-        .icon span, p, a {
-            display: inline;
-            text-decoration: none;
-            color: #3a3a3e;
-        }
-
-        #addy, #contact, #email {
-            font-weight: 600;
-            font-size: large;
-            margin-left: 10px;
-        }
-
-        .copyright {
-            color: #8D9C98;
-        }
-
-        .s-footer-con-2 {
-            flex-direction: column;
-            justify-content: space-between;
-            width: 100%;
             display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .icon img {
+            margin-right: 10px; /* Space between icon image and text */
         }
 
         .s-footer-2-main {
-            justify-content: space-between;
-            height: 100%;
             display: flex;
+            justify-content: space-between; /* Center the columns */
+            gap: 60px; /* Add space between columns */
+            margin-top: 5px; /* Add some space above the links section */
+            width: 80%; /* Full width for the footer links section */
         }
 
         .s-footer-2-block {
-            flex-direction: column;
-            justify-content: center;
-            width: 22.2%;
-            height: 100%;
-            padding-top: 20px;
-            padding-left: 2rem;
-            display: flex;
-            position: relative;
-            overflow: hidden;
+            width: 30%; /* Set width to allow centering */
+            min-width: 200px; /* Ensure blocks don't get too small */
+            padding: 10px; /* Padding for each block */
         }
 
         .footer-link {
+            color: white;
             text-decoration: none;
-            line-height: 50px;
-            color: #3a3a3e;
         }
 
         .footer-link:hover {
             text-decoration: underline;
         }
 
-        .link-header {
-            font-weight: 500;
-            font-size: x-large;
-        }
-
-        .footer-logotype {
-            width: 300px;
-            height: 125px;
-            overflow: hidden;
-        }
-
         .footer {
-            background-color: #f9f9f9;
-            padding: 20px;
-            display: flex; /* Use flexbox for alignment */
-            justify-content: space-between; /* Space out the payment and social icons */
-            align-items: center; /* Center items vertically */
+            background: linear-gradient(to right, orange, green); /* Gradient background for footer */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             text-align: center;
-            margin-top: 20px; /* Add some space above */
         }
 
-        .payment-methods {
-            display: flex; /* Ensure payment methods are in a row */
-            align-items: center; /* Center payment method icons vertically */
-        }
-
-        .social-icons {
-            display: flex; /* Ensure social icons are in a row */
-            align-items: center; /* Center social icons vertically */
-        }
-
-        .payment-methods img {
-            width: 50px;
-            margin-left: 10px;
-        }
-
+        .payment-methods img,
         .social-icons img {
-            margin-left: 15px;
-            width: 30px;
-        }
-
-        .social-icons a {
-            text-decoration: none;
+            margin-left: 10px; /* Space between payment method icons */
+            width: 25px; /* Fixed width for payment icons */
         }
     </style>
 </head>
 <body>
 
     <footer class="s-footer">
-        <div class="s-footer-con-1">
-            <a href="/" aria-current="page" class="footer-symbol-con w-inline-block w--current">
-                <div class="footer-symbol" data-w-id="cbd10d6b-2b20-7d1b-48f5-7fc31c7db77b" data-animation-type="lottie" data-src="https://cdn.prod.website-files.com/628bd935bf709b13cada8065/628bd935bf709b2a13da813c_BQN_logo10.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="3.716666666666667" data-duration="0"></div>
-            </a>
-            <a href="/" aria-current="page" class="footer-logotype-con w-inline-block w--current">
-                <img src="/static/img/GreenGrocer-removebg-preview.png" loading="lazy" alt="Bequant logotype" class="footer-logotype"/>
-            </a>
-            <div class="icons-container">
-                <div class="icon">
-                    <img src="/static/img/maps-and-flags.png" alt="location">
-                    <span>
-                        <p id="addy">Address:</p>
-                        <a href="https://maps.app.goo.gl/G8ToFV1162qN6mPY9" id="gm">1234 California Ave</a>
-                    </span>
+        <div class="s-footer-2-main">
+            <div class="s-footer-2-block"> <!-- Added class for proper spacing -->
+                <div class="footer-symbol-con">
+                    <div class="footer-symbol"></div> <!-- Replace with your Lottie animation -->
+                    <img src="/static/img/GreenGrocer-removebg-white.png" alt="GreenGrocer Logo" class="footer-logotype" />
                 </div>
-                <div class="icon">
-                    <img src="/static/img/telephone.png" alt="phone">
-                    <span>
-                        <p id="contact">Call Us:</p> 123-456-7890
-                    </span>
+                <div class="icons-container">
+                    <div class="icon">
+                        <img src="/static/img/maps-and-flags-white.png" alt="location" />
+                        <span>
+                            <strong>Address:</strong> <a href="https://maps.app.goo.gl/G8ToFV1162qN6mPY9" style="color: white;">1234 California Ave</a>
+                        </span>
+                    </div>
+                    <div class="icon">
+                        <img src="/static/img/telephone-white.png" alt="phone" />
+                        <span><strong>Call Us:</strong> 123-456-7890</span>
+                    </div>
+                    <div class="icon">
+                        <img src="/static/img/mail-white.png" alt="mail" />
+                        <span><strong>Email:</strong> greengrocer@contact.com</span>
+                    </div>
                 </div>
-                <div class="icon">
-                    <img src="/static/img/mail.png" alt="mail">
-                    <span>
-                        <p id="email">Email:</p> greengrocer@contact.com
-                    </span>
+                <div class="copyright">
+                    <span style="color: white;">&#169; 2024 GreenGrocer, All Rights Reserved</span>
                 </div>
             </div>
-            <div class="copyright">
-                <span id="cr">&#169; 2024 GreenGrocer, All Rights Reserved</span>
-            </div>
-        </div>
 
-        <div class="s-footer-con-2">
             <div class="s-footer-2-main">
-                <div class="s-footer-2-block _1">
-                    <div class="footer-link-title-con write">
-                        <div class="link-header">Account</div>
-                    </div>
-                    <div class="foter-links-con write">
-                        <div class="footer-link-con _1"><a href="/tcp-optimization" class="footer-link">Wishlist</a></div>
-                        <div class="footer-link-con _1"><a href="cart.html" class="footer-link">Cart</a></div>
-                        <div class="footer-link-con _1"><a href="/network-visibility" class="footer-link">Track order</a></div>
-                        <div class="footer-link-con _1"><a href="/bqn-platform" class="footer-link">Shipping Details</a></div>
-                    </div>
+                <div class="s-footer-2-block">
+                    <h4 style="color: white; font-weight: bold;">Account</h4>
+                    <div><a href="/tcp-optimization" class="footer-link">Wishlist</a></div>
+                    <div><a href="cart.html" class="footer-link">Cart</a></div>
+                    <div><a href="/network-visibility" class="footer-link">Track Order</a></div>
+                    <div><a href="/bqn-platform" class="footer-link">Shipping Details</a></div>
                 </div>
                 <div class="s-footer-2-block">
-                    <div class="footer-link-title-con write">
-                        <div class="link-header">Useful Links</div>
-                    </div>
-                    <div class="foter-links-con write">
-                        <div class="footer-link-con _2"><a href="/customers" class="footer-link">About Us</a></div>
-                        <div class="footer-link-con _2"><a href="/newsroom" class="footer-link">Contact</a></div>
-                        <div class="footer-link-con _2"><a href="/buy" class="footer-link">Hot Deals</a></div>
-                        <div class="footer-link-con _2"><a href="/about" class="footer-link">Promotions</a></div>
-                        <div class="footer-link-con _2"><a href="/contact" class="footer-link">New Products</a></div>
-                    </div>
+                    <h4 style="color: white; font-weight: bold;">Useful Links</h4>
+                    <div><a href="/customers" class="footer-link">About Us</a></div>
+                    <div><a href="/newsroom" class="footer-link">Contact</a></div>
+                    <div><a href="/buy" class="footer-link">Hot Deals</a></div>
+                    <div><a href="/about" class="footer-link">Promotions</a></div>
+                    <div><a href="/contact" class="footer-link">New Products</a></div>
                 </div>
                 <div class="s-footer-2-block">
-                    <div class="footer-link-title-con write">
-                        <div class="link-header">Help Center</div>
-                    </div>
-                    <div class="foter-links-con write">
-                        <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Payments</a></div>
-                        <div class="footer-link"><a href="https://twitter.com/bequant_es" target="_blank" class="footer-link">Refunds</a></div>
-                        <div class="footer-link"><a href="https://www.facebook.com/bequant/" target="_blank" class="footer-link">Checkout</a></div>
-                        <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Customer Service</a></div>
-                    </div>
+                    <h4 style="color: white; font-weight: bold;">Help Center</h4>
+                    <div><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Payments</a></div>
+                    <div><a href="https://twitter.com/bequant_es" target="_blank" class="footer-link">Refunds</a></div>
+                    <div><a href="https://www.facebook.com/bequant/" target="_blank" class="footer-link">Checkout</a></div>
+                    <div><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Customer Service</a></div>
                 </div>
             </div>
         </div>
@@ -249,23 +151,14 @@
     <div class="footer">
         <div class="payment-methods">
             <img src="https://img.icons8.com/fluency/48/000000/visa.png" alt="Visa">
-            <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="MasterCard">
+            <img src="https://img.icons8.com/fluency/48/000000/mastercard.png" alt="Mastercard">
+            <img src="https://img.icons8.com/fluency/48/000000/paypal.png" alt="PayPal">
             <img src="https://img.icons8.com/color/48/000000/maestro.png" alt="Maestro">
-            <img src="https://img.icons8.com/color/48/000000/amex.png" alt="American Express">
         </div>
         <div class="social-icons">
-            <a href="https://www.facebook.com" target="_blank">
-                <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook">
-            </a>
-            <a href="https://www.linkedin.com" target="_blank">
-                <img src="https://img.icons8.com/fluency/48/000000/linkedin.png" alt="LinkedIn">
-            </a>
-            <a href="https://www.instagram.com" target="_blank">
-                <img src="https://img.icons8.com/fluency/48/000000/instagram-new.png" alt="Instagram">
-            </a>
-            <a href="https://www.twitter.com" target="_blank">
-                <img src="https://img.icons8.com/fluency/48/000000/twitter.png" alt="Twitter">
-            </a>
+            <a href="https://www.facebook.com/"><img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook"></a>
+            <a href="https://x.com" target="_blank"><img src="https://img.icons8.com/?size=100&id=01GWmP9aUoPj&format=png&color=000000" alt="X"></a>
+            <a href="https://www.instagram.com/"><img src="https://img.icons8.com/fluency/48/000000/instagram-new.png" alt="Instagram"></a>
         </div>
     </div>
 

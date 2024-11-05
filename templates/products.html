@@ -4,60 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ category }} Products - FreshFoods190</title>
+    
+    <!-- Google Fonts for Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Apply Quicksand font to the entire page */
+        body {
+            font-family: 'Quicksand', sans-serif;
+        }
         .product-item {
+            width: 100%;
+            max-width: 300px;
             margin-bottom: 20px;
         }
         .product-item img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
+            width: 100%;
+            height: 350px; /* Set a fixed height for uniformity */
+            object-fit: cover; /* Ensures images maintain their aspect ratio */
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .card-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #B12704;
+        }
+        .old-price {
+            font-size: 14px;
+            color: #555;
+            text-decoration: line-through;
+            margin-right: 5px;
+        }
+        .discount-badge {
+            font-size: 12px;
+            color: white;
+            background-color: #d10000;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-bottom: 5px;
         }
         .btn-add-cart {
-            background-color: #4caf50;
+            background-color: #218838;
             color: white;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-add-cart:hover {
+            background-color: #1e7e34;
+        }
+
+        .delivery-info {
+            font-size: 12px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* Spacer to push Add to Cart button to the bottom */
+        .flex-spacer {
+            flex-grow: 1;
         }
     </style>
 </head>
 <body>
+    {% include 'topheader.html' %}
+
     <div class="container">
         <h1>{{ category }} Products</h1>
         
         <div class="row">
             {% for product in products %}
-                <div class="col-md-4 product-item">
-                    <div class="card">
+            <div class="col-md-3 d-flex justify-content-center">
+                    <div class="card product-item">
                         <img src="{{ product['images'][0]['sizes'][0]['url'] if product['images'] else '' }}" alt="{{ product['description'] }}" class="card-img-top">
                         <div class="card-body">
+                            {% if product['discount'] %}
+                                <div class="discount-badge">-{{ product['discount'] }}%</div>
+                            {% endif %}
                             <h5 class="card-title">{{ product['description'] }}</h5>
                             <p class="card-text">
-                                Price: 
-                                {% if product['items'] and product['items'][0].get('price') and product['items'][0]['price'].get('regular') %}
-                                    ${{ product['items'][0]['price']['regular'] }}
-                                {% else %}
-                                    Not Available
+                                <span class="price">${{ product['items'][0]['price']['regular'] }}</span>
+                                {% if product['items'][0]['price'].get('old') %}
+                                    <span class="old-price">${{ product['items'][0]['price']['old'] }}</span>
                                 {% endif %}
                             </p>
+                            <div class="delivery-info">FREE Delivery by {{ product['delivery_date'] or 'Tomorrow' }}</div>
+
+                            <!-- Spacer div to push the button to the bottom -->
+                            <div class="flex-spacer"></div>
                             
                             <form action="{{ url_for('add_to_cart', product_id=product['id']) }}" method="POST">
                                 <input type="hidden" name="product_name" value="{{ product['description'] }}">
                                 <input type="hidden" name="product_price" value="{{ product['items'][0]['price']['regular'] if product['items'][0]['price'] else 'N/A' }}">
                                 <input type="hidden" name="product_image" value="{{ product['images'][0]['sizes'][0]['url'] if product['images'] else '' }}">
-                                <button type="submit" class="btn btn-primary btn-add-cart">Add to Cart</button>
+                                <button type="submit" class="btn-add-cart">Add to Cart</button>
                             </form>
-                            
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% include 'footer.html' %}
     {% include 'bottom_navigation.html' %}
 
 </body>
-{% include 'bottom_navigation.html' %}
-
 </html>
