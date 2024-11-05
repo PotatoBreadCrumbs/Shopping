@@ -42,16 +42,7 @@ static update (Nov 5th)
 - uploaded background img 2.0
 - uploaded checkout img delivery
 
-* code for background to be implemented on every HTML *
-  body {
-            font-family: Arial, sans-serif;
-            background-image: url('/static/img/delivery.webp'); /* Replace img location according to the image you want implemented for each page */
-            background-size: cover; 
-            background-repeat: no-repeat;
-            background-position: center;
-            background-attachment: fixed; 
-            color: #333;
-        }
+* code for background to be implemented on every HTML (check discord for code section and only need to change img location accoridnly) *
   
   
 
