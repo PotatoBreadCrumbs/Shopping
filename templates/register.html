@@ -41,14 +41,16 @@
         }
 
         .btn-register {
-            background-color: #4caf50;
+            background-color: #00A600;
             color: white;
             width: 100%;
             margin-bottom: 20px;
+            border-color: #004b75 #004b75 #00456a !important;
+            box-shadow: 0 1px 0 rgb(0 0 0 / 15%), inset 0 1px 0 0 hsl(0deg 0% 100% / 10%) !important;
         }
         
         .btn-register:hover {
-            background-color: #00A600;
+            background-color: #009500;
             color: #fff;
         }
 
@@ -160,29 +162,178 @@
             transition: all 0.3s ease;
         }
 
+
+
+        .alert-container {
+            margin: 5px 0;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            color: red;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
             
+        }
+        .c6e697ea4::before,  .c6e697ea4::after{
+            content: "";
+            border-bottom: 1px solid #c2c8d0;
+            border-bottom: 1px solid #8891aa;
+            flex: 1 0 auto;
+            height: .7em;
+            margin: 0;
+        }
+        .c6e697ea4 {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            text-transform: uppercase;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 0;
+            padding: 24px 0 0;
+            padding: 24px 0 0 0;
+        }
+
+        .c6e697ea4 span {
+            text-align: center;
+            flex: 0.2 0 auto;
+            margin: 0;
+        }
         
+        .beacon-container {
+            bottom: -42px;
+            height: 85px;
+            left: 0;
+            margin: auto;
+            position: absolute;
+            right: 0;
+            transform: scale(0);
+            width: 85px;
+        }
+
+        .gg-sign-in-header {
+            border-bottom-color: #ddd;
+            background-color: #f7f7f7; /* or any color you want */
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #gg-sign-in .auth-header {
+            border-bottom: 1px solid #ddd;
+            border-bottom-color: rgb(221, 221, 221);
+            position: relative;
+            transition: padding-bottom .4s;
+            z-index: 10;
+            /*padding: 5px 10px 0 10px;  Reduce padding on the bottom */
+            height: 150px; /* Adjust this value as needed */
+        }
+        
+        #gg-sign-in h1 img{
+            border: 0;
+            border-bottom-width: 0px;
+            border-bottom-style: none;
+            border-bottom-color: currentcolor;
+            font-size: 100%;
+            font: inherit;
+            outline: 0;
+            padding-bottom: 0px;
+            vertical-align: baseline;
+            padding-bottom: 0; /* Ensure no padding at the bottom of the image */
+        }
+
+        .gg-sign-in-header h1 {
+            margin: 0; /* Remove margin from the h1 */
+        }
+
+        .login-form{
+            background-color: #f7f7f7;  
+            padding: 40px;
+            border-radius: 0px 0px 10px 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            display: flexbox;
+            
+        }
+
+        .login-container {
+            border-radius: 10px;
+            border-style: solid;
+            border-width: 1px;
+            border-color: #000;
+            font-size: 14px;
+            font-weight: 400;
+            height: auto;
+            line-height: 1.4;
+            margin: 100px auto 8px;
+            min-width: 300px;
+            overflow: auto;
+            position: relative;
+            width: 400px;
+        }
+
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: green;
+        }
+
+        .form-control {
+            margin-bottom: 20px;
+        }
+
+        .form-control:hover {
+            border: 1px solid black;
+        }
+
+        /* Faint blue outline on focus for input boxes */
+        .form-control:focus {
+            border: 1px solid #ddd;
+            box-shadow: 0 0 2px 2px rgba(30, 144, 255, 0.3); /* Light blue shadow with some blur */
+            border-radius: 5px; /* Optional: adjust to match input box style */
+        }
+
+
     </style>
 </head>
 <body>
-    <div class="register-container">
-        <div class="logo-container">
-            <img src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+    <main id="gg-sign-in" class="login-container">
+        <div class="gg-sign-in-header auth-header">
+            <h1>
+                <img class="auth-org-logo" src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+            </h1>
+            <div class="beacon-container"></div>
         </div>
+        <div class="login-form">
         <h1>Sign Up</h1>
-        <form method="POST" action="{{ url_for('register') }}" class = registrationForm>
+        <form method="POST" action="{{ url_for('register') }}" class = registrationForm autocomplete="off">
             {{ form.hidden_tag() }}
     
             <div class="form-group">
-                
-                
-
                 <!--Email/Username-->
-                <strong style="margin: -10px;">Email</strong>
+                <strong style="margin: -10px;">Username</strong>
                 <div class="row">
-                <img src="/static/img/user.svg" alt="" class="user-pass">
-                {{ form.username(class="form-control", placeholder="Username") }}
+                    <img src="/static/img/user.svg" alt="" class="user-pass">
+                    {{ form.username(class="form-control", id="username", placeholder="Username", oninput="checkUsernameAvailability()") }}
                 </div>
+                <div class="un">
+                    <small id="usernameFeedback" class="form-text" ></small> 
+                </div>
+                
+                <!-- Feedback message -->
 
                 <!--Password-->
     
@@ -224,8 +375,13 @@
         <div class="text-center login-link">
             Already have an account? <a class="log-in-link" href="{{ url_for('login') }}">Log in</a>
         </div>
-    </div>
 
+        <div class="c6e697ea4 ce3b90bf7">
+            <span>Or</span>
+        </div>
+    </div>
+</div>
+</main>
 <script>
     // Get the elements
 const password = document.getElementById('password');
@@ -343,7 +499,8 @@ async function validateForm() {
     // Process response from Python
     const result = await response.json();
 
-    alert("PW is not Valid");
+    // Display validation message from backend
+    document.getElementById('responseMessage').textContent = result.message;
 
     // Display validation message from backend
     document.getElementById('responseMessage').textContent = "Password needs to be stronger";
@@ -368,8 +525,39 @@ function toggleChecklist() {
         
     }
 
+    document.getElementById('username').addEventListener('input', function() {
+    let username = this.value;
 
+    // If username field is not empty, make an AJAX request
+    if (username.length > 0) {
+        checkUsernameAvailability(username);
+    } else {
+        // Clear any previous messages if the field is empty
+        document.getElementById('usernameFeedback').textContent = '';
+    }
+});
 
+// Function to check username availability
+function checkUsernameAvailability(username) {
+        fetch(`/check_username?username=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                const feedbackElement = document.getElementById('usernameFeedback');
+                
+                // If the username is taken, display an error message
+                if (data.is_taken) {
+                    feedbackElement.textContent = 'Username is already taken';
+                    feedbackElement.style.color = 'red';
+                } else {
+                    // If the username is available, display success
+                    feedbackElement.textContent = 'Username is available';
+                    feedbackElement.style.color = 'green';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking username:', error);
+            });
+    }
 // Add event listeners
 password.addEventListener('input', checkPasswordCriteria);
 password.addEventListener('blur', toggleChecklist); // Hide if empty on blur

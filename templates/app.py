@@ -8,9 +8,8 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, ValidationError, Length, Regexp, EqualTo
 import json
 import os
-
 import requests
-
+from markupsafe import Markup
 
 
 # First we are going to initialize the Flask app
@@ -67,8 +66,8 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[
     DataRequired(),
     Length(min=8),
-    Regexp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]'),
-
+    Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&\-_])[A-Za-z\d@$!%*#?&\-_]+$',
+           message="Password is too weak"),
     ])
     submit = SubmitField('Sign Up')
 
@@ -106,7 +105,6 @@ def update_user():
         users[username]['email'] = request.form['email']
         users[username]['phone'] = request.form['phone']
         users[username]['address'] = request.form['address']
-        
         # Write updated user data back to JSON file
         write_users(users)
         
@@ -128,6 +126,17 @@ def user_history():
 @app.route('/faq')
 def faq():
     return render_template('faq.html')
+
+@app.route('/check_username')
+def check_username():
+    username = request.args.get('username')
+    users = read_users()  # Assuming this reads all registered users from your database or file
+    
+    # Check if the username already exists
+    is_taken = username in users
+
+    return jsonify({'is_taken': is_taken})
+
 
 # this is our user login route 
 @app.route('/login', methods=['GET', 'POST'])
@@ -170,9 +179,10 @@ def register():
         new_username = form.username.data
         new_password = form.password.data
         users = read_users()  # reads users from the file saved in db 
-        
+
         if new_username in users:
-            flash('Username already exists, please choose another.')
+            message = Markup("Username already exists, please choose another.")
+            flash(message)
         else:
             users[new_username] = {'password': new_password}
             write_users(users)  # saves new user to the file

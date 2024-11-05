@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <title>GreenGrocer Login</title>
     <style>
         body {
@@ -15,28 +22,101 @@
             font-family: Arial, sans-serif;
             background: linear-gradient(45deg, #007f0e 50%, #d38e1b 50%);
         }
-        .login-container {
-            background-color: #006600;
+        /*.logo-container{
+            margin: -25px 0px 25px 0;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+            transition: padding-bottom .4s;
+            z-index: 10;
+        }*/
+
+        .beacon-container {
+            bottom: -42px;
+            height: 85px;
+            left: 0;
+            margin: auto;
+            position: absolute;
+            right: 0;
+            transform: scale(0);
+            width: 85px;
+        }
+
+        .gg-sign-in-header {
+            border-bottom-color: #ddd;
+            background-color: #f7f7f7; /* or any color you want */
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #gg-sign-in .auth-header {
+            border-bottom: 1px solid #ddd;
+            border-bottom-color: rgb(221, 221, 221);
+            position: relative;
+            transition: padding-bottom .4s;
+            z-index: 10;
+            /*padding: 5px 10px 0 10px;  Reduce padding on the bottom */
+            height: 150px; /* Adjust this value as needed */
+        }
+        
+        #gg-sign-in h1 img{
+            border: 0;
+            border-bottom-width: 0px;
+            border-bottom-style: none;
+            border-bottom-color: currentcolor;
+            font-size: 100%;
+            font: inherit;
+            outline: 0;
+            padding-bottom: 0px;
+            vertical-align: baseline;
+            padding-bottom: 0; /* Ensure no padding at the bottom of the image */
+        }
+
+        .gg-sign-in-header h1 {
+            margin: 0; /* Remove margin from the h1 */
+        }
+
+        .login-form{
+            background-color: #f7f7f7;  
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-radius: 0px 0px 10px 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            display: flexbox;
+            
+        }
+
+        .login-container {
+            border-radius: 10px;
+            border-style: solid;
+            border-width: 1px;
+            border-color: #000;
+            font-size: 14px;
+            font-weight: 400;
+            height: auto;
+            line-height: 1.4;
+            margin: 100px auto 8px;
+            min-width: 300px;
+            overflow: auto;
+            position: relative;
+            width: 400px;
+        }
+
+        .login-container h1 {
             text-align: center;
-            width: 300px;
+            margin-bottom: 30px;
+            color: green;
         }
-        .login-container img {
-            width: 80px;
+
+        .form-control {
             margin-bottom: 20px;
         }
-        .login-container h2 {
-            color: #fff;
-            margin-bottom: 20px;
-        }
+
         .input-box {
-            display: block;
             margin-bottom: 15px;
             padding: 10px;
             border: none;
-            border-radius: 5px;
             width: 100%;
             font-size: 14px;
         }
@@ -50,58 +130,302 @@
             border: none;
             border-radius: 5px;
             width: 100%;
-            font-size: 14px;
+            font-size: 12px;
+            border: 1px solid;
+            border-color: #004b75 #004b75 #00456a !important;
+            box-shadow: 0 1px 0 rgb(0 0 0 / 15%), inset 0 1px 0 0 hsl(0deg 0% 100% / 10%) !important;
+            font-size: 18px;
         }
         .btn-login {
-            background-color: #fff;
-            color: #000;
+            background-color: #00A600;
+            color: white;
+            width: 100%;
+            font-weight: 400;
         }
+
+        #error-box {
+            display: none; /* Hide by default */
+        }
+
+        .btn-login:hover {
+
+            background-color: #009500;
+            color: #fff;
+        }
+
         .btn-signup {
             background-color: #e60000;
             color: #fff;
+            font-weight: 400;
         }
+
+        
+        .btn-signup:hover {
+            background-color: #cf0000;
+            color: #fff;
+            font-weight: 400;
+        }
+
         .btn-guest {
             background-color: #fdbf1d;
             color: #fff;
+            font-weight: 400;
         }
-        .forgot-password {
+
+        .btn-guest:hover {
+            background-color: #e3ab1a;
             color: #fff;
+            font-weight: 400;
+        }
+
+        .forgot-password {
+            color: green;
             font-size: 12px;
             text-decoration: underline;
         }
+        .su-lg-link{
+            text-decoration: none;
+        }
+    
+        .field{
+            position: relative;
+            height: 50px;
+            width: 100%;
+            
+        }
+        .show{
+            position:absolute;
+            top: 37%;
+            right: 1px;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .row{
+            position: relative;
+        }
+
+        .row .user-pass{
+            position: absolute;
+            width: 40px;
+            height: 74%;
+            color: #fff;
+            font-size: 22px;
+            background: #00A600;
+            border: 1px solid #00A600;
+            border-radius: 5px 0 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row input{
+            max-height: 80%;
+            width: 100%;
+            outline: none;
+            padding-left: 55px;
+            border-radius: 5px;
+            border: 1px solid lightgrey;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            
+        }
+
+        .pass{
+            margin-bottom: 25px;
+        }
+
+        .input-box::placeholder{
+            color: #595C5F;
+        }
+
+        .o-form-error-container{
+            background: transparent;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            margin: 0;
+            outline: 0;
+            padding: 0;
+            vertical-align: baseline;
+        }
+
+        .infobox-error {
+            display: block !important;
+            margin-bottom: 50px;
+        }
+
+        .infobox{
+            background-color: #fbfbfb;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .infobox-error::before {
+            background-color: #e34843;
+        }
+
+        .infobox {
+            -webkit-hyphens: none;
+            hyphens: none;
+            min-height: 18px;
+            padding: 12px 18px 12px 48px !important;
+            position: relative;
+            word-break: break-word;
+        }
+        
+
+        .infobox::before {
+            border-bottom-left-radius: 3px;
+            border-top-left-radius: 3px;
+            bottom: -1px;
+            content: "";
+            left: -1px;
+            position: absolute;
+            top: -1px;
+        }
+
+        .infobox::before {
+            width: 36px;
+        }
+
+        #gg-sign-in p{
+            background: transparent;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            margin: 0;
+            outline: 0;
+            padding: 0;
+            vertical-align: baseline;
+            color: #6e6e78;
+        }
+
+        .icon {
+            left: 9px;
+            top: 13px;
+            line-height: 16px;
+            position: absolute;
+        }
+
+
+        .input-box:hover {
+            border: 1px solid black;
+        }
+
+        /* Faint blue outline on focus for input boxes */
+        .input-box:focus {
+            border: 1px solid #ddd;
+            box-shadow: 0 0 2px 2px rgba(30, 144, 255, 0.3); /* Light blue shadow with some blur */
+            border-radius: 5px; /* Optional: adjust to match input box style */
+        }
+
+        .error-box{
+            display: none;
+        }
     </style>
+
+
 </head>
 <body>
-    <div class="login-container">
-        <img src="/static/img/logo.png" alt="GreenGrocer Logo"> 
-        <h2>GreenGrocer</h2>
-        <form method="POST" action="{{ url_for('login') }}">
-            <!-- CSRF token for protection -->
-            {{ form.hidden_tag() }}
+    <main id="gg-sign-in" class="login-container">
+        <div class="gg-sign-in-header auth-header">
+            <h1>
+                <img class="auth-org-logo" src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
+            </h1>
+            <div class="beacon-container"></div>
+        </div>
+        <div class="login-form">
+            <h1>Log In</h1>
+
+            {% if get_flashed_messages() %}
+                <div id="error-box" class="o-form-error-container o-form-has-errors">
+                    <div>
+                        <div class="gg-form-infobox-error infobox infobox-error">
+                            <img src="/static/img/exclamation-circle-fill.svg" alt="error16" class="icon error-16">
+                            <p autocomplete="false">
+                                {% with messages = get_flashed_messages(with_categories=false) %}
+                                    {% if messages %}
+                                        {{ messages[0] }}  <!-- Display the first message only -->
+                                    {% endif %}
+                                {% endwith %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    // Set flag to show the error message after page load
+                    sessionStorage.setItem('errorMessageVisible', 'true');
+                </script>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <!-- CSRF token for protection -->
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                <!-- Username field -->
+                <strong style="margin: -10px;">Username</strong>
+                <div class="row">
+                <img src="/static/img/user.svg" alt="" class="user-pass">
+                <input type="text" name="username" class="input-box" placeholder="Username" required style="height: 42px;" onclick="this.select()">            
+                </div>
+                <!-- Password field -->
+                <strong style="margin: -10px;"> Password </strong>
+                <div class="row pass">
+                <img src="/static/img/lock.svg" alt="" class="user-pass">
+                <input type="password" name="password" class="input-box" id="password" placeholder="Password" required style="height: 41px;">            
+                <img src="/static/img/show1.svg" alt="" class="show">
+                </div>
+            </div>
+        
+                <!-- Login button -->
+                <button type="submit" class="btn-login">Login</button>
+            </form>
             
-            <!-- Username field -->
-            <input type="text" name="username" class="input-box" placeholder="Username" required>
-            
-            <!-- Password field -->
-            <input type="password" name="password" class="input-box" placeholder="Password" required>
-            
-            <!-- Login button -->
-            <button type="submit" class="btn-login">LOGIN</button>
-        </form>
 
-        <!-- our sign up button below -->
-        <a href="{{ url_for('register') }}">
-            <button type="button" class="btn-signup">SIGN UP</button>
-        </a>
+            <!-- our sign up button below -->
+            <a class="su-lg-link" href="{{ url_for('register') }}">
+                <button type="button" class="btn-signup">Sign Up</button>
+            </a>
 
-        <!-- heres the login implementatin for the guest -->
-        <a href="{{ url_for('guest_login') }}">
-            <button type="button" class="btn-guest">LOGIN AS GUEST</button>
-        </a>
-       
+            <!-- heres the login implementatin for the guest -->
+            <a class="su-lg-link" href="{{ url_for('guest_login') }}">
+                <button type="button" class="btn-guest">Login as Guest</button>
+            </a>
+        
 
+            <div class="forgot-pass-link">
+            <a href="{{url_for('reset_password')}}" class="forgot-password">Forgot password?</a>
+            </div>
+        </div>
+</main>
+    <script>
+        let eyeIcon = document.getElementsByClassName('show');
+        const password = document.getElementById('password');
+        //Show pw on click
+    eyeIcon[0].onclick = function(){
+    if(password.type == "password"){
+        password.type = "text"
+        eyeIcon[0].src = "/static/img/hide1.svg"
+    }else{
+        password.type = "password";
+        eyeIcon[0].src = "/static/img/show1.svg"
+    }
+}
 
-        <a href="#" class="forgot-password">Forgot password?</a>
-    </div>
+    window.onload = function() {
+                const errorBox = document.getElementById('error-box');
+                if (sessionStorage.getItem('errorMessageVisible') === 'true') {
+                    errorBox.style.display = 'block';
+                    sessionStorage.removeItem('errorMessageVisible');
+                    console.log(sessionStorage)
+                }
+            };
+
+    </script>
+
 </body>
 </html>
