@@ -62,9 +62,12 @@
             align-items: center;
         }
 
-        .dropdown-menu {
-            min-width: 160px;
+        .nav-item .dropdown-menu {
+            left: 50%;
+            width: 200px;
+            transform: translateX(-55%);
         }
+
 
         .content {
             padding-top: 80px;
@@ -92,6 +95,18 @@
             margin-right: 20px;
             font-weight: bold;
         }
+        .location-dropdown {
+            width: 175px;
+            margin-left: auto; /* Pushes the dropdown to the far right */
+            z-index: 1000; /* Ensures it stays above other elements */
+        }
+                
+        .form-select-sm {
+            font-size: 12px; /* Adjusts text size */
+            padding: 4px; /* Reduces padding for a smaller dropdown */
+        }
+    
+        
     </style>
 </head>
 
@@ -104,6 +119,7 @@
                 <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 250px; height: auto;">
             </a>
         </div>
+        
 
         <!-- Search Bar with Category Dropdown -->
         <div class="search-bar">
@@ -130,34 +146,72 @@
                 </button>
             </div>
         </div>
+      <!-- Location Dropdown positioned in top-right corner -->
+      <div class="location-dropdown">
+        <select id="locationDropdown" class="form-select form-select-sm" onchange="changeLocation()">
+            <option value="">Select Location</option>
+            {% for location in locations %}
+                <option value="{{ location['locationId'] }}" {% if location['locationId'] == selected_location %}selected{% endif %}>
+                    {{ location['name'] }} - {{ location['address']['city'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    
 
-        <!-- Username and Accessibility Button -->
-        <div class="d-flex align-items-center">
-            <div class="nav-item dropdown">
-                <a class="dropdown-toggle username" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                    Kevin
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
-                    <li>
-                        <form action="{{ url_for('logout') }}" method="POST">
-                            <button class="dropdown-item" type="submit">Sign Out</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+<script>
+    function changeLocation() {
+        const locationDropdown = document.getElementById("locationDropdown");
+        const locationId = locationDropdown.value;
 
-            <div class="accessibility-btn">
-                <img src="/static/img/AccessabilityButton.png" alt="Accessibility Icon">
-            </div>
-        </div>
+        if (locationId) {
+            // Redirect to set the location in the backend and update the JSON file
+            window.location.href = `/set_location?location_id=${locationId}`;
+        }
+    }
+
+    // When the page loads, set the dropdown to the stored location from the server
+    document.addEventListener("DOMContentLoaded", function() {
+        const locationDropdown = document.getElementById("locationDropdown");
+        const savedLocationId = "{{ selected_location }}";  // Server-passed selected location
+
+        if (savedLocationId) {
+            locationDropdown.value = savedLocationId;
+        }
+    });
+</script>
+
+
+      <!-- Username and Accessibility Button -->
+<div class="d-flex align-items-center">
+    <div class="nav-item dropdown">
+        <a class="dropdown-toggle username" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ username }}
+        </a>
+
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
+            <li>
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button class="dropdown-item text-center" type="submit" style="color: red; display: block; width: 100%; text-align: center;">Sign Out</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+    <div class="accessibility-btn">
+        <img src="/static/img/AccessabilityButton.png" alt="Accessibility Icon">
+    </div>
+    </div>
+    
     </nav>
+    
 
     <div style="height: 150px;"></div> <!-- Adjust the height as needed -->
-
 
     <!-- Bootstrap JS, Popper.js, 
      and Font Awesome JS -->
@@ -277,7 +331,7 @@ const productMapping = {
 
             if (currentScrollPosition > lastScrollPosition) {
                 // Scroll down, hide header
-                header.style.top = '-125px';
+                header.style.top = '-60px';
             } else {
                 // Scroll up, show header
                 header.style.top = '0';

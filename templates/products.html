@@ -4,14 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ category }} Products - FreshFoods190</title>
-    
+
     <!-- Google Fonts for Quicksand -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Apply Quicksand font to the entire page */
         body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/img/veggie_background.png'); /* Replace white background with an image */
+            background-size: cover; /* Fills the viewport while keeping the image's aspect ratio */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed; /* Keeps the background fixed during scrolling */
+            color: #333;
+        }
+        {
             font-family: 'Quicksand', sans-serif;
         }
         .product-item {
@@ -25,7 +33,6 @@
             object-fit: cover; /* Ensures images maintain their aspect ratio */
             border-bottom: 1px solid #e0e0e0;
         }
-
         .card-body {
             padding: 10px;
             display: flex;
@@ -72,17 +79,28 @@
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
-
         .btn-add-cart:hover {
             background-color: #1e7e34;
         }
-
         .delivery-info {
             font-size: 12px;
             color: #555;
             margin-top: 5px;
         }
-
+        .favorite-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .favorite-btn .fas {
+            color: yellow; /* Filled star color */
+        }
+        .favorite-btn .far {
+            color: gray; /* Unfilled star color */
+        }
         /* Spacer to push Add to Cart button to the bottom */
         .flex-spacer {
             flex-grow: 1;
@@ -97,8 +115,8 @@
         
         <div class="row">
             {% for product in products %}
-            <div class="col-md-3 d-flex justify-content-center">
-                    <div class="card product-item">
+                <div class="col-md-3 d-flex justify-content-center product-item">
+                    <div class="card position-relative">
                         <img src="{{ product['images'][0]['sizes'][0]['url'] if product['images'] else '' }}" alt="{{ product['description'] }}" class="card-img-top">
                         <div class="card-body">
                             {% if product['discount'] %}
@@ -106,14 +124,19 @@
                             {% endif %}
                             <h5 class="card-title">{{ product['description'] }}</h5>
                             <p class="card-text">
-                                <span class="price">${{ product['items'][0]['price']['regular'] }}</span>
-                                {% if product['items'][0]['price'].get('old') %}
-                                    <span class="old-price">${{ product['items'][0]['price']['old'] }}</span>
+                                Price: 
+                                {% if product['items'] and product['items'][0].get('price') and product['items'][0]['price'].get('regular') %}
+                                    <span class="price">${{ product['items'][0]['price']['regular'] }}</span>
+                                    {% if product['items'][0]['price'].get('old') %}
+                                        <span class="old-price">${{ product['items'][0]['price']['old'] }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="price">Not Available</span>
                                 {% endif %}
                             </p>
+                            
                             <div class="delivery-info">FREE Delivery by {{ product['delivery_date'] or 'Tomorrow' }}</div>
 
-                            <!-- Spacer div to push the button to the bottom -->
                             <div class="flex-spacer"></div>
                             
                             <form action="{{ url_for('add_to_cart', product_id=product['id']) }}" method="POST">
@@ -122,15 +145,48 @@
                                 <input type="hidden" name="product_image" value="{{ product['images'][0]['sizes'][0]['url'] if product['images'] else '' }}">
                                 <button type="submit" class="btn-add-cart">Add to Cart</button>
                             </form>
+
+                            <button onclick="toggleFavorite('{{ product['id'] }}', '{{ product['description'] }}', '{{ product['items'][0]['price']['regular'] if product['items'][0].get('price') else 'N/A' }}', '{{ product['images'][0]['sizes'][0]['url'] if product['images'] else '' }}')" class="favorite-btn">
+                                <i id="favorite-icon-{{ product['id'] }}" class="{% if product['id'] in favorite_ids %}fas{% else %}far{% endif %} fa-star"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
+        
+        <!-- Pagination controls -->
+        <div class="pagination-controls text-center my-4">
+            {% if page > 1 %}
+                <a href="{{ url_for('get_products', category=category, query=query, page=page-1) }}" class="btn btn-outline-primary">Previous</a>
+            {% endif %}
+            <span class="px-3">Page {{ page }}</span>
+            {% if products|length == 50 %}
+                <a href="{{ url_for('get_products', category=category, query=query, page=page+1) }}" class="btn btn-outline-primary">Next</a>
+            {% endif %}
+        </div>
+        
     </div>
-    
-    {% include 'footer.html' %}
-    {% include 'bottom_navigation.html' %}
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function toggleFavorite(id, name, price, imageUrl) {
+            const icon = document.getElementById("favorite-icon-" + id);
+            icon.classList.toggle("fas");
+            icon.classList.toggle("far");
+
+            fetch('/toggle_favorite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, price, image_url: imageUrl })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data.message))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+    {% include 'bottom_navigation.html' %}
 </body>
 </html>
