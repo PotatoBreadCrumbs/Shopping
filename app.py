@@ -1,23 +1,88 @@
 # Import necessary libraries
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session
-import requests
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_wtf.csrf import CSRFProtect
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, ValidationError, Length, Regexp, EqualTo
-import json
-import os
-import requests
 from markupsafe import Markup
-
+from authlib.integrations.flask_client import OAuth # First we are going to initialize the Flask app
+import uuid,requests,os,json
+from flask_mail import Mail, Message
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from functools import wraps
 
 # First we are going to initialize the Flask app
 app = Flask(__name__)
 app.secret_key = b'\xef\xd4\x16\x98h\xc6\xdd\xc3\xc6\xce\x02\xd6@o\x8a|\x08\x1c\xd6\\X{\xeex'
 csrf = CSRFProtect(app)  # Enable CSRF protection
+# Configure Flask-Mail using environment variables
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() in ['true', '1', 'yes']
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 
-# We created a file to store user data (this simulates a database using mysql lite)
+# Initialize Flask-Mail
+mail = Mail(app)
+import os
+
+import requests
+import json
+sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+def send_direct_email(to_email):
+    url = "https://api.sendgrid.com/v3/mail/send"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "personalizations": [
+            {
+                "to": [{"email": to_email}],
+                "dynamic_template_data": {
+                    "reset_url": "http://127.0.0.1:5000/reset-password",  # Guys this is temporary url for local reset
+                    "username": to_email  
+                }
+            }
+        ],
+        "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
+        "template_id": "d-9c2c93acfa0e40cbbeea3cf01582af1b"  # our custom template using the sendgrid api we made
+    }
+    
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    print("Direct API call status:", response.status_code)
+    print("Response text:", response.text)
+
+
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password_page():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        new_password = request.form.get('new_password')
+        
+       
+        users = read_users()
+        
+
+        for username, user_info in users.items():
+            if user_info.get('email') == email:
+               
+                user_info['password'] = new_password
+                write_users(users)
+                flash('Password updated successfully!', 'success')
+                return redirect(url_for('login'))
+        
+        flash('Email not found. Please check and try again.', 'danger')
+
+
+    return render_template('reset_password.html')
+
+oauth = OAuth(app)
+
+# We created a file to store user data (this simulates a database using mysql lite) x
 USER_FILE = 'user_storage.json'
 
 # Our Kroger API credentials 
@@ -32,19 +97,35 @@ login_manager.init_app(app)
 # Disable CSRF for testing
 app.config['WTF_CSRF_ENABLED'] = False
 # implemented a helper functions to manage user data in a file
-def read_users():
-    if not os.path.exists(USER_FILE):
-        return {}
-    with open(USER_FILE, 'r') as file:
+def read_users(source='regular'):
+    if source and not os.path.exists(USER_FILE):
+        file_path = 'google_accounts.json'
+    else:
+        file_path = 'user_storage.json'
+    with open(file_path, 'r') as file:
         return json.load(file)
+    
 def read_user(username):
     users = read_users()
     return users.get(username)
 
-def write_users(users):
-    with open(USER_FILE, 'w') as file:
-        json.dump(users, file)
+def write_users(users,source='regular'):
+    file_path = 'google_accounts.json' if source == 'google' else 'user_storage.json'
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            try:
+                existing_users = json.load(file)  # Load existing data
+            except json.JSONDecodeError:
+                existing_users = {}  
+    else:
+        existing_users = {} 
+    
+    existing_users.update(users)
 
+    with open(file_path, 'w') as file:
+        json.dump(existing_users, file, indent=4)
+
+        
 # User class for Flask-Login
 class User(UserMixin):
     def __init__(self, id):
@@ -63,12 +144,17 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[
-    DataRequired(),
-    Length(min=8),
-    Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&\-_])[A-Za-z\d@$!%*#?&\-_]+$',
-           message="Password is too weak"),
-    ])
+    password = PasswordField(
+        'Password', 
+        validators=[
+            DataRequired(),
+            Length(min=8, message="Password must be at least 8 characters long."),
+            Regexp(
+                r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&_-])[A-Za-z\d@$!%*#?&_-]+$',
+                message="Password must include an uppercase letter, a lowercase letter, a number, and a special character."
+            ),
+        ]
+    )
     submit = SubmitField('Sign Up')
 
 # Form for the logout button 
@@ -114,14 +200,55 @@ def update_user():
     
     return redirect(url_for('settings'))
 
-@app.route('/user_history')
+@app.route('/orderhistory')
 @login_required
-def user_history():
+def orderhistory():
+    # Sample order data with renamed attribute to avoid conflict
     order_history = [
-        {"date": "2024-10-01", "payment": "Visa", "discount": "10%"},
-        {"date": "2024-09-15", "payment": "PayPal", "discount": "5%"}
+        {
+            "date": "2024-10-12",
+            "order_items": [
+                {"name": "Sample Item 1", "price": 5.00},
+                {"name": "Sample Item 2", "price": 7.50}
+            ],
+            "total_price": 12.50
+        },
+        {
+            "date": "2024-10-13",
+            "order_items": [
+                {"name": "Sample Item 3", "price": 3.00},
+                {"name": "Sample Item 4", "price": 6.50}
+            ],
+            "total_price": 9.50
+        }
     ]
-    return render_template('user_history.html', order_history=order_history)
+    return render_template('orderhistory.html', order_history=order_history)
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        # Get the email entered in the form
+        email = request.form.get('email')
+        print(f"Email entered for reset: {email}")
+
+        # Load the users and search for the email in the JSON structure
+        users = read_users()
+        user_found = False
+        for username, user_data in users.items():
+            if user_data.get('email') == email:
+                user_found = True
+                send_direct_email(email)
+                flash('Password reset instructions have been sent to your email.', 'info')
+                break
+
+        if not user_found:
+            flash('Email address not found.', 'danger')
+
+        # Redirect to the login page or another confirmation page
+        return redirect(url_for('login'))
+
+    # Render the forgot password page for GET requests
+    return render_template('forgot_password.html')
 
 @app.route('/faq')
 def faq():
@@ -151,8 +278,11 @@ def login():
             login_user(user)
             return redirect(url_for('home'))  # redirect to home after login
         else:
-            flash('Invalid username or password')
+            flash('Invalid username or password',category="incorrect pw or un")
     return render_template('login.html', form=form)
+
+
+
 
 @app.route('/settings')
 @login_required
@@ -186,10 +316,12 @@ def register():
         else:
             users[new_username] = {'password': new_password}
             write_users(users)  # saves new user to the file
-            flash('User registered successfully! Please log in.')
+            flash('User registered successfully! Please log in.',category="success")
             return redirect(url_for('login'))
     
     return render_template('register.html', form=form)
+
+
 
 @app.route('/validate', methods=['POST'])
 def validate():
@@ -209,22 +341,6 @@ def validate():
     # If all checks pass
     return jsonify({"message": "Form is valid!"})
 
-
-@app.route('/reset_password/new', methods=['GET', 'POST'])
-def reset_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        users = read_users()
-        # Logic to verify the email and send a reset password link(not implemented fully will do so later)
-        for i in users:
-             if email == users[i]['email']:
-                flash('Password reset instructions have been sent to your email.', 'info')
-                return redirect(url_for('redirect'))
-        flash('Invalid email address!', 'danger')
-        return redirect(url_for('login'))
-        
-    # sets the GET request, which render the forgot password page
-    return render_template('forgot_password.html')
 
 @app.route('/')
 @login_required
@@ -333,6 +449,7 @@ def get_location_products(location_id):
         return jsonify({"error": "Error fetching products for the selected location"}), 500
 
 
+
 @app.route('/add_to_cart', methods=['POST'])
 @login_required
 def add_to_cart():
@@ -351,6 +468,7 @@ def add_to_cart():
             session.modified = True
             return redirect(url_for('view_cart'))
         
+    
 
     # Add new item to cart
     session['cart'].append({
@@ -405,9 +523,16 @@ def inject_cart_count():
 @app.route('/logout', methods=['POST'])
 @login_required
 def logout():
-    session.clear()  # Explicitly clear the session
-    logout_user()  # Log out the user
+    # Check if the user is logged in with Google and remove the token if so
+    if 'google_token' in session:
+        session.pop('google_token')  # Remove the Google token
+        
+    # Clear the session and log out the user
+    session.clear()
+    logout_user()
+    
     return redirect(url_for('login'))
+
 
 @app.route('/discounts')
 @login_required
@@ -492,6 +617,12 @@ def search():
         return redirect(url_for('home'))
 
 
+@app.route('/account_info')
+@login_required
+def account_info():
+    users = read_users()
+    user_data = users.get(current_user.id, {})
+    return render_template('account_info.html', user_data=user_data)
 
 # Function to retrieve the cart count to use in templates
 @app.context_processor
@@ -540,6 +671,79 @@ def process_checkout():
     return redirect(url_for('home'))
 
 
+GOOGLE_CLIENT_ID = '948980706830-8ff2bi5o0lupforj4u8h5odjs66krb1p.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+
+
+oauth.register(
+    name='google',
+    client_id=GOOGLE_CLIENT_ID,
+    client_secret=GOOGLE_CLIENT_SECRET,
+    server_metadata_url=CONF_URL,
+    client_kwargs={'scope': 'openid email profile'}
+)
+
+
+# Google Authentication
+@app.route('/google/')
+def google():
+    # Redirect to google_auth function
+    nonce = uuid.uuid4().hex
+    session['nonce'] = nonce
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri,nonce=nonce)
+
+@app.route('/loyalty_rewards')
+@login_required
+def loyalty_rewards():
+    rewards_info = {
+        "points": 1200,
+        "tier": "Gold",
+        "next_tier_points": 3000
+    }
+    return render_template('loyalty_rewards.html', rewards_info=rewards_info)
+
+@app.route('/google/auth/')
+def google_auth():
+    token = oauth.google.authorize_access_token()
+    nonce = session.pop('nonce', None)
+    if nonce is None:
+        flash("Invalid session. Please try logging in again.", "error")
+        return redirect(url_for('login'))
+    
+    user_info = oauth.google.parse_id_token(token, nonce=nonce)
+    if user_info:
+        # Create or fetch the user in your system
+        user = User(user_info['name'])  # Use Google's unique user ID or create a User instance with `user_info`
+
+        write_users({user.id: user_info},source='google')
+
+        # Log the user in
+        login_user(user)
+
+        # Redirect to the desired page after login
+        return redirect(url_for('home'))
+    else:
+        flash("Failed to retrieve user information from Google.", "danger")
+        return redirect(url_for('login'))
+    
+@app.route('/remove_item/<int:index>', methods=['POST'])
+@login_required
+def remove_item(index):
+    if 'cart' in session:
+        try:
+            session['cart'].pop(index)
+            session.modified = True
+            flash("Item removed from cart.", "success")
+        except IndexError:
+            flash("Item not found in the cart.", "danger")
+    
+    return redirect(url_for('view_cart'))
+
+
+# We created a file to store user data (this simulates a database using mysql lite)
+USER_FILE = 'user_storage.json'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
