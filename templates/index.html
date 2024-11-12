@@ -5,147 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore Categories - GreenGrocer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
-    </style>
-    <style>
-        * { 
-            -moz-box-sizing: border-box; 
-            -webkit-box-sizing: border-box; 
-            box-sizing: border-box; 
-        }
         body {
             background-color: #f7f7f7;
-            font-family: Quicksand;
+            font-family: Arial, sans-serif;
             padding-bottom: 70px;
         }
         .navbar {
             background-color: #fff;
             padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         .navbar-brand img {
-            width: 200px;
-
-            margin-right: -175px;
+            width: 150px;
         }
         .nav-item .dropdown-toggle {
             color: #000;
         }
         .nav-item .dropdown-menu {
-            margin-left: auto;
-            position: relative;
-            display: inline-block; /* Ensures it's not affected by the search bar */
-            top: 0;
-            right: 0;
+            background-color: white;
         }
         .search-bar {
             display: flex;
-            flex-grow: 1;
-            margin-right: 20px; /* Space between search bar and dropdown */
+            justify-content: space-between;
             align-items: center;
-            text-align: center;
-            
+            margin-left: 20px;
+            width: 70%;
         }
         .search-bar input {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
-            
+            border-radius: 4px;
         }
-
-
-        .input-group {
-            display: flex;
-            width: 100%;
-        }
-
-        .input-group-btn .btn {
-            background-color: #198754; /* Light Green */
-            border: 0px 20px 0px 0px solid #a887349d;
-            padding: 10px 15px;
-        }
-        .dropdown-menu{
-            height: auto;
-            max-height:320px;  /* Increase / Decrease value as per your need */
-            overflow-x: hidden;
-        }
-        .input-group {
-        position: relative;
-        display: table;
-        border-collapse: separate;
-        }
-
-        .input-group-addon, .input-group-btn {
-            width: 1%;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-        
-
-        .btn custom-dropdown-button dropdown-toggle{
-            margin-right: -1px;
-        }
-        
-        .input-group .form-control, .input-group-addon, .input-group-btn {
-            display: table-cell;
-        }
-        .input-group .form-control {
-            position: relative;
-            z-index: 2;
-            float: left;
-            width: 100%;
-            margin-bottom: 0;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-
-        .form-control {
-            display: block;
-            width: 100%;
-            height: 34px;
-            padding: 6px 12px;
-            font-size: 14px;
-            line-height: 1.42857143;
-            color: #555;
-            background-color: #fff;
-            background-image: none;
-            border: 1px solid #ccc;
-            
-            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-            -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
-            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-        }
-        .input-group-btn {
-            position: relative;
-            font-size: 0;
-            white-space: nowrap;
-        }
-        .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
-            z-index: 2;
-            margin-left: -1px;
-        }
-        .bi {
-            position: relative;
-            top: 1px;
-            display: inline-block;
-            font-family: 'Glyphicons Halflings';
-            font-style: normal;
-            font-weight: 400;
-            line-height: 1;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
         .accessibility-btn {
             background-color: #ffd700;
             color: #000;
@@ -168,7 +60,7 @@
             padding: 0 20px;
         }
         .category-card {
-            background-color: white;
+            background-color: #d9d9d9;
             width: 180px;
             margin: 15px;
             text-align: center;
@@ -178,15 +70,14 @@
             vertical-align: top;
             position: relative;
             display: inline-block;
-            justify-content: space-between; /* Distribute space evenly */
+            justify-content: space-between;
             align-items: center;
             text-decoration: none;
             -webkit-transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             backface-visibility: hidden;
         }
-
-        .category-card::after{
+        .category-card::after {
             position: absolute;
             z-index: -1;
             width: 50%;
@@ -196,24 +87,21 @@
             opacity: 0.5;
             transition: opacity 0.3s ease-in-out;
         }
-        
-        .category-card:hover{
+        .category-card:hover {
             transform: scale(1.05,1.05);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
             transition: transform 0.3s ease-in-out;
         }
-        .category-card:hover::after{
+        .category-card:hover::after {
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); 
             opacity: 1;
             transition: opacity 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
-        
         .category-card img {
             width: 130px;
             height: 100px;
             object-fit: cover;
             margin-bottom: 10px;
-            object-fit: cover; /* Ensures the image fits inside the container while maintaining aspect ratio */
         }
         .category-card h4 {
             font-size: 16px;
@@ -222,29 +110,23 @@
         }
         .category-card p {
             color: #666;
-            
         }
         .category-card:hover h4, .category-card:hover p {
             transform: scale(1.05);
             transition: transform 0.5s ease-in-out;
         }
-
         .category-card:hover img {
             transform: scale(1.05);
             transition: transform 0.5s ease-in-out;
         }
-
         .category-card h4, .category-card p, .category-card img {
             transition: transform 0.3s ease-in-out;
-        }   
-
-
-
+        }
         .bottom-nav {
             position: fixed;
             bottom: 0;
             width: 100%;
-            background-color: #fff;
+            background-color: #f8f9fa;
             box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-around;
@@ -254,6 +136,48 @@
         .nav-item {
             flex-grow: 1;
             text-align: center;
+        }
+        .nav-item a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: auto;
+            padding: 5px 0;
+            margin: 0 100px;
+            box-sizing: border-box;
+        }
+        .nav-item a:visited {
+            color: #000;
+        }
+        .nav-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+            background-color: #f8f9fa;
+        }
+        .nav-item img {
+            width: 30px;
+            height: 30px;
+        }
+        .nav-item span {
+            font-size: 14px;
+        }
+        .nav-item a:hover .nav-icon {
+            background-color: #28a745;
+        }
+        .nav-item a:hover img {
+            filter: brightness(0) invert(1);
+        }
+        .nav-item a:hover {
+            color: #000;
+        
         }
         .nav-item a {
             text-decoration: none;
@@ -452,354 +376,295 @@
             position: static;
             float: none;
         }
-
-        
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
-    <style>
-    .flickity-viewport {
-        width: 100%;
-      overflow: visible !important;
-    }
-    .flickity-button {
-        display: none;
-    }
-    </style>
-    
 </head>
+
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-<!-- Add custom CSS to style the dropdown button -->
-<style>
-    .custom-dropdown-button {
-        background-color: #198754; /* Light Green */
-        color: white;
-        border-color: #198754; /* Matching border color */
-    }
 
-    .custom-dropdown-button:hover {
-        background-color: #157147; /* Darker Green on hover */
-        color: white;
-        border-color: #157147; /* Matching border color on hover */
-    }
-</style>
+    <!-- Navbar with custom dropdown inside the search bar -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="navbar-brand">
+            <a href="{{ url_for('home') }}">
+                <img src="/static/img/GreenGrocer.png" alt="GreenGrocer Logo" style="width: 250px; height: auto;">
+            </a>
+        </div>
 
-<!-- Navbar with custom dropdown button -->
+        <div class="search-bar" style="display: flex; align-items: center; max-width: 50%;">
+            <div class="input-group" style="width: 900px;">
+                <div class="input-group-prepend">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="categoryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 5px 0 0 5px;">
+                        All Categories
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton">
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('All Categories')">All Categories</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Vegetables')">Vegetables</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Fruits')">Fruits</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Meats')">Meats</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Frozen')">Frozen</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Dairy')">Dairy</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Bread')">Bread</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Canned')">Canned</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Snacks')">Snacks</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Drinks')">Drinks</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="selectCategory('Personal Care')">Personal Care</a></li>
+                    </ul>
+                </div>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search for items..." aria-label="Search for items" style="width: 200px;">
+                <button class="btn btn-success" style="padding: 10px 20px; border-radius: 0 5px 5px 0;" onclick="searchItems()">
+                    <i class="fas fa-search" style="color: white; font-size: 16px;"></i>
+                </button>
+            </div>
+        </div>
 
-<nav class="navbar d-flex justify-content-between">
-    <div class="navbar-brand">
-        <a href="{{ url_for('home') }}">
-            <img src="/static/img/GreenGrocer.png" alt="GreenGrocer Logo" style="width: 250px; height: auto;">
-        </a>
-    </div>
-    <div class="row">
-        <div class="search-bar">
-        <div class="col-xs-8 col-xs-offset-2">
-            <div class="input-group">
-             <div class="input-group-btn search-panel">
-            <button class="btn custom-dropdown-button dropdown-toggle" type="button" id="categoryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 10px 0px 0px 10px;">
-                <span id="search_concept">All</span> <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton">
-                
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Vegetables')">Vegetables</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Fruits')">Fruits</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Meats')">Meats</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Frozen')">Frozen</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Dairy')">Dairy</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Bread')">Bread</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Canned')">Canned</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Snacks')">Snacks</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Drinks')">Drinks</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectCategory('Personal Care')">Personal Care</a></li>
+        <!-- User Dropdown -->
+        <div class="nav-item dropdown ms-3">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                {{username}}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
+                <form action="{{ url_for('logout') }}" method="POST" class="signout-btn d-flex">
+                    {{ form.hidden_tag() }} <!-- CSRF token -->
+                    <button class="dropdown-item w-100 text-start" type="submit" onclick="signOut">Sign Out</button>
+                </form>
             </ul>
         </div>
-        
-        <input type="text" id="searchInput" placeholder="Search for items..." style="padding: 10px 5px; font-size: 1rem; width: 650px;" onkeyup="handleKeyPress(event)">
-        <span class="input-group-btn">
-            <!--TODO: On click make it turn white and magnifying glass black-->
-            <button class="btn btn-default" type="button" style="border-radius: 0px 10px 10px 0px;" onmouseleave="this.style.backgroundColor='#198754'" onmouseover="this.style.backgroundColor='#157147'" onclick="searchItems()">
-              <span class="bi bi-search" style="color: #f7f7f7;"></span>
+
+        <!-- Accessibility Button -->
+        <div class="ms-3">
+            <button class="accessibility-btn" onclick="toggleAccessibilitySettings()">
+                <img src="/static/img/AccessabilityButton.png" alt="Accessibility Icon" style="width: 60px; height: 60px;">
             </button>
-        </span>
-    <i class="fas fa-search me-2"></i>
-    </div>
-</div>
+        </div>
+    </nav>
 
-<!-- Sign Out Option-->
-<div class="nav-item dropdown" style="position: relative; left: -20px;">
-    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"> 
-        {{username}}
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
-        <li>
-            <form action="{{ url_for('logout') }}" method="POST" class="signout-btn">
-                {{ form.hidden_tag() }}  CSRF token 
-                <button class="dropdown-item" type="submit">Sign Out</button>
-            </form>
-        </li>
-    </ul>
-</div>v
-
-</div>
-</div>
-
-    <div class="ms-3">
-        <button class="accessibility-btn" onclick="toggleAccessibilitySettings()">
-            <img src="static/img/AccessabilityButton.png" alt="Accessibility Icon" style="width: 60px; height: 60px;">
-        </button>
-    </div>
-     </div>
-</nav>
-
-  
-
-<!-- JavaScript to handle the search functionality -->
-<script>
-    let selectedCategory = 'All Categories';
-
-    function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        searchItems();
-    }
-}
-
-    function selectCategory(category) {
-        selectedCategory = category;
-        document.getElementById('categoryDropdownButton').textContent = category;
-    }
-
-    function searchItems() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        
-        // Product to category mapping
-        const productMapping = {
-            "chicken": "Meats", "beef": "Meats", "pork": "Meats", "turkey": "Meats", "bacon": "Meats", "lamb": "Meats",
-            "apple": "Fruits", "banana": "Fruits", "orange": "Fruits", "grape": "Fruits", "pineapple": "Fruits",
-            "carrot": "Vegetables", "broccoli": "Vegetables", "lettuce": "Vegetables", "spinach": "Vegetables",
-            "milk": "Dairy", "cheese": "Dairy", "yogurt": "Dairy", "butter": "Dairy", "cream": "Dairy", "eggs": "Dairy",
-            "bread": "Bread", "bagel": "Bread", "bun": "Bread", "croissant": "Bread", "muffin": "Bread", "roll": "Bread",
-            "soda": "Drinks", "coffee": "Drinks", "tea": "Drinks", "juice": "Drinks", "water": "Drinks", "smoothie": "Drinks",
-            "ice cream": "Frozen", "frozen pizza": "Frozen", "frozen vegetables": "Frozen", "frozen fries": "Frozen",
-            "beans": "Canned", "canned soup": "Canned", "canned tomatoes": "Canned", "canned corn": "Canned",
-            "chips": "Snacks", "cookies": "Snacks", "popcorn": "Snacks", "crackers": "Snacks", "pretzels": "Snacks",
-            "shampoo": "Personal Care", "toothpaste": "Personal Care", "soap": "Personal Care", "lotion": "Personal Care"
-        };
-
-        // Determine the mapped category of the query
-        const mappedCategory = productMapping[query];
-
-        // Check if the query is mapped to a category and matches the selected category
-        if (mappedCategory) {
-            if (selectedCategory === 'All Categories' || selectedCategory === mappedCategory) {
-                window.location.href = `/products/${mappedCategory}?query=${query}`;
-            } else {
-                alert(`"${query}" is not available in the selected category "${selectedCategory}".`);
-            }
-        } else {
-            alert("No items found for the entered product name.");
+    <!-- JavaScript to handle the search functionality -->
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+            console.log('User signed out.');
+            });
         }
-    }
-</script>
 
+        let selectedCategory = 'All Categories';
+
+        function selectCategory(category) {
+            selectedCategory = category;
+            document.getElementById('categoryDropdownButton').textContent = category;
+        }
+
+        function searchItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+
+            const productMapping = {
+                "chicken": "Meats", "beef": "Meats", "pork": "Meats", "turkey": "Meats", "bacon": "Meats", "lamb": "Meats",
+                "apple": "Fruits", "banana": "Fruits", "orange": "Fruits", "grape": "Fruits", "pineapple": "Fruits",
+                "carrot": "Vegetables", "broccoli": "Vegetables", "lettuce": "Vegetables", "spinach": "Vegetables",
+                "milk": "Dairy", "cheese": "Dairy", "yogurt": "Dairy", "butter": "Dairy", "cream": "Dairy", "eggs": "Dairy",
+                "bread": "Bread", "bagel": "Bread", "bun": "Bread", "croissant": "Bread", "muffin": "Bread", "roll": "Bread",
+                "soda": "Drinks", "coffee": "Drinks", "tea": "Drinks", "juice": "Drinks", "water": "Drinks", "smoothie": "Drinks",
+                "ice cream": "Frozen", "frozen pizza": "Frozen", "frozen vegetables": "Frozen", "frozen fries": "Frozen",
+                "beans": "Canned", "canned soup": "Canned", "canned tomatoes": "Canned", "canned corn": "Canned",
+                "chips": "Snacks", "cookies": "Snacks", "popcorn": "Snacks", "crackers": "Snacks", "pretzels": "Snacks",
+                "shampoo": "Personal Care", "toothpaste": "Personal Care", "soap": "Personal Care", "lotion": "Personal Care"
+            };
+
+            const mappedCategory = productMapping[query];
+
+            if (mappedCategory) {
+                if (selectedCategory === 'All Categories' || selectedCategory === mappedCategory) {
+                    window.location.href = `/products/${mappedCategory}?query=${query}`;
+                } else {
+                    alert(`"${query}" is not available in the selected category "${selectedCategory}".`);
+                }
+            } else {
+                alert("No items found for the entered product name.");
+            }
+        }
+    </script>
 
     <div class="container mt-5">
         <h2 class="text-center">Explore Categories</h2>
-
-        <!-- First Category Section -->
         <div class="category-container">
             <a href="/products/Vegetables" class="category-card">
                 <img src="/static/img/vegetables.png" style="height: 160px;" alt="Vegetables">
                 <h4>Vegetables</h4>
-                <p>220 Items</p>
             </a>
             <a href="/products/Meats" class="category-card">
                 <img src="/static/img/meats.png" style="height: 150px; width: 150px; margin-bottom: 18px;" alt="Meats">
                 <h4>Meats</h4>
-                <p>10 Items</p>
             </a>
             <a href="/products/Fruits" class="category-card">
                 <img src="/static/img/fruits.png" style="width: 150px; height: 120px; margin-bottom: 48px;" alt="Fruits">
                 <h4>Fruits</h4>
-                <p>40 Items</p>
             </a>
             <a href="/products/Drinks" class="category-card">
                 <img src="/static/img/drinks.png" style="height: 150px; width: 150px; margin-bottom: 18px;" alt="Drinks">
                 <h4>Drinks</h4>
-                <p>23 Items</p>
             </a>
             <a href="/products/Frozen" class="category-card">
                 <img src="/static/img/frozen.png" style="width: 160px; height: 140px; margin-bottom: 28px;" alt="Frozen">
                 <h4>Frozen</h4>
-                <p>3 Items</p>
             </a>
         </div>
-        
-        <!-- Second Category Section -->
+
         <div class="category-container">
             <a href="/products/Dairy" class="category-card">
                 <img src="/static/img/milk.png" style="width: 150px; height: 150px;" alt="Dairy">
                 <h4>Dairy</h4>
-                <p>X Items</p>
             </a>
             <a href="/products/Bread" class="category-card">
                 <img src="/static/img/bread.png" style="width: 150px; height: 120px; margin-bottom: 23px; margin-top: 15px;" alt="Bread">
                 <h4>Bread</h4>
-                <p>X Items</p>
             </a>
             <a href="/products/Canned" class="category-card">
                 <img src="/static/img/canned_foods.png" style="width: 160px; height: 130px; margin-bottom: 28px;" alt="Canned Foods">
                 <h4>Canned Foods</h4>
-                <p>X Items</p>
             </a>
             <a href="/products/Snacks" class="category-card">
                 <img src="/static/img/snacks.png" style="width: 160px; height: 130px; margin-bottom: 28px;" alt="Snacks">
                 <h4>Snacks</h4>
-                <p>50 Items</p>
             </a>
             <a href="/products/PersonalCare" class="category-card">
-                <img src="/static/img/personal_care2.png" style="width: 140px; height: 120px; margin-bottom: 35px;" alt="Personal Care">
+                <img src="/static/img/personalcare.png" style="width: 140px; height: 120px; margin-bottom: 35px;" alt="Personal Care">
                 <h4>Personal Care</h4>
-                <p>30 Items</p>
             </a>
         </div>
+    </div>
+
+    <footer class="s-footer">
+        <div class="s-footer-con-1">
+          <a href="/" aria-current="page" class="footer-symbol-con w-inline-block w--current">
+            <div class="footer-symbol" data-w-id="cbd10d6b-2b20-7d1b-48f5-7fc31c7db77b" data-animation-type="lottie" data-src="https://cdn.prod.website-files.com/628bd935bf709b13cada8065/628bd935bf709b2a13da813c_BQN_logo10.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="3.716666666666667" data-duration="0"></div>
+          </a>
+          <a href="/" aria-current="page" class="footer-logotype-con w-inline-block w--current">
+            <img src="/static/img/GreenGrocer-removebg-preview.png" loading="lazy" alt="Bequant logotype" class="footer-logotype"/>
+          </a>
+          <div class="icons-container">
+          <div class="icon"><img src="/static/img/maps-and-flags.png" alt="location">
+            <span><p id="addy">Address: </p> <a href="https://maps.app.goo.gl/G8ToFV1162qN6mPY9" id="gm">1234 California ave</a></span>
+          </div>
+          <div class="icon"><img src="/static/img/telephone.png" alt="phone">
+            <span><p id="contact">Call Us: </p> 123-456-7890</span>
+          </div>
+          <div class="icon"><img src="/static/img/mail.png" alt="mail">
+            <span><p id="email">Email: </p> greengrocer@contact.com</span>
+          </div>
+          </div>
+          <div class="copyright"><span id="cr">&#169; 2024 GreenGrocer, All Rights Reserved</span> 
+          </div>
+        </div>
         
-
-   <!--Dailys-->
-
-   <!-- Bottom Navigation -->
-<div class="bottom-nav">
-    <div class="nav-item">
-        <a href="{{ url_for('home') }}">
-            <div class="nav-icon nav-home">
-                <img src="https://img.icons8.com/ios-filled/50/000000/home.png" alt="Home Icon" />
-            </div>
-            <span>Home</span>
-        </a>
-    </div>
-    <div class="nav-item">
-        <a href="{{ url_for('view_favorites') }}">
-            <div class="nav-icon nav-favorites">
-                <img src="https://img.icons8.com/ios-filled/50/000000/star--v1.png" alt="Favorites Icon" />
-            </div>
-            <span>Favorites</span>
-        </a>
-    </div>
-    <div class="nav-item">
-        <a href="{{ url_for('discounts') }}">
-            <div class="nav-icon nav-discounts">
-                <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Discounts Icon" />
-            </div>
-            <span>Discounts</span>
-        </a>
-    </div>
-    <div class="nav-item">
-        <a href="{{ url_for('view_cart') }}">
-            <div class="nav-icon nav-cart">
-                <img src="https://img.icons8.com/ios-filled/50/000000/shopping-cart.png" alt="Cart Icon" />
-            </div>
-            <!-- Display Cart count -->
-            <span>Cart ({{ cart_count }})</span>
-        </a>
-    </div>
-</div>
-
-
-<footer class="s-footer">
-    <div class="s-footer-con-1">
-      <a href="/" aria-current="page" class="footer-symbol-con w-inline-block w--current">
-        <div class="footer-symbol" data-w-id="cbd10d6b-2b20-7d1b-48f5-7fc31c7db77b" data-animation-type="lottie" data-src="https://cdn.prod.website-files.com/628bd935bf709b13cada8065/628bd935bf709b2a13da813c_BQN_logo10.json" data-loop="0" data-direction="1" data-autoplay="1" data-is-ix2-target="0" data-renderer="svg" data-default-duration="3.716666666666667" data-duration="0"></div>
-      </a>
-      <a href="/" aria-current="page" class="footer-logotype-con w-inline-block w--current">
-        <img src="/static/img/GreenGrocer-removebg-preview.png" loading="lazy" alt="Bequant logotype" class="footer-logotype"/>
-      </a>
-      <div class="icons-container">
-      <div class="icon"><img src="/static/img/maps-and-flags.png" alt="location">
-        <span><p id="addy">Address: </p> <a href="https://maps.app.goo.gl/G8ToFV1162qN6mPY9" id="gm">1234 California ave</a></span>
-      </div>
-      <div class="icon"><img src="/static/img/telephone.png" alt="phone">
-        <span><p id="contact">Call Us: </p> 123-456-7890</span>
-      </div>
-      <div class="icon"><img src="/static/img/mail.png" alt="mail">
-        <span><p id="email">Email: </p> greengrocer@contact.com</span>
-      </div>
-      </div>
-      <div class="copyright"><span id="cr">&#169; 2024 GreenGrocer, All Rights Reserved</span> 
-      </div>
-    </div>
     
+        <div class="s-footer-con-2">
+          <div class="s-footer-2-main">
+            <div class="s-footer-2-block _1">
+              <div class="footer-link-title-con write">
+                <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd093" class="link-header">Account</div>
+              </div>
+              <div class="foter-links-con write">
+                <div class="footer-link-con _1"><a href="/tcp-optimization" class="footer-link">Wishlist</a></div>
+                <div class="footer-link-con _1"><a href="cart.html" class="footer-link">Cart</a></div>
+                <div class="footer-link-con _1"><a href="/network-visibility" class="footer-link">Track order</a></div>
+                <div class="footer-link-con _1"><a href="/bqn-platform" class="footer-link">Shipping Details</a></div>
+              </div>
+              <div class="footer-block-bg write"></div>
+            </div>
+            <div class="s-footer-2-block">
+              <div class="footer-link-title-con write">
+                <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0a3" class="link-header">Useful Links</div>
+              </div>
+              <div class="foter-links-con write">
+                <div class="footer-link-con _2"><a href="/customers" class="footer-link">About Us</a></div>
+                <div class="footer-link-con _2"><a href="/newsroom" class="footer-link">Contact</a></div>
+                <div class="footer-link-con _2"><a href="/buy" class="footer-link">Hot Deals</a></div>
+                <div class="footer-link-con _2"><a href="/about" class="footer-link">Promotions</a></div>
+                <div class="footer-link-con _2"><a href="/contact" class="footer-link">New Products</a></div>
+              </div>
+              <div class="footer-block-bg"></div>
+            </div>
+            <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0b3" class="s-footer-2-block">
+              <div class="footer-link-title-con write">
+                <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0b5" class="link-header">Help Center</div>
+              </div>
+              <div class="foter-links-con write">
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Payments</a></div>
+                <div class="footer-link"><a href="https://twitter.com/bequant_es" target="_blank" class="footer-link">Refunds</a></div>
+                <div class="footer-link"><a href="https://www.facebook.com/bequant/" target="_blank" class="footer-link">Checkout</a></div>
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Shipping</a></div>
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Q&A</a></div>
+                <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Privacy Policy</a></div>
+              </div>
+              <div class="footer-block-bg"></div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      
+    
+     <!-- Footer with Payment Methods and Social Icons-->
+     <div class="footer">
+        <div class="payment-methods">
+            <img src="https://img.icons8.com/fluency/48/000000/visa.png" alt="Visa">
+            <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="MasterCard">
+            <img src="https://img.icons8.com/color/48/000000/maestro.png" alt="Maestro">
+            <img src="https://img.icons8.com/color/48/000000/amex.png" alt="American Express">
+        </div>
+        <div class="social-icons">
+            <a href="https://www.facebook.com" target="_blank">
+                <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook">
+            </a>
+            <a href="https://www.linkedin.com" target="_blank">
+                <img src="https://img.icons8.com/fluency/48/000000/linkedin.png" alt="LinkedIn">
+            </a>
+            <a href="https://www.instagram.com" target="_blank">
+                <img src="https://img.icons8.com/fluency/48/000000/instagram-new.png" alt="Instagram">
+            </a>
+            <a href="https://www.twitter.com" target="_blank">
+                <img src="https://img.icons8.com/fluency/48/000000/twitter.png" alt="Twitter">
+            </a>
+        </div>
 
-    <div class="s-footer-con-2">
-      <div class="s-footer-2-main">
-        <div class="s-footer-2-block _1">
-          <div class="footer-link-title-con write">
-            <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd093" class="link-header">Account</div>
-          </div>
-          <div class="foter-links-con write">
-            <div class="footer-link-con _1"><a href="/tcp-optimization" class="footer-link">Wishlist</a></div>
-            <div class="footer-link-con _1"><a href="cart.html" class="footer-link">Cart</a></div>
-            <div class="footer-link-con _1"><a href="/network-visibility" class="footer-link">Track order</a></div>
-            <div class="footer-link-con _1"><a href="/bqn-platform" class="footer-link">Shipping Details</a></div>
-          </div>
-          <div class="footer-block-bg write"></div>
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item">
+            <a href="{{ url_for('home') }}">
+                <div class="nav-icon nav-home">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/home.png" alt="Home Icon" />
+                </div>
+                <span>Home</span>
+            </a>
         </div>
-        <div class="s-footer-2-block">
-          <div class="footer-link-title-con write">
-            <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0a3" class="link-header">Useful Links</div>
-          </div>
-          <div class="foter-links-con write">
-            <div class="footer-link-con _2"><a href="/customers" class="footer-link">About Us</a></div>
-            <div class="footer-link-con _2"><a href="/newsroom" class="footer-link">Contact</a></div>
-            <div class="footer-link-con _2"><a href="/buy" class="footer-link">Hot Deals</a></div>
-            <div class="footer-link-con _2"><a href="/about" class="footer-link">Promotions</a></div>
-            <div class="footer-link-con _2"><a href="/contact" class="footer-link">New Products</a></div>
-          </div>
-          <div class="footer-block-bg"></div>
+        <div class="nav-item">
+            <a href="{{ url_for('view_favorites') }}">
+                <div class="nav-icon nav-favorites">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/star--v1.png" alt="Favorites Icon" />
+                </div>
+                <span>Favorites</span>
+            </a>
         </div>
-        <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0b3" class="s-footer-2-block">
-          <div class="footer-link-title-con write">
-            <div data-w-id="42117b19-d6b7-9e76-f0d5-5210947fd0b5" class="link-header">Help Center</div>
-          </div>
-          <div class="foter-links-con write">
-            <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Payments</a></div>
-            <div class="footer-link"><a href="https://twitter.com/bequant_es" target="_blank" class="footer-link">Refunds</a></div>
-            <div class="footer-link"><a href="https://www.facebook.com/bequant/" target="_blank" class="footer-link">Checkout</a></div>
-            <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Shipping</a></div>
-            <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Q&A</a></div>
-            <div class="footer-link"><a href="https://www.linkedin.com/company/bequant/" target="_blank" class="footer-link">Privacy Policy</a></div>
-          </div>
-          <div class="footer-block-bg"></div>
+        <div class="nav-item">
+            <a href="{{ url_for('discounts') }}">
+                <div class="nav-icon nav-discounts">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Discounts Icon" />
+                </div>
+                <span>Discounts</span>
+            </a>
         </div>
-      </div>
+        <div class="nav-item">
+            <a href="{{ url_for('view_cart') }}">
+                <div class="nav-icon nav-cart">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/shopping-cart.png" alt="Cart Icon" />
+                </div>
+                <span>Cart ({{ cart_count }})</span>
+            </a>
+        </div>
     </div>
-  </footer>
-  
-
- <!-- Footer with Payment Methods and Social Icons-->
- <div class="footer">
-    <div class="payment-methods">
-        <img src="https://img.icons8.com/fluency/48/000000/visa.png" alt="Visa">
-        <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="MasterCard">
-        <img src="https://img.icons8.com/color/48/000000/maestro.png" alt="Maestro">
-        <img src="https://img.icons8.com/color/48/000000/amex.png" alt="American Express">
-    </div>
-    <div class="social-icons">
-        <a href="https://www.facebook.com" target="_blank">
-            <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook">
-        </a>
-        <a href="https://www.linkedin.com" target="_blank">
-            <img src="https://img.icons8.com/fluency/48/000000/linkedin.png" alt="LinkedIn">
-        </a>
-        <a href="https://www.instagram.com" target="_blank">
-            <img src="https://img.icons8.com/fluency/48/000000/instagram-new.png" alt="Instagram">
-        </a>
-        <a href="https://www.twitter.com" target="_blank">
-            <img src="https://img.icons8.com/fluency/48/000000/twitter.png" alt="Twitter">
-        </a>
-    </div>
-</div>
- 
+</body>
+</html>
