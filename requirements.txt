@@ -19,3 +19,4 @@ sendgrid==6.11.0
 six==1.16.0
 starkbank-ecdsa==2.2.0
 Werkzeug==2.2.3
+requests
