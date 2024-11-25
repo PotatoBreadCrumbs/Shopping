@@ -29,8 +29,11 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_KEY_PREFIX'] = 'app-session:'
-redis_url = os.getenv('STACKHERO_REDIS_URL_TLS') or os.getenv('STACKHERO_REDIS_URL_CLEAR')
+redis_url = os.getenv('AH_REDIS_STACKHERO_RED_URL_TLS')
+if not redis_url:
+    raise ValueError("Redis URL not found. Make sure AH_REDIS_STACKHERO_RED_URL_TLS is set in your environment variables.")
 app.config['SESSION_REDIS'] = redis.from_url(redis_url)
+
 
 # Initialize server-side session handling
 Session(app)
