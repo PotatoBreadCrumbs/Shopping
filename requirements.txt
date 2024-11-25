@@ -34,3 +34,4 @@ urllib3==2.2.3
 Werkzeug==2.2.3
 WTForms==3.2.1
 flask-session
+redis
