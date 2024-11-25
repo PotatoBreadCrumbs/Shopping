@@ -39,34 +39,6 @@ app.config['SESSION_REDIS'] = redis.from_url(redis_url)
 Session(app)
 
 # Add other app routes and functionalities below this line
-mail = Mail(app)
-
-import requests
-
-sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
-def send_direct_email(to_email):
-    url = "https://api.sendgrid.com/v3/mail/send"
-    headers = {
-        "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "personalizations": [
-            {
-                "to": [{"email": to_email}],
-                "dynamic_template_data": {
-                    "reset_url": "http://127.0.0.1:5000/reset-password",  # Guys this is temporary url for local reset
-                    "username": to_email  
-                }
-            }
-        ],
-        "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
-        "template_id": "d-9c2c93acfa0e40cbbeea3cf01582af1b"  # our custom template using the sendgrid api we made
-    }
-    
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-    print("Direct API call status:", response.status_code)
-    print("Response text:", response.text)
 
 #good from here onwards, testing sg above now
 @app.route('/reset-password', methods=['GET', 'POST'])
