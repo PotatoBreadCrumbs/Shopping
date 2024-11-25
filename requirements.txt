@@ -28,3 +28,4 @@ Werkzeug==2.2.3
 Flask-Login==0.6.2
 
 Flask-WTF
+Flask-Mail
