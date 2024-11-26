@@ -12,6 +12,9 @@ from flask_mail import Mail, Message
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from functools import wraps
+from flask_googletrans import translator
+from twilio.rest import Client
+
 
 # First we are going to initialize the Flask app
 app = Flask(__name__)
@@ -89,10 +92,87 @@ USER_FILE = 'user_storage.json'
 client_id = 'kevingawrinauth-b1629c2310698a009e85d726fbc0e9aa8264849196508842534'
 client_secret = 'fpfEnrPkQnQcWGySAoig8G6Up1ZosRbV8u0LrKSd'
 
-# Flask-Login
+app.secret_key = b'\xef\xd4\x16\x98h\xc6\xdd\xc3\xc6\xce\x02\xd6@o\x8a|\x08\x1c\xd6\\X{\xeex'
+def load_user_storage():
+    try:
+        # Load and return the user data from user_Storage.json
+        with open("user_storage.json", "r") as f:
+            users = json.load(f)
+            print("Users loaded successfully:", users)  # Debugging line
+            return users
+    except FileNotFoundError:
+        print("Error: user_storage.json file not found.")
+        return {}
+    except json.JSONDecodeError:
+        print("Error: user_storage.json is not a valid JSON file.")
+        return {}
+
+@app.context_processor
+def inject_username():
+    user_id = session.get("user_id")
+    if user_id:
+        users = load_user_storage()  # Load users from JSON file
+        user = users.get(user_id)
+        if user:
+            return {"username": user.get("name", user_id)}
+    return {"username": "Guest"}
+
+
+# Initialize Flask-Login
 login_manager = LoginManager()
-login_manager.login_view = 'login'  
+login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+def get_kroger_token(client_id, client_secret):
+    token_url = "https://api.kroger.com/v1/connect/oauth2/token"
+    data = {
+        'grant_type': 'client_credentials',
+        'scope': 'product.compact'
+    }
+    auth = (client_id, client_secret)
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    response = requests.post(token_url, headers=headers, data=data, auth=auth)
+
+    # Log full response for debugging
+    print("Token Response Status Code:", response.status_code)
+    print("Token Response Text:", response.text)
+
+    # Check for JSON format response
+    if response.status_code == 200:
+        try:
+            return response.json().get('access_token')
+        except ValueError:
+            # In case JSON decoding fails
+            raise Exception("Error decoding JSON response while fetching access token.")
+    else:
+        # Handle error case explicitly
+        raise Exception("Error fetching access token: Response Code " + str(response.status_code) + ", Response Text: " + response.text)
+
+@app.route('/locations')
+def fetch_locations():
+    # Get access token
+    access_token = get_kroger_token(client_id, client_secret)
+    location_url = "https://api.kroger.com/v1/locations"
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+    params = {
+        'filter.radiusInMiles': 50,  # Adjusted radius
+        'filter.limit': 250          # Limit to 250 locations
+    }
+    # Make the API call
+    response = requests.get(location_url, headers=headers, params=params)
+    
+    # Logging response for debugging
+    print("Status Code:", response.status_code)
+    print("Response Text:", response.text)
+
+    # Check and parse response
+    if response.status_code == 200:
+        locations = response.json().get('data', [])
+        return render_template('index.html', locations=locations)
+    else:
+        flash("Error fetching locations.", "danger")
+        return redirect(url_for('home'))
 
 # Disable CSRF for testing
 app.config['WTF_CSRF_ENABLED'] = False
@@ -281,8 +361,32 @@ def login():
             flash('Invalid username or password',category="incorrect pw or un")
     return render_template('login.html', form=form)
 
+@app.route('/save_for_later/<int:index>', methods=['POST'])
+@login_required
+def save_for_later(index):
+    username = session.get('user_id')
 
+    if username:
+        # Retrieve the user's cart from JSON and saved items from the session
+        cart = get_user_cart(username)
+        saved_items = session.get('saved_items', [])
 
+        # Ensure index is valid before moving the item
+        if 0 <= index < len(cart):
+            item = cart.pop(index)  # Remove the item from cart
+            saved_items.append(item)  # Add it to saved items
+	# Update both cart in JSON and session data
+            write_cart(username, cart)  # Persist the updated cart to JSON
+            session['saved_items'] = saved_items  # Update saved items in session
+
+            # Mark session as modified to save changes
+            session.modified = True
+
+            flash("Item saved for later.", "info")
+        else:
+            flash("Item not found in cart.", "danger")
+
+    return redirect(url_for('view_cart'))
 
 @app.route('/settings')
 @login_required
@@ -291,6 +395,30 @@ def settings():
     user_data = users.get(current_user.id, {})
     return render_template('settings.html', user_data=user_data)
 
+@app.route('/move_to_cart/<int:index>', methods=['POST'])
+@login_required
+def move_to_cart(index):
+    username = session.get('user_id')
+
+    if username:
+        cart = get_user_cart(username)  # Get cart from JSON
+        saved_items = session.get('saved_items', [])
+
+        try:
+            # Move the item from saved items back to cart
+            item = saved_items.pop(index)
+            cart.append(item)
+
+            # Update both cart and saved items
+            write_cart(username, cart)  # Persist updated cart to JSON
+            session['saved_items'] = saved_items  # Update saved items in session
+            session.modified = True
+
+            flash("Item moved back to cart.", "success")
+        except IndexError:
+            flash("Item not found in saved items.", "danger")
+
+    return redirect(url_for('view_cart'))
 
 # our guest login route
 @app.route('/guest_login')
@@ -301,6 +429,71 @@ def guest_login():
     return redirect(url_for('home'))  # should allow us redirect to home after guest login
 
 
+@app.route('/api/product/<product_id>', methods=['GET'])
+def get_product(product_id):
+    access_token = get_kroger_token(client_id, client_secret)
+    search_url = f"https://api.kroger.com/v1/products/{product_id}"
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+
+    response = requests.get(search_url, headers=headers)
+    if response.status_code == 200:
+        product = response.json().get('data')
+        if product:
+            return jsonify(product)
+    return jsonify({"error": "Product not found"}), 404
+
+FAVORITES_FILE = "favorites.json"
+
+def read_favorites():
+    if os.path.exists(FAVORITES_FILE):
+        with open(FAVORITES_FILE, 'r') as file:
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                print("Error reading favorites file: malformed JSON.")
+                return []
+    return []
+
+def write_favorites(favorites):
+    with open(FAVORITES_FILE, 'w') as file:
+        json.dump(favorites, file, indent=4)
+
+@app.route('/toggle_favorite', methods=['POST'])
+def toggle_favorite():
+    data = request.get_json()
+
+    # Ensure required fields are present
+    required_fields = ['name', 'price', 'image_url']
+    for field in required_fields:
+        if not data.get(field):
+            print(f"Missing or empty field: {field}")
+            return jsonify({"message": f"Missing field: {field}", "status": "error"}), 400
+
+    favorites = read_favorites()
+    item_exists = any(fav['name'] == data['name'] for fav in favorites)
+
+    # Toggle the favorite item based on the name
+    if item_exists:
+        favorites = [fav for fav in favorites if fav['name'] != data['name']]
+        status = "removed"
+    else:
+        favorites.append({
+            'name': data['name'],
+            'price': data['price'],
+            'image_url': data['image_url']
+        })
+        status = "added"
+
+    # Write updated favorites to file
+    write_favorites(favorites)
+    return jsonify({"message": f"Favorite {status} successfully", "status": status})
+
+
+@app.route('/get_favorites', methods=['GET'])
+def get_favorites():
+    favorites = read_favorites()
+    return jsonify(favorites)
+
 # the route for our user registration
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -309,10 +502,10 @@ def register():
         new_username = form.username.data
         new_password = form.password.data
         users = read_users()  # reads users from the file saved in db 
-
-        if new_username in users:
-            message = Markup("Username already exists, please choose another.")
-            flash(message)
+        if (len(new_username) < 5 or len(new_username) > 9):
+            flash(message=Markup("Username must be at least 5 characters."))
+        if new_username in users: 
+            flash(message = Markup("Username already exists, please choose another."))
         else:
             users[new_username] = {'password': new_password}
             write_users(users)  # saves new user to the file
@@ -354,7 +547,7 @@ def home():
         {"id": 4, "name": "Long Island - Syosset", "zip_code": "11791"},
         {"id": 5, "name": "Long Island - Patchogue", "zip_code": "11772"}
     ]
-    return render_template('index.html', username=username, form=form, locations=locations)
+    return render_template('index.html', username=username, form=form,) #location=location not working
 
 
 
@@ -448,37 +641,131 @@ def get_location_products(location_id):
     else:
         return jsonify({"error": "Error fetching products for the selected location"}), 500
 
+import os
+import json
 
+LOCATION_FILE = 'locations.json'
+
+def read_selected_location():
+    if not os.path.exists(LOCATION_FILE):
+        return None
+    with open(LOCATION_FILE, 'r') as file:
+        data = json.load(file)
+    return data.get('selected_location', None)
+
+def write_selected_location(location_id):
+    with open(LOCATION_FILE, 'w') as file:
+        json.dump({'selected_location': location_id}, file)
+import json
+import os
+
+CART_FILE = "cart.json"
+
+# Helper function to read the cart from the file
+def read_cart(user_id):
+    if os.path.exists(CART_FILE):
+        with open(CART_FILE, 'r') as file:
+            data = json.load(file)
+            return data.get(user_id, [])
+    return []
+
+# Helper function to write the cart to the file
+def write_cart(user_id, cart):
+    data = {}
+    if os.path.exists(CART_FILE):
+        with open(CART_FILE, 'r') as file:
+            data = json.load(file)
+    
+    data[user_id] = cart  # Update the user's cart data
+    
+    with open(CART_FILE, 'w') as file:
+        json.dump(data, file, indent=4)
+
+def get_user_cart(username):
+    """Retrieve the cart for a specific user from the JSON data."""
+    cart_data = read_cart(username)  # Pass `username` to read_cart to get specific user's data
+    return cart_data
+
+def add_item_to_cart(username, item):
+    """Add an item to the user's cart in the JSON data."""
+    cart_data = read_cart()
+    user_cart = cart_data.get(username, [])
+
+    # Check if item is already in the cart; update quantity if so
+    for existing_item in user_cart:
+        if existing_item['name'] == item['name']:
+            existing_item['quantity'] += item['quantity']
+            break
+    else:
+        # If not found, add new item
+        user_cart.append(item)
+
+    # Save updated cart data
+    cart_data[username] = user_cart
+    write_cart(cart_data)
+
+def remove_item_from_cart(username, item_name):
+    """Remove an item from the user's cart in the JSON data."""
+    cart_data = read_cart(username)  # Retrieve the user's specific cart directly from cart.json
+    
+    # Ensure we have a valid dictionary and user cart exists
+    if isinstance(cart_data, dict):
+        user_cart = cart_data.get(username, [])
+
+        # Filter out the item to remove
+        user_cart = [item for item in user_cart if item['name'] != item_name]
+        
+        # Update the user's cart in the overall cart data and save to cart.json
+        cart_data[username] = user_cart
+        write_cart(username, user_cart)
 
 @app.route('/add_to_cart', methods=['POST'])
 @login_required
 def add_to_cart():
+    user_id = session.get("user_id")
     product_name = request.form.get('product_name')
     product_price = request.form.get('product_price')
-    product_image = request.form.get('product_image')  # Retrieve image URL
+    product_image = request.form.get('product_image')
+    category = request.form.get('category')  # Capture the category from the form
 
-    # Initialize cart if it doesn't exist
-    if 'cart' not in session:
-        session['cart'] = []
+    # Validate and convert product_price
+    try:
+        product_price = float(product_price)
+    except (ValueError, TypeError):
+        # If product_price is invalid, set it to 0.0 and log a warning
+        product_price = 0.0
+        print(f"Warning: Invalid price for {product_name}. Defaulting to 0.0.")
+
+    # Load the user's cart from the JSON file
+    cart = read_cart(user_id)
 
     # Check if product is already in cart and update quantity
-    for item in session['cart']:
+    item_exists = False
+    for item in cart:
         if item['name'] == product_name:
             item['quantity'] += 1
-            session.modified = True
-            return redirect(url_for('view_cart'))
-        
-    
+            item_exists = True
+            break
 
-    # Add new item to cart
-    session['cart'].append({
-        'name': product_name,
-        'price': product_price,
-        'image': product_image,  # Store image URL in the session
-        'quantity': 1
-    })
-    session.modified = True
-    return redirect(url_for('view_cart'))
+    # If it's a new item, add it to the cart
+    if not item_exists:
+        cart.append({
+            'name': product_name,
+            'price': product_price,
+            'image': product_image,
+            'quantity': 1
+        })
+
+    # Save updated cart to JSON file
+    write_cart(user_id, cart)
+
+    # Update cart count in the session based on the total quantity of items
+    session['cart_count'] = sum(item['quantity'] for item in cart)
+    session.modified = True  # Mark session as modified
+
+    return redirect(url_for('get_products', category=category))
+
+
 
 
 @app.route('/update_quantity/<int:index>/<operation>', methods=['POST'])
@@ -509,6 +796,20 @@ def update_quantity(index, operation):
 @app.route('/cart')
 @login_required
 def view_cart():
+    user_id = session.get("user_id")
+    cart = read_cart(user_id)  # Load cart from JSON file
+    
+    # Ensure all prices are valid floats and handle missing prices
+    for item in cart:
+        try:
+            item['price'] = float(item.get('price', 0))  # Handle missing prices by defaulting to 0
+        except (ValueError, TypeError):
+            item['price'] = 0.00
+
+    # Calculate the total amount in the cart
+    total_amount = sum(item['price'] * item['quantity'] for item in cart)
+
+
     return render_template('cart.html')  # Ensure this template is correctly set up
 
 
@@ -646,8 +947,45 @@ def checkout():
     
     # Calculate total cost
     total_cost = subtotal + sales_tax
-    
+
     return render_template('checkout.html', cart_items=cart_items, subtotal=subtotal, sales_tax=sales_tax, total_cost=total_cost)
+
+def send_order_confirmation_email(recipient_email, name, address, city, zip_code):
+    # Set up SendGrid API URL and headers
+    url = "https://api.sendgrid.com/v3/mail/send"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}"
+,  # Replace with your SendGrid API Key
+        "Content-Type": "application/json"
+    }
+    
+    # Email data, including the template ID and recipient information
+    data =data = {
+    "personalizations": [
+        {
+            "to": [{"email": recipient_email}],
+            "dynamic_template_data": {
+                "customer_name": name,
+                "address": address,
+                "city": city,
+                "zip_code": zip_code,
+            }
+        }
+    ],
+    "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
+    "template_id": "d-54cbef9f0d5a46c3a5c99a01efb9c0de",
+    "subject": "Order Confirmation"
+}
+    # Send the request
+    response = requests.post(url, headers=headers, json=data)
+    
+    # Check the response
+    if response.status_code == 202:
+        print("Order confirmation email sent successfully!")
+    else:
+        print("Failed to send email. Status Code:", response.status_code)
+        print("Response:", response.json())
+
 @app.route('/process_checkout', methods=['POST'])
 @login_required
 def process_checkout():
@@ -661,15 +999,39 @@ def process_checkout():
     city = request.form.get('city')
     zip_code = request.form.get('zip')
 
-    # Dummy processing step - Replace with actual logic
-    flash("Order placed successfully!", "success")
+    # Try to get the user's email from the session
+    to_email = session.get("user_email")  # Assumes email should be in session
+
+    # If email isn't in the session, load it from user_Storage.json
+    if not to_email:
+        users = load_user_storage()  # Load all users from the JSON file
+        user_id = session.get("user_id")  # Assumes user_id is stored in session
+
+        # Retrieve the email from the JSON file using the user ID
+        if user_id and user_id in users:
+            to_email = users[user_id].get("email")
+
+    print(f"User email for order confirmation: {to_email}")  # Debugging line to verify email
 
     # Clear the cart after checkout
     session.pop('cart', None)
     session['cart_count'] = 0
 
+    # Send order confirmation email if email is present
+    if to_email:
+        send_order_confirmation_email(to_email, name, address, city, zip_code)
+        flash("Thank you for your order! A confirmation email has been sent.", "success")
+    else:
+        flash("Order placed successfully, but no email was sent due to missing email address.", "info")
+
     return redirect(url_for('home'))
 
+def read_selected_location():
+    if not os.path.exists('locations.json'):
+        return None
+    with open('locations.json', 'r') as file:
+        data = json.load(file)
+    return data.get('selected_location', None)
 
 GOOGLE_CLIENT_ID = '948980706830-8ff2bi5o0lupforj4u8h5odjs66krb1p.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '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'
@@ -694,15 +1056,63 @@ def google():
     redirect_uri = url_for('google_auth', _external=True)
     return oauth.google.authorize_redirect(redirect_uri,nonce=nonce)
 
+
+
+
+@app.route('/set_location')
+def set_location():
+    location_id = request.args.get('location_id')
+    
+    if location_id:
+        write_selected_location(location_id)  # Update the JSON file with the new location
+        flash("Location updated successfully.", "success")
+    else:
+        flash("No location ID provided.", "danger")
+    
+    return redirect(request.referrer or url_for('home'))
+
 @app.route('/loyalty_rewards')
 @login_required
 def loyalty_rewards():
+    # Example data; ideally, fetch this from a database
     rewards_info = {
         "points": 1200,
         "tier": "Gold",
-        "next_tier_points": 3000
+        "next_tier_points": 3000,
+        "next_tier_name": "Platinum",
+        "points_to_next_tier": 3000 - 1200  # Calculate remaining points needed
     }
-    return render_template('loyalty_rewards.html', rewards_info=rewards_info)
+    rewards_history = [
+        {"date": "2024-10-15", "description": "Redeemed 10% off coupon", "points_used": 100},
+        {"date": "2024-09-30", "description": "Free delivery voucher", "points_used": 50},
+        {"date": "2024-09-20", "description": "5% off on next purchase", "points_used": 80},
+    ]
+    return render_template(
+        'loyalty_rewards.html',
+        rewards_info=rewards_info,
+        rewards_history=rewards_history
+    )
+
+@app.context_processor
+def inject_locations():
+    # Only fetch locations if not already in the session
+    if 'locations' not in session:
+        try:
+            access_token = get_kroger_token(client_id, client_secret)
+            location_url = "https://api.kroger.com/v1/locations"
+            headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+            params = {'filter.radiusInMiles': 50, 'filter.limit': 900}
+            response = requests.get(location_url, headers=headers, params=params)
+            
+            if response.status_code == 200:
+                session['locations'] = response.json().get('data', [])
+            else:
+                session['locations'] = []
+        except Exception as e:
+            session['locations'] = []
+            print(f"Error fetching locations: {e}")
+    
+    return {'locations': session.get('locations', [])}
 
 @app.route('/google/auth/')
 def google_auth():
@@ -740,6 +1150,53 @@ def remove_item(index):
             flash("Item not found in the cart.", "danger")
     
     return redirect(url_for('view_cart'))
+
+# from flask import Flask, request, jsonify
+# from google.cloud import translate_v2 as translate
+# import os
+# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/Users/kevingawrinauth/grocery_app/rising-cable-441021-b1-337bc9fa13da.json'
+
+
+# @app.route('/translate', methods=['POST'])
+# def translate_text():
+#     data = request.get_json()
+#     text = data.get('text', '')
+#     target_language = data.get('target', 'es')  # Default to Spanish
+
+#     if text:
+#         result = translate_client.translate(text, target_language=target_language)
+#         return jsonify(result['translatedText'])
+#     return jsonify({"error": "No text provided"}), 400
+
+@app.context_processor
+def inject_selected_location_and_locations():
+    selected_location = read_selected_location()  # Retrieves selected location if stored
+    
+    # Access token and Kroger API endpoint
+    access_token = get_kroger_token(client_id, client_secret)
+    location_url = "https://api.kroger.com/v1/locations"
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'}
+    params = {
+        'filter.radiusInMiles': 50,
+        'filter.limit': 350
+    }
+
+    # Fetch locations
+    try:
+        response = requests.get(location_url, headers=headers, params=params)
+        if response.status_code == 200:
+            locations = response.json().get('data', [])
+        else:
+            print(f"Error fetching locations: {response.status_code} - {response.text}")
+            locations = []  # Fallback to empty list if fetch fails
+    except Exception as e:
+        print("Exception occurred while fetching locations:", e)
+        locations = []  # Fallback in case of exception
+
+    # Inject selected location and locations data into the template context
+    return {'selected_location': selected_location, 'locations': locations}
+
+
 
 
 # We created a file to store user data (this simulates a database using mysql lite)
