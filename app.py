@@ -947,7 +947,7 @@ def discounts(category=None):
 
 
 
-rom datetime import datetime  # Ensure this is imported at the top
+from datetime import datetime  # Ensure this is imported at the top
 
 def calculate_cart_totals(cart):
     """Helper function to calculate subtotal, sales tax, and total."""
