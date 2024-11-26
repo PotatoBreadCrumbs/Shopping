@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Explore Categories - GreenGrocer</title>
+
+    <!-- Bootstrap CSS (version 5.3.0-alpha1) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+        <!-- Font Awesome (version 5.15.4) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+        --btn-dark-bg: #ffffff; /* Default light mode */
+        --btn-hover-bg: #f0f0f0; /* Default light hover */
+    }
+
+    [data-theme="dark"] {
+        --btn-dark-bg: #444444; /* Dark mode background */
+        --btn-hover-bg: #333333; /* Dark mode hover */
+    }
+
+    .btn-darkmode {
+        background-color: var(--btn-dark-bg);
+        color: white;
+        border: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-darkmode:hover {
+        background-color: var(--btn-hover-bg);
+    }
+        /* Base page styles to ensure consistent layout */
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+            padding-bottom: 70px;
+        }
+
+        .navbar {
+            background-color: #fff;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: top 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 150px;
+        }
+
+        .nav-item .dropdown-toggle {
+            color: #000;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            width: 50%;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-search {
+            padding: 10px 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-menu {
+            min-width: 160px;
+        }
+
+        .content {
+            padding-top: 80px;
+        }
+
+        .accessibility-btn {
+
+            color: #000;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-left: 15px;
+            background-color: transparent !important; /* Explicitly remove background */
+            margin-right: 15px;
+        }
+
+        .accessibility-btn img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .username {
+            margin-right: 20px;
+            font-weight: bold;
+        }
+        .small-dropdown {
+            width: 150px;
+            color: #fff;
+        }
+        .location-dropdown {
+            position: absolute; /* Allows precise positioning */
+            top: 28px; /* Adjust this to align vertically */
+            left: 1200px; /* Adjust this based on the position of the search bar */
+            width: 175px; /* Set the width to fit within available space */
+            z-index: 1000; /* Ensures it stays above other elements */
+        }
+        
+        .form-select-sm {
+            font-size: 12px; /* Adjusts text size */
+            padding: 4px; /* Reduces padding for a smaller dropdown */
+        }
+    
+        
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar with Search Bar, Username, and Accessibility Button -->
+    <nav id="stickyHeader" class="navbar">
+        <div class="navbar-brand">
+            <a href="{{ url_for('home') }}">
+                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo"style"width:250px;height:auto;">
+            </a>
+        </div>
+        
+
+        
+        <!-- Search Bar with Category Dropdown -->
+        <div class="search-bar">
+            <div class="input-group">
+                <button class="btn btn-success dropdown-toggle" type="button" id="categoryDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    All Categories
+                </button>
+                
+                <ul class="dropdown-menu" aria-labelledby="categoryDropdownButton">
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('All Categories')">All Categories</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Vegetables')">Vegetables</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Fruits')">Fruits</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Meats')">Meats</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Frozen')">Frozen</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Dairy')">Dairy</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Bread')">Bread</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Canned')">Canned</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Snacks')">Snacks</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Drinks')">Drinks</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="selectCategory('Personal Care')">Personal Care</a></li>
+                </ul>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search for items...">
+                <button class="btn btn-success" onclick="searchItems()">
+                    <i class="fas fa-search" style="color: white;"></i>
+                </button>
+            </div>
+        </div>
+      <!-- Location Dropdown positioned in top-right corner -->
+      <div class="location-dropdown">
+        <select id="locationDropdown" class="form-select form-select-sm" onchange="changeLocation()">
+            <option value="">Select Location</option>
+            {% for location in locations %}
+                <option value="{{ location['locationId'] }}" {% if location['locationId'] == selected_location %}selected{% endif %}>
+                    {{ location['name'] }} - {{ location['address']['city'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <script src="https://kk-designs.github.io/dark-mode/dark-mode.js"></script>
+
+<!--ENABLE DARK MODE-->
+<script src="../static/js/darkmode.js"></script>
+
+<script>
+
+    function changeLocation() {
+        const locationDropdown = document.getElementById("locationDropdown");
+        const locationId = locationDropdown.value;
+
+        if (locationId) {
+            // Redirect to set the location in the backend and update the JSON file
+            window.location.href = `/set_location?location_id=${locationId}`;
+        }
+    }
+
+    // When the page loads, set the dropdown to the stored location from the server
+    document.addEventListener("DOMContentLoaded", function() {
+        const locationDropdown = document.getElementById("locationDropdown");
+        const savedLocationId = "{{ selected_location }}";  // Server-passed selected location
+
+        if (savedLocationId) {
+            locationDropdown.value = savedLocationId;
+        }
+    });
+</script>
+
+
+<div class="d-flex align-items-center ms-auto" style="margin-right: 85px;" >
+    <div class="nav-item dropdown">
+        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
+            {{ username if username else "Guest" }}
+        </button>
+         <!-- Dropdown Menu -->
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+            <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
+            <li>
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button class="dropdown-item" type="submit">Sign Out</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+<style>
+    .dropdown-menu-end {
+        right: 5; /* Aligns the dropdown menu to the right */
+    }
+    .nav-item dropdown{
+        margin-right: -20px;
+    }
+</style>
+            
+            <div class="accessibility-btn" onclick="changeToDarkMode()">
+                <img src="/static/img/Accessability.svg" alt="Accessibility Icon">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Add your page content here -->
+      
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, 
+     and Font Awesome JS -->
+  
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+    <!-- Custom Script -->
+    <script>
+        let selectedCategory = 'All Categories';
+
+        function selectCategory(category) {
+            selectedCategory = category;
+            document.getElementById('categoryDropdownButton').textContent = category;
+        }
+
+        function searchItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+// Mapping categories to products
+const productMapping = {
+  "All Categories": [
+    // Meats
+    "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", "duck", "venison", "rabbit", "goose", 
+    "bison", "quail", "pheasant", "goat", "ox", "veal", "buffalo", "horsemeat", "kangaroo", "ostrich", "alligator", "frog legs",
+    
+    // Fruits
+    "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", "mango", 
+    "papaya", "pomegranate", "cherry", "watermelon", "melon", "cantaloupe", "dragon fruit", "lychee", "starfruit", "plum", 
+    "peach", "apricot", "nectarine", "fig", "date", "persimmon", "blackberry", "raspberry", "cranberry", "tamarind", "avocado", 
+    "cherries", "passion fruit", "guava", "mulberry", "currant", "jackfruit", "durian", "gooseberry", "olive", "coconut", 
+    "longan", "jabuticaba", "soursop", "sugar apple", "boysenberry", "cloudberry", "salak", "marionberry", "elderberry", 
+    "miracle fruit", "rambutan", "cupuacu", "cacao", "ackee", "santol", "breadfruit", "buddha's hand", "feijoa", "mangosteen"
+
+    
+    // Vegetables
+    "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
+    "cauliflower", "zucchini", "eggplant", "beet", "asparagus", "brussels sprouts", "cabbage", "radish", "turnip", "parsnip", 
+    "yam", "chard", "collard greens", "kale", "okra", "pumpkin", "butternut squash", "acorn squash", "watercress", "bamboo shoots",
+    
+    // Dairy and Desserts
+    "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", "sour cream", "kefir", "goat milk", "cottage cheese", 
+    "cream cheese", "ghee", "condensed milk", "evaporated milk", "lactose-free milk", "ricotta", "mascarpone", "paneer", 
+    "feta cheese", "parmesan", "mozzarella", "camembert", "brie", "cheddar", "gouda", "roquefort", "stilton", "swiss cheese",
+    "ice cream", "pudding", "custard", "cheesecake", "tiramisu", "flan", "yogurt parfait", "milkshake", "gelato", "panna cotta",
+    
+    // Breads and Bakery
+    "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", "sourdough", "rye bread", "whole wheat bread", 
+    "brioche", "focaccia", "ciabatta", "lavash", "chapati", "roti", "tortilla", "flatbread", "english muffin", "paratha", 
+    "biscuit", "doughnut", "danish", "pancake", "waffle", "pie", "cake", "cupcake", "brownie", "pastry", "scone", "pretzel", "shortbread",
+    
+    // Beverages
+    "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", "smoothie", "milkshake", "coconut water", "iced tea", 
+    "kombucha", "sports drink", "aloe vera drink", "sparkling water", "tonic water", "root beer", "ginger ale", "chai", 
+    "hot chocolate", "matcha", "mocha", "espresso", "latte", "cappuccino", "green tea", "black tea", "herbal tea", "yerba mate",
+    
+    // Frozen Foods
+    "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", "frozen berries", "frozen fish", "frozen shrimp", 
+    "frozen dumplings", "frozen spring rolls", "frozen waffles", "frozen yogurt", "frozen pie", "frozen burritos", "frozen meatballs", 
+    "frozen sausages", "frozen empanadas", "frozen falafel", "frozen samosas", "frozen chicken tenders", "frozen lasagna",
+    
+    // Canned Goods
+    "canned beans", "canned tomatoes", "canned soup", "canned corn", "canned peas", "canned carrots", "canned pineapple", 
+    "canned tuna", "canned salmon", "canned chicken", "canned coconut milk", "canned green beans", "canned peaches", 
+    "canned apricots", "canned sardines", "canned anchovies", "canned olives", "canned mushrooms", "canned chickpeas", 
+    "canned artichoke hearts", "canned pumpkin", "canned clams",
+    
+    // Snacks and Sweets
+    "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", "granola bar", "trail mix", "beef jerky", 
+    "pita chips", "rice cakes", "fruit snacks", "gummy bears", "licorice", "marshmallows", "peanut butter", "jelly", "honey", 
+    "jam", "caramel", "toffee", "nougat", "chewing gum", "hard candy", "cotton candy", "fruit leather", "yogurt raisins", "salsa",
+    "truffles", "fudge", "macarons", "baklava", "churros", "mousse", "tarts", "eclairs", "popsicles", "fruit pie", "cupcakes", "madeleines",
+    
+    // Personal Care
+    "shampoo", "conditioner", "soap", "toothpaste", "mouthwash", "lotion", "deodorant", "razor", "shaving cream", "toilet paper", 
+    "tissue", "hand sanitizer", "body wash", "facial cleanser", "body scrub", "face mask", "lip balm", "sunscreen", 
+    "hand lotion", "moisturizer", "face cream", "eye drops", "makeup remover", "cotton pads", "toothbrush", "hair gel", 
+    "hair spray", "nail polish", "hand soap", "essential oils", "bath salts", "foot cream", "body butter", "eye cream"
+]
+
+};
+
+
+            let isItemFound = false;
+
+            // Check if the query exists in the selected category
+            if (selectedCategory === 'All Categories') {
+                // Check across all categories
+                for (const category in productMapping) {
+                    if (productMapping[category].includes(query)) {
+                        window.location.href = `/products/${category}?query=${query}`;
+                        isItemFound = true;
+                        break;
+                    }
+                }
+            } else {
+                // Check within the selected category
+                if (productMapping[selectedCategory] && productMapping[selectedCategory].includes(query)) {
+                    window.location.href = `/products/${selectedCategory}?query=${query}`;
+                    isItemFound = true;
+                }
+            }
+
+            // If no match found
+            if (!isItemFound) {
+                alert(`"${query}" is not available in the selected category "${selectedCategory}".`);
+            }
+        }
+
+        // Sticky header functionality
+        let lastScrollPosition = 0;
+        const header = document.getElementById('stickyHeader');
+
+        window.addEventListener('scroll', function() {
+            const currentScrollPosition = window.pageYOffset;
+
+            if (currentScrollPosition > lastScrollPosition) {
+                // Scroll down, hide header
+                header.style.top = '-60px';
+            } else {
+                // Scroll up, show header
+                header.style.top = '0';
+            }
+
+            lastScrollPosition = currentScrollPosition;
+
+            document.addEventListener('DOMContentLoaded', () => {
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'enabled') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            });
+        
+    </script>
+
+</body>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</html>

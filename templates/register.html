@@ -5,10 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - FreshFoods190</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
     <style>
+            .animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition*/
+@-webkit-keyframes slideInRight {
+  0% {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+  }
+}
+@keyframes slideInRight {
+  0% {
+    -webkit-transform: translate3d(100%, 0, 0);
+    -ms-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+  }
+}
+.slideInRight {
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight
+}
+
+
        body {
             margin: 0;
             padding: 0;
@@ -18,6 +67,15 @@
             height: 100vh;
             font-family: Arial, sans-serif;
             background: linear-gradient(45deg, #007f0e 50%, #d38e1b 50%);
+
+        }
+
+        .page-enter {
+            animation: slideInFromLeft 0.8s ease-out forwards;
+        }
+
+        .page-exit {
+            animation: slideOutToRight 0.8s ease-in forwards;
         }
 
         .register-container {
@@ -28,18 +86,22 @@
             max-width: 400px;
             width: 100%;
             display: flexbox;
+            transform: translateY(20px); /* Start slightly below */
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            animation: 1s ease-out 20s 1 slideInFromLeft;
         }
 
         .register-container h1 {
             text-align: center;
             margin-bottom: 30px;
             color: green;
+
         }
 
         .form-control {
             margin-bottom: 20px;
         }
-
+        
         .btn-register {
             background-color: #00A600;
             color: white;
@@ -307,10 +369,141 @@
         }
 
 
-    </style>
+        .login-btn {
+            justify-content: center;
+            flex-direction: row;
+            display: flex;
+            background-color: rgb(255, 255, 255);
+            justify-content: center;
+            align-items: center;
+            width: 220px;
+            padding: 10px;
+            box-shadow: 3px 3px 3px rgb(170, 170, 170);
+            border-radius: 15px;
+        }
+        .btn-text {
+            justify-content: center;
+            padding: 10px;
+            font-family: 'Poppins', sans-serif;
+            color: rgb(85, 85, 85);
+        }
+
+        .gsi-material-button {
+            
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-appearance: none;
+  background-color: WHITE;
+  background-image: none;
+  border: 1px solid #747775;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #1f1f1f;
+  cursor: pointer;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 16px;
+  height: 50px;
+  letter-spacing: 0.25px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 12px;
+  position: relative;
+  text-align: center;
+  -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
+  transition: background-color .218s, border-color .218s, box-shadow .218s;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: auto;
+  max-width: 400px;
+  min-width: min-content;
+  text-align: center;
+}
+
+.gsi-material-button .gsi-material-button-icon {
+  height: 20px;
+  margin-right: 12px;
+  min-width: 20px;
+  width: 20px;
+}
+
+.gsi-material-button .gsi-material-button-content-wrapper {
+  -webkit-align-items: center;
+  align-items: center;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  height: 100%;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.gsi-material-button .gsi-material-button-contents {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
+.gsi-material-button .gsi-material-button-state {
+  -webkit-transition: opacity .218s;
+  transition: opacity .218s;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.gsi-material-button:disabled {
+  cursor: default;
+  background-color: #ffffff61;
+  border-color: #1f1f1f1f;
+}
+
+.gsi-material-button:disabled .gsi-material-button-contents {
+  opacity: 38%;
+}
+
+.gsi-material-button:disabled .gsi-material-button-icon {
+  opacity: 38%;
+}
+
+.gsi-material-button:not(:disabled):active .gsi-material-button-state, 
+.gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 12%;
+}
+
+.gsi-material-button:not(:disabled):hover {
+  -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+}
+
+.gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 8%;
+}
+
+.un{
+    margin: -20px  0px 20px 27px;
+}
+
+
+
+</style>
 </head>
 <body>
-    <main id="gg-sign-in" class="login-container">
+    <main id="gg-sign-in" class="login-container slideInRight animated">
         <div class="gg-sign-in-header auth-header">
             <h1>
                 <img class="auth-org-logo" src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
@@ -369,19 +562,15 @@
                     </li>
                 </ul>
     
-            <button type="submit" class="btn btn-register">Sign Up</button>
+            <button type="submit" class="btn btn-register" onclick="changePage('login-page')">Sign Up</button>
         </form>
     
         <div class="text-center login-link">
             Already have an account? <a class="log-in-link" href="{{ url_for('login') }}">Log in</a>
         </div>
-
-        <div class="c6e697ea4 ce3b90bf7">
-            <span>Or</span>
-        </div>
-    </div>
-</div>
 </main>
+</div>
+
 <script>
     // Get the elements
 const password = document.getElementById('password');
@@ -476,7 +665,7 @@ function checkPasswordCriteria() {
     }
 
     // Check if there is at least one special character
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwdValue)) {
+    if (/[!@#$%^&*(),.?":_{}|<>-]/.test(pwdValue)) {
         mark5.src = checkmark;
         cl5.classList.add('cl-success');
         cl5.classList.remove('cl-error');
@@ -543,9 +732,12 @@ function checkUsernameAvailability(username) {
             .then(response => response.json())
             .then(data => {
                 const feedbackElement = document.getElementById('usernameFeedback');
-                
+                if(username.length < 5 || username.length > 9){
+                    feedbackElement.textContent = 'Username must be between 5-10 characters'
+                    feedbackElement.style.color = 'red'
+                }
                 // If the username is taken, display an error message
-                if (data.is_taken) {
+                else if (data.is_taken) {
                     feedbackElement.textContent = 'Username is already taken';
                     feedbackElement.style.color = 'red';
                 } else {

@@ -1,5 +1,6 @@
+<!DOCTYPE html>
 <!-- Bottom Navigation -->
-<div class="bottom-nav">
+<div class="bottom-nav" id="bottomNav">
     <div class="nav-item">
         <a href="{{ url_for('home') }}">
             <div class="nav-icon nav-home">
@@ -35,7 +36,6 @@
     </div>
 </div>
 
-
 <style>
     .bottom-nav {
         position: fixed;
@@ -47,6 +47,10 @@
         justify-content: space-around;
         padding: 10px 0;
         z-index: 1000;
+        transition: transform 0.3s ease;
+    }
+    body {
+        padding-bottom: 125px;
     }
     .nav-item {
         flex-grow: 1;
@@ -59,6 +63,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: auto;
+        padding: 5px 0;
+        margin: 0 100px;
+        box-sizing: border-box;
+    }
+    .nav-item a:visited {
+        color: #000;
     }
     .nav-icon {
         width: 50px;
@@ -68,7 +79,7 @@
         justify-content: center;
         align-items: center;
         margin-bottom: 5px;
-        background-color: #f0f0f0;
+        background-color: #f8f9fa;
     }
     .nav-item img {
         width: 30px;
@@ -78,6 +89,34 @@
         font-size: 14px;
     }
     .nav-item a:hover .nav-icon {
-        background-color: #d4d4d4;
+        background-color: #28a745;
+    }
+    .nav-item a:hover img {
+        filter: brightness(0) invert(1);
+    }
+    .nav-item a:hover {
+        color: #000;
+    }
+
+    /* Initial state is visible */
+    .bottom-nav {
+        transform: translateY(0);
     }
 </style>
+
+<script>
+    let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    window.addEventListener("scroll", function () {
+        const bottomNav = document.getElementById("bottomNav");
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Show navbar when scrolling up, hide when scrolling down
+        if (currentScroll > lastScrollTop) {
+            bottomNav.style.transform = "translateY(100%)"; // Hide nav when scrolling down
+        } else {
+            bottomNav.style.transform = "translateY(0)"; // Show nav when scrolling up
+        }
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Update scroll position
+    });
+</script>

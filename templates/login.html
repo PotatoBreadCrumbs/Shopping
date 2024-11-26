@@ -12,7 +12,77 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <title>GreenGrocer Login</title>
     <style>
+        /*base code*/
+.animated {
+  -webkit-animation-duration: .3s;
+  animation-duration: .3s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition
+@-webkit-keyframes slideInLeft {
+  0% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+  }
+}
+@keyframes slideInLeft {
+  0% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    -ms-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+  }
+}
+.slideInLeft {
+  -webkit-animation-name: slideInLeft;
+  animation-name: slideInLeft
+}*/
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0
+  }
+  100% {
+    opacity: 1
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0
+  }
+  100% {
+    opacity: 1
+  }
+}
+.fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn
+}
+
+
+
         body {
+
+            
             margin: 0;
             padding: 0;
             display: flex;
@@ -39,6 +109,16 @@
             right: 0;
             transform: scale(0);
             width: 85px;
+            transform: translateY(20px); /* Initial position for subtle vertical adjustment */
+            opacity: 0; /* Initially hidden */
+        }
+
+        .page-enter {
+            animation: slideInFromLeft 0.8s ease-out forwards;
+        }
+
+        .page-exit {
+            animation: slideOutToRight 0.8s ease-in forwards;
         }
 
         .gg-sign-in-header {
@@ -464,7 +544,7 @@
 
 </head>
 <body>
-    <main id="gg-sign-in" class="login-container">
+    <main id="gg-sign-in" class="login-container slideInLeft animated">
         <div class="gg-sign-in-header auth-header">
             <h1>
                 <img class="auth-org-logo" src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
@@ -475,7 +555,7 @@
             <h1>Log In</h1>
 
             {% if get_flashed_messages(category_filter="incorrect pw or un") %}
-                <div id="error-box" class="o-form-error-container o-form-has-errors" toggleDiv()>
+                <div id="error-box" class="o-form-error-container o-form-has-errors fadeIn animated" toggleDiv()>
                     <div>
                         <div class="gg-form-infobox-error infobox infobox-error">
                             <img src="/static/img/exclamation-circle-fill.svg" alt="error16" class="icon error-16">
@@ -493,6 +573,13 @@
                     // Set flag to show the error message after page load
                     sessionStorage.setItem('errorMessageVisible', 'true');
                 </script>
+            
+            {% else %}
+            <script>
+                    // Remove error
+                    sessionStorage.setItem('errorMessageVisible', 'false');
+            </script>
+
             {% endif %}
 
             <form method="POST" action="{{ url_for('login') }}">
@@ -526,7 +613,7 @@
 
             <!-- heres the login implementatin for the guest -->
             <a class="su-lg-link" href="{{ url_for('guest_login') }}">
-                <button type="button" class="btn-guest">Login as Guest</button>
+                <button type="button" class="btn-guest" onclick="changePage('register-page')">Login as Guest</button>
             </a>
         
 
@@ -604,10 +691,14 @@ function toggleDiv() {
                 const errorBox = document.getElementById('error-box');
                 if (sessionStorage.getItem('errorMessageVisible') === 'true') {
                     errorBox.style.display = 'block';
-                    sessionStorage.removeItem('errorMessageVisible');
-                    console.log(sessionStorage)
                 }
-            };
+                else{
+                    sessionStorage.removeItem('errorMessageVisible');
+                    errorBox.style.display = 'none';       
+    }
+    };  
+
+    
 
     </script>
 

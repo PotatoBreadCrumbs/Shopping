@@ -1,29 +1,91 @@
-<!-- settings.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+            padding-bottom: 120px;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: #007f0e;
+            font-weight: bold;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            margin-top: 10px;
+        }
+    </style> 
 </head>
 <body>
-    <h1>Settings</h1>
-    <p>Manage your account information here.</p>
-    <form method="POST" action="{{ url_for('update_user') }}">
-        <label>Name:</label>
-        <input type="text" name="name" value="{{ user_data.get('name', '') }}" required>
-        
-        <label>Email:</label>
-        <input type="email" name="email" value="{{ user_data.get('email', '') }}" required>
-        
-        <label>Phone:</label>
-        <input type="text" name="phone" value="{{ user_data.get('phone', '') }}">
-        
-        <label>Address:</label>
-        <input type="text" name="address" value="{{ user_data.get('address', '') }}">
-        
-        <button type="submit">Update</button>
-    </form>
-</body>
-{% include 'bottom_navigation.html' %}
+    {% include 'topheader.html' %}
+    <div class="container">
+        <h1>Account Information</h1>
+        <p class="text-center">Manage your account information here:</p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="POST" action="{{ url_for('update_user') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ user_data.get('name', '') }}" required>
+                    </div>
 
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{{ user_data.get('email', '') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone:</label>
+                        <input type="text" id="phone" name="phone" class="form-control" value="{{ user_data.get('phone', '') }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Street Address:</label>
+                        <input type="text" id="address" name="address" class="form-control" value="{{ user_data.get('address', '') }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City:</label>
+                        <input type="text" id="city" name="city" class="form-control" value="{{ user_data.get('city', '') }}">
+                    </div>
+
+                    <!-- City and Zip Code next to each other -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="zip" class="form-label">Zip Code:</label>
+                            <input type="text" id="zip" name="zip" class="form-control" value="{{ user_data.get('zip', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="state" class="form-label">State:</label>
+                            <input type="text" id="state" name="state" class="form-control" value="{{ user_data.get('state', '') }}">
+                        </div>
+                        
+                    </div>
+                    
+
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary me-2">Update Information</button>
+                        <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Home</a>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+    {% include 'bottom_navigation.html' %}
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+</script>
 </html>
