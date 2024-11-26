@@ -9,7 +9,6 @@ from wtforms.validators import DataRequired
 import json
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_mail import Mail, Message
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from flask import g
@@ -26,36 +25,58 @@ app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True').lower() in ['true
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
-
-# Initialize Flask-Mail
 mail = Mail(app)
 
 import requests
 
-sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+'''
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
+
 def send_direct_email(to_email):
-    url = "https://api.sendgrid.com/v3/mail/send"
-    headers = {
-        "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "personalizations": [
-            {
-                "to": [{"email": to_email}],
-                "dynamic_template_data": {
-                    "reset_url": "http://127.0.0.1:5000/reset-password",  # Guys this is temporary url for local reset
-                    "username": to_email  
+    try:
+        url = "https://api.sendgrid.com/v3/mail/send"
+        headers = {
+            "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": to_email}],
+                    "dynamic_template_data": {
+                        "reset_url": "http://127.0.0.1/reset-password",  # Temporary URL for local testing
+                        "username": to_email  
+                    }
                 }
-            }
-        ],
-        "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
-        "template_id": "d-9c2c93acfa0e40cbbeea3cf01582af1b"  # our custom template using the sendgrid api we made
-    }
-    
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-    print("Direct API call status:", response.status_code)
-    print("Response text:", response.text)
+            ],
+            "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
+            "template_id": "d-9c2c93acfa0e40cbbeea3cf01582af1b"  # Custom SendGrid template
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        
+        print(f"SendGrid Response Status Code: {response.status_code}")
+        print(f"SendGrid Response Headers: {response.headers}")
+        print(f"SendGrid Response Body: {response.text}")
+        
+        if response.status_code != 202:
+            raise Exception(f"Failed to send email. Response: {response.text}")
+        
+        print("Password reset email sent successfully.")
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        raise
+'''
+
 
 
 @app.route('/reset-password', methods=['GET', 'POST'])
@@ -111,7 +132,6 @@ def inject_username():
         if user:
             return {"username": user.get("name", user_id)}
     return {"username": "Guest"}
-
 
 # Initialize Flask-Login
 login_manager = LoginManager()
@@ -251,17 +271,23 @@ def update_user():
     
     return redirect(url_for('settings'))
 
-
 @app.route('/order_history')
 @login_required
 def order_history():
     user_id = session.get("user_id")
-    user_data = read_user(user_id)
+    user_data = read_user(user_id)  #Reading from our User.Storage.json
+    order_history = user_data.get("order_history", [])
 
-    # Fetch order history or initialize an empty list if not found
-    order_history = user_data.get("order_history", []) if isinstance(user_data, dict) else []
-
+    # Iterate through each order and ensure required fields are present
+    for order in order_history:
+      
+        order['subtotal'] = float(order.get('subtotal', 0))
+        order['sales_tax'] = float(order.get('sales_tax', 0))
+        order['total_price'] = float(order.get('total_price', order['subtotal'] + order['sales_tax']))
+        order['points_earned'] = int(order.get('points_earned', order['subtotal'] * 3))
+    
     return render_template('orderhistory.html', order_history=order_history)
+
 
 
 
@@ -274,30 +300,30 @@ def settings():
 
 @app.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login():
-    form = LoginForm()  # Use LoginForm for the login form
+    form = LoginForm() 
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
 
-        # Load users from JSON file
+       
         users = read_users()
         if not users:
             print("Error: No users loaded from user_storage.json.")
             return "User data not loaded. Check user_storage.json.", 500
 
-        # Check user credentials
+      
         if username in users and users[username]['password'] == password:
             user = User(username)  # Create a user object
             login_user(user)  # Log in the user
 
-            # Load the user's cart and calculate the cart count
+           
             cart_data = read_cart(username)
             session['user_id'] = username  # Store user ID in session
             session['cart_count'] = sum(item.get('quantity', 1) for item in cart_data['cart_items'])  # Calculate total quantity
-            session.modified = True  # Ensure session is saved
+            session.modified = True 
 
             flash('Login successful!', 'success')
-            return redirect(url_for('home'))  # Redirect to home or desired page
+            return redirect(url_for('home'))  
         else:
             flash('Invalid username or password', 'danger')
 
@@ -309,22 +335,21 @@ def save_for_later(index):
     username = session.get('user_id')
 
     if username:
-        # Retrieve the user's data (cart_items and saved_items) from JSON
+        # Retrieving the user's data (cart_items and saved_items) from JSON
         user_data = read_cart(username)
         cart = user_data.get('cart_items', [])
         saved_items = user_data.get('saved_items', [])
 
-        # Ensure index is valid before moving the item
+   
         if 0 <= index < len(cart):
-            item = cart.pop(index)  # Remove the item from cart
-            saved_items.append(item)  # Add it to saved items
+            item = cart.pop(index)  
+            saved_items.append(item)
 
-            # Update the user's data in the JSON file
             write_cart(username, {'cart_items': cart, 'saved_items': saved_items})
 
-            # Recalculate cart counter based on remaining items in the cart
+        
             session['cart_count'] = sum(item.get('quantity', 1) for item in cart)
-            session.modified = True  # Mark session as modified
+            session.modified = True
 
             flash("Item saved for later.", "info")
         else:
@@ -392,7 +417,7 @@ def write_favorites(favorites):
 def toggle_favorite():
     data = request.get_json()
 
-    # Ensure required fields are present
+    
     required_fields = ['name', 'price', 'image_url']
     for field in required_fields:
         if not data.get(field):
@@ -414,7 +439,7 @@ def toggle_favorite():
         })
         status = "added"
 
-    # Write updated favorites to file
+   
     write_favorites(favorites)
     return jsonify({"message": f"Favorite {status} successfully", "status": status})
 
@@ -470,13 +495,12 @@ def reset_password():
     return render_template('forgot_password.html')
 
 @app.route('/')
-@login_required
 def home():
     selected_location = read_selected_location()  # Get the selected location from locations.json
     locations = get_locations()  # Fetch all available locations
 
     form = LogoutForm()
-    username = "Guest" if current_user.id == 'guest' else current_user.id
+    username = "Guest" if not current_user.is_authenticated else current_user.id
 
     # Pass selected_location to the index.html template
     return render_template('index.html', username=username, form=form, locations=locations, selected_location=selected_location)
@@ -527,12 +551,12 @@ def read_cart(user_id):
                 data = json.load(file)  # Load all cart data
                 user_cart = data.get(user_id, {})  # Get cart for specific user
                 return {
-                    'cart_items': user_cart.get('cart_items', []),  # Ensure cart_items is a list
-                    'saved_items': user_cart.get('saved_items', [])  # Ensure saved_items is a list
+                    'cart_items': user_cart.get('cart_items', []), 
+                    'saved_items': user_cart.get('saved_items', [])
                 }
             except json.JSONDecodeError:
                 print("Error decoding JSON from cart file.")
-    # Return empty structure if file doesn't exist or user has no cart
+ 
     return {'cart_items': [], 'saved_items': []}
 
 def write_cart(user_id, cart):
@@ -590,12 +614,8 @@ def remove_item_from_cart(username, item_name):
         write_cart(username, user_cart)
 
 @app.route('/add_to_cart', methods=['POST'])
-@login_required
 def add_to_cart():
     user_id = session.get("user_id")
-    if not user_id:
-        flash("User not logged in.", "danger")
-        return redirect(url_for('login'))
 
     # Retrieve product details from the form
     product_name = request.form.get('product_name')
@@ -618,38 +638,69 @@ def add_to_cart():
         product_quantity = 1  # Default to 1 if invalid
         print(f"Warning: Invalid quantity for {product_name}. Defaulting to 1.")
 
-    # Load the user's cart data from cart.json
-    cart_data = read_cart(user_id)
+    # If user is logged in, use their cart from cart.json
+    if user_id:
+        # Load the user's cart data from cart.json
+        cart_data = read_cart(user_id)
 
-    # Ensure cart_items is a list
-    if not isinstance(cart_data.get('cart_items'), list):
-        cart_data['cart_items'] = []
+        # Ensure cart_items is a list
+        if not isinstance(cart_data.get('cart_items'), list):
+            cart_data['cart_items'] = []
 
-    cart = cart_data['cart_items']
+        cart = cart_data['cart_items']
 
-    # Check if the product already exists in the cart
-    item_exists = False
-    for item in cart:
-        if item.get('name') == product_name:
-            item['quantity'] += product_quantity  # Update quantity based on form input
-            item_exists = True
-            break
+        # Check if the product already exists in the cart
+        item_exists = False
+        for item in cart:
+            if item.get('name') == product_name:
+                item['quantity'] += product_quantity  # Update quantity based on form input
+                item_exists = True
+                break
 
-    # If the product is new, add it to the cart
-    if not item_exists:
-        cart.append({
-            'name': product_name,
-            'price': product_price,
-            'image': product_image,
-            'quantity': product_quantity  # Set quantity from form input
-        })
+        # If the product is new, add it to the cart
+        if not item_exists:
+            cart.append({
+                'name': product_name,
+                'price': product_price,
+                'image': product_image,
+                'quantity': product_quantity  # Set quantity from form input
+            })
 
-    # Save the updated cart back to cart.json
-    write_cart(user_id, cart_data)
+        # Save the updated cart back to cart.json
+        write_cart(user_id, cart_data)
 
-    # Update the session cart count based on the total quantity of items
-    session['cart_count'] = sum(item['quantity'] for item in cart)
-    session.modified = True  # Ensure session updates are saved
+        # Update the session cart count based on the total quantity of items
+        session['cart_count'] = sum(item['quantity'] for item in cart)
+        session.modified = True  # Ensure session updates are saved
+
+    else:
+        # Guest user logic: use session to store cart temporarily
+        if 'guest_cart' not in session:
+            session['guest_cart'] = []
+
+        cart = session['guest_cart']
+
+        # Check if the product already exists in the guest cart
+        item_exists = False
+        for item in cart:
+            if item.get('name') == product_name:
+                item['quantity'] += product_quantity  # Update quantity
+                item_exists = True
+                break
+
+        # If the product is new, add it to the guest cart
+        if not item_exists:
+            cart.append({
+                'name': product_name,
+                'price': product_price,
+                'image': product_image,
+                'quantity': product_quantity
+            })
+
+        # Update the session cart count for guest user
+        session['cart_count'] = sum(item['quantity'] for item in cart)
+        session['guest_cart'] = cart
+        session.modified = True  # Ensure session updates are saved
 
     flash(f"{product_quantity}x {product_name} added to your cart.", "success")
     return redirect(url_for('get_products', category=category))
@@ -658,7 +709,6 @@ def add_to_cart():
 from urllib.parse import unquote
 
 @app.route('/remove_item/<int:index>', methods=['POST'])
-@login_required
 def remove_item(index):
     username = session.get('user_id')
 
@@ -685,7 +735,6 @@ def remove_item(index):
 
 
 @app.route('/update_quantity/<int:index>/<operation>', methods=['POST'])
-@login_required
 def update_quantity(index, operation):
     user_id = session.get('user_id')  # Get the user_id from the session
 
@@ -728,26 +777,42 @@ def update_quantity(index, operation):
 
 
 @app.route('/cart')
-@login_required
 def view_cart():
     user_id = session.get("user_id")
-    user_data = read_cart(user_id)  # Retrieve user data (cart_items and saved_items) from JSON
+    cart = []  # Initialize cart
+    saved_items = []  # Initialize saved items
+    total_amount = 0  # Initialize total amount
 
-    # Extract cart_items and initialize saved_items if missing
-    cart = user_data.get('cart_items', [])
-    saved_items = user_data.get('saved_items', [])
+    if user_id:
+        # Retrieve user data (cart_items and saved_items) from JSON for logged-in users
+        user_data = read_cart(user_id)
+        cart = user_data.get('cart_items', [])
+        saved_items = user_data.get('saved_items', [])
 
-    # Ensure all prices in the cart are valid floats
-    for item in cart:
-        try:
-            item['price'] = float(item.get('price', 0))  # Handle missing prices by defaulting to 0
-        except (ValueError, TypeError):
-            item['price'] = 0.00
+        # Ensure all prices in the cart are valid floats
+        for item in cart:
+            try:
+                item['price'] = float(item.get('price', 0))  # Handle missing prices by defaulting to 0
+            except (ValueError, TypeError):
+                item['price'] = 0.00
 
-    # Calculate the total amount in the cart
-    total_amount = sum(item['price'] * item['quantity'] for item in cart)
+        # Calculate the total amount in the cart
+        total_amount = sum(item['price'] * item['quantity'] for item in cart)
+    else:
+        # For guest users, retrieve cart from session
+        cart = session.get('guest_cart', [])
 
-    # Render the template, passing both cart and saved_items
+        # Ensure all prices in the guest cart are valid floats
+        for item in cart:
+            try:
+                item['price'] = float(item.get('price', 0))  # Handle missing prices by defaulting to 0
+            except (ValueError, TypeError):
+                item['price'] = 0.00
+
+        # Calculate the total amount in the guest cart
+        total_amount = sum(item['price'] * item['quantity'] for item in cart)
+
+    # Render the template, passing both cart and saved_items (empty for guests)
     return render_template(
         'cart.html',
         cart=cart,
@@ -769,11 +834,15 @@ def logout():
     
     return redirect(url_for('login'))
 
+from flask_session import Session
 
-
+app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+Session(app)
 
 @app.route('/products/<category>')
-@login_required
 def get_products(category):
     # Get the saved location ID
     location_id = read_selected_location()  # Ensure this reads from locations.json
@@ -890,7 +959,7 @@ def discounts(category=None):
         'filter.locationId': location_id,
         'filter.limit': 50,
        
-    }
+ }
 
     # Add filter for category-specific discounts or general discounts
     if category:
@@ -930,62 +999,99 @@ def discounts(category=None):
 
 
 
+from datetime import datetime  # Ensure this is imported at the top
 
+def calculate_cart_totals(cart):
+    """Helper function to calculate subtotal, sales tax, and total."""
+    try:
+        subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in cart)
+    except (ValueError, TypeError):
+        subtotal = 0.0
 
-@app.route('/checkout', methods=['POST', 'GET'])
-@login_required
+    sales_tax_rate = 0.08625  # Example tax rate
+    sales_tax = round(subtotal * sales_tax_rate, 2)
+    total_amount = round(subtotal + sales_tax, 2)
+
+    return subtotal, sales_tax, total_amount
+
+@app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     user_id = session.get("user_id")
+    cart = []
+    subtotal = 0
+    sales_tax = 0
+    total_amount = 0
 
-    # Retrieve the cart directly from cart.json using user_id
-    user_cart = read_cart(user_id)
-    cart_items = user_cart.get("cart_items", []) if isinstance(user_cart, dict) else []
+    # Retrieve cart for logged-in or guest user
+    if user_id:
+        user_data = read_cart(user_id)
+        cart = user_data.get('cart_items', [])
+    else:
+        cart = session.get('guest_cart', [])
 
-    # Calculate subtotal and other amounts
-    try:
-        subtotal = sum(float(item.get('price', 0)) * item.get('quantity', 0) for item in cart_items)
-        total_quantity = sum(item.get('quantity', 0) for item in cart_items)
-    except (ValueError, TypeError, KeyError):
-        subtotal = 0
-        total_quantity = 0
-
-    sales_tax_rate = 0.08625
-    sales_tax = subtotal * sales_tax_rate
-    total_cost = round(subtotal + sales_tax, 2)
+    # Calculate cart totals
+    subtotal, sales_tax, total_amount = calculate_cart_totals(cart)
 
     if request.method == 'POST':
-        # Save order details in user_storage.json
-        user_data = read_user(user_id)
-        if user_data:
-            # Create a new order entry
-            from datetime import datetime
-            new_order = {
-                "date": datetime.now().strftime("%Y-%m-%d %I:%M:%S %p"),
-                "order_items": cart_items,  # cart_items already contain imageUrl, name, price, quantity
-                "total_price": round(total_cost, 2)
+        # Validate required fields
+        name = request.form.get('name')
+        address = request.form.get('address')
+        city = request.form.get('city')
+        zip_code = request.form.get('zip')
+
+        if not all([name, address, city, zip_code]):
+            flash("Please fill in all required fields.", "danger")
+            return redirect(url_for('checkout'))
+
+        if not cart:
+            flash("Your cart is empty. Please add items before checking out.", "warning")
+            return redirect(url_for('home'))
+
+        # Create order object
+        order = {
+            "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "order_items": cart,
+            "subtotal": subtotal,
+            "sales_tax": sales_tax,
+            "total_price": total_amount,
+            "shipping_details": {
+                "name": name,
+                "address": address,
+                "city": city,
+                "zip": zip_code
             }
+        }
 
-            # Add to order_history
-            if "order_history" not in user_data:
-                user_data["order_history"] = []
-            user_data["order_history"].append(new_order)
+        if user_id:
+            # Update user order history and clear cart
+            user_data['order_history'] = user_data.get('order_history', [])
+            user_data['order_history'].append(order)
+            user_data['cart_items'] = []  # Clear cart
+            write_cart(user_id, user_data)
+        else:
+            # Clear guest cart
+            session['guest_cart'] = []
 
-            # Save updated user data
-            write_user(user_id, user_data)
+        # Send order confirmation email
+        to_email = request.form.get('email')  # Optional email field
+        if to_email:
+            send_order_confirmation_email(to_email, name, address, city, zip_code, order)
 
-        # Clear the cart for the user in cart.json
-        write_cart(user_id, {"cart_items": [], "saved_items": []})
-
-        flash("Order placed successfully!", "success")
-        return redirect(url_for('order_history'))
+        flash("Order placed successfully! A confirmation email has been sent.", "success")
+        return redirect(url_for('home'))
 
     return render_template(
         'checkout.html',
-        cart_items=cart_items,
+        cart=cart,
         subtotal=subtotal,
+        total_quantity=sum(item.get('quantity', 1) for item in cart),
         sales_tax=sales_tax,
-        total_cost=total_cost,
+        total_amount=total_amount
     )
+
+
+
+
 
 @app.route('/api/order_history')
 def api_order_history():
@@ -993,85 +1099,129 @@ def api_order_history():
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    with open('user_Storage.json', 'r') as f:
-        users = json.load(f)
-    
+    users = read_users()
     user_data = users.get(user_id, {})
     order_history = user_data.get('order_history', [])
-    
+
+    # Validate existing points_earned values
+    for order in order_history:
+        if 'points_earned' not in order:
+            # Fallback calculation (consistent with checkout route)
+            order['points_earned'] = int(order.get('subtotal', 0) * 3)
+
     return jsonify(order_history)
-
-
-def send_order_confirmation_email(recipient_email, name, address, city, zip_code):
-    # Set up SendGrid API URL and headers
-    url = "https://api.sendgrid.com/v3/mail/send"
-    headers = {
-        "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}"
-,  # Replace with your SendGrid API Key
-        "Content-Type": "application/json"
-    }
-    
-    # Email data, including the template ID and recipient information
-    data =data = {
-    "personalizations": [
-        {
-            "to": [{"email": recipient_email}],
-            "dynamic_template_data": {
-                "customer_name": name,
-                "address": address,
-                "city": city,
-                "zip_code": zip_code,
-            }
+'''
+def send_order_confirmation_email(to_email, name, address, city, zip_code, order):
+    try:
+        # Set up SendGrid API URL and headers
+        url = "https://api.sendgrid.com/v3/mail/send"
+        headers = {
+            "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",  # Replace with your SendGrid API Key
+            "Content-Type": "application/json"
         }
-    ],
-    "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
-    "template_id": "d-54cbef9f0d5a46c3a5c99a01efb9c0de",
-    "subject": "Order Confirmation"
-}
-    # Send the request
-    response = requests.post(url, headers=headers, json=data)
+        
+        # Prepare the email data using the template ID
+        data = {
+            "personalizations": [
+                {
+                    "to": [{"email": to_email}],
+                    "dynamic_template_data": {
+                        "customer_name": name,
+                        "address": address,
+                        "city": city,
+                        "zip_code": zip_code,
+                        "order_items": "".join(
+                            f"<li>{item['quantity']}x {item['name']} at ${item['price']} each</li>"
+                            for item in order.get("order_items", [])
+                        ),
+                        "total_price": order.get("total_price", 0.0)
+                    }
+                }
+            ],
+            "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
+            "template_id": "d-54cbef9f0d5a46c3a5c99a01efb9c0de",  # Replace with your active template ID
+            "subject": "Order Confirmation"
+        }
+        
+        # Send the request
+        response = requests.post(url, headers=headers, json=data)
+        
+        # Logging SendGrid response
+        print(f"SendGrid Response Status Code: {response.status_code}")
+        print(f"SendGrid Response Body: {response.text}")
+        
+        # Check the response
+        if response.status_code == 202:
+            print("Order confirmation email sent successfully!")
+        else:
+            raise Exception(f"Failed to send email. Response: {response.text}")
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+        raise
+'''
+
+
     
-    # Check the response
-    if response.status_code == 202:
-        print("Order confirmation email sent successfully!")
-    else:
-        print("Failed to send email. Status Code:", response.status_code)
-        print("Response:", response.json())
 @app.route('/process_checkout', methods=['POST'])
-@login_required
 def process_checkout():
+    from datetime import datetime  # Ensure datetime is imported
+
     # Retrieve form data
     name = request.form.get('name')
     address = request.form.get('address')
     city = request.form.get('city')
     zip_code = request.form.get('zip')
+    to_email = request.form.get('email')  # Get the email entered in the form
+
+    # Debugging: Print the submitted email
+    print(f"Email submitted: {to_email}")
+
+    # Validate required fields
+    if not all([name, address, city, zip_code, to_email]):
+        missing_fields = [field for field, value in {
+            'name': name,
+            'address': address,
+            'city': city,
+            'zip_code': zip_code,
+            'email': to_email
+        }.items() if not value]
+        flash(f"Missing required fields: {', '.join(missing_fields)}", "danger")
+        return redirect(url_for('checkout'))  # Redirect back to the checkout page
 
     user_id = session.get("user_id")
-
-    # Try to get the user's email from the session
-    to_email = session.get("user_email")
-    if not to_email:
-        users = load_user_storage()
-        if user_id and user_id in users:
-            to_email = users[user_id].get("email")
-
-    print(f"User email for order confirmation: {to_email}")
 
     # Load the cart data
     cart_data = read_cart(user_id)
     cart_items = cart_data.get('cart_items', [])
 
-    # If the cart is empty, redirect back to the cart page
+    # Check if cart is empty
     if not cart_items:
         flash("Your cart is empty. Please add items before checking out.", "warning")
-        return redirect(url_for('cart'))
+        return redirect(url_for('home'))  # Redirect to home if no items in the cart
+
+    # Calculate subtotal, sales tax, total price, and points earned
+    try:
+        subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in cart_items)
+    except (ValueError, TypeError):
+        flash("Error calculating cart totals. Please review your cart and try again.", "danger")
+        return redirect(url_for('checkout'))
+
+    sales_tax_rate = 0.08625  # Example tax rate
+    sales_tax = round(subtotal * sales_tax_rate, 2)
+    total_price = round(subtotal + sales_tax, 2)
+    points_earned = int(subtotal * 3)  # Example: 3 points per dollar spent
+
+    # Debugging: Print calculated values
+    print(f"Subtotal: {subtotal}, Sales Tax: {sales_tax}, Total Price: {total_price}, Points Earned: {points_earned}")
 
     # Prepare the order object
-    from datetime import datetime
     order = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "order_items": cart_items,
-        "total_price": sum(item['price'] * item['quantity'] for item in cart_items),
+        "subtotal": round(subtotal, 2),
+        "sales_tax": sales_tax,
+        "total_price": total_price,
+        "points_earned": points_earned,
         "shipping_details": {
             "name": name,
             "address": address,
@@ -1080,18 +1230,15 @@ def process_checkout():
         }
     }
 
-    # Update the user's order history in user_storage.json
+    # Update user's order history in user_storage.json
     users = load_user_storage()
     if user_id in users:
         user_data = users[user_id]
-        if "order_history" not in user_data:
-            user_data["order_history"] = []
-        user_data["order_history"].append(order)
+        user_data.setdefault("order_history", []).append(order)  # Add to order history
+        user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned  # Update loyalty points
+        write_users(users)  # Save back to user_storage.json
 
-        # Save back to user_storage.json using the correct function
-        write_users(users)
-
-    # Clear the cart in `cart.json`
+    # Clear the cart in cart.json
     cart_data['cart_items'] = []  # Empty the user's cart
     write_cart(user_id, cart_data)  # Save changes back to the file
 
@@ -1099,12 +1246,19 @@ def process_checkout():
     session['cart_count'] = 0
     session.modified = True
 
-    # Send confirmation email if email is present
+    # Send confirmation email
     if to_email:
-        send_order_confirmation_email(to_email, name, address, city, zip_code)
+        try:
+            print(f"send_order_confirmation_email called with: {to_email}, {name}, {address}, {city}, {zip_code}, {order}")
+            send_order_confirmation_email(to_email, name, address, city, zip_code, order)  # Pass the order object
+        except Exception as e:
+            flash(f"Order placed successfully, but there was an issue sending the email: {e}", "warning")
+            return redirect(url_for('home'))
 
     flash("Thank you for your order! A confirmation email has been sent.", "success")
     return redirect(url_for('home'))
+
+
 
 
 def read_selected_location():
@@ -1136,24 +1290,53 @@ def set_location():
 @app.route('/loyalty_rewards')
 @login_required
 def loyalty_rewards():
-    # Example data; ideally, fetch this from a database
+    # Fetch the user ID from the session and user data
+    user_id = session.get("user_id")
+    user_data = read_user(user_id)
+
+    # Get loyalty points from user data or default to 0
+    loyalty_points = user_data.get("loyalty_points", 0)
+
+    # Define the initial tier and next tier points
+    tier = "Bronze"
+    next_tier_points = 1000
+
+    # Update tier based on loyalty points
+    if loyalty_points >= 1000:
+        tier = "Silver"
+        next_tier_points = 3000
+    if loyalty_points >= 3000:
+        tier = "Gold"
+        next_tier_points = 5000
+    if loyalty_points >= 5000:
+        tier = "Platinum"
+        next_tier_points = None
+
+    # Prepare rewards info
     rewards_info = {
-        "points": 1200,
-        "tier": "Gold",
-        "next_tier_points": 3000,
-        "next_tier_name": "Platinum",
-        "points_to_next_tier": 3000 - 1200  # Calculate remaining points needed
+        "points": loyalty_points,
+        "tier": tier,
+        "next_tier_points": next_tier_points,
+        "points_to_next_tier": next_tier_points - loyalty_points if next_tier_points else 0,
     }
-    rewards_history = [
-        {"date": "2024-10-15", "description": "Redeemed 10% off coupon", "points_used": 100},
-        {"date": "2024-09-30", "description": "Free delivery voucher", "points_used": 50},
-        {"date": "2024-09-20", "description": "5% off on next purchase", "points_used": 80},
-    ]
+
+    # Get rewards history from user data (order history)
+    rewards_history = user_data.get("order_history", [])
+
+    # Ensure every order in rewards history has 'points_earned'
+    for order in rewards_history:
+        if 'points_earned' not in order:
+            # Calculate points earned for the order based on subtotal (example: 3x multiplier)
+            order['points_earned'] = int(order.get('subtotal', 0) * 3)
+
+    # Render the loyalty rewards page with the updated rewards info and history
     return render_template(
         'loyalty_rewards.html',
         rewards_info=rewards_info,
         rewards_history=rewards_history
     )
+
+
 
 @app.context_processor
 def inject_locations():
@@ -1291,12 +1474,11 @@ def google_auth():
     else:
         flash("Failed to retrieve user information from Google.", "danger")
         return redirect(url_for('login'))
-
     
     app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax'
+    SESSION_COOKIE_SAMESITE='None'  # For cross-site cookies
 )
 
 @app.route('/saved_items')
@@ -1309,9 +1491,5 @@ def view_saved_items():
     return render_template('saved_items.html', saved_items=saved_items)
 
 
-
-
-
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)

@@ -63,24 +63,32 @@
     <div class="container mt-5">
         <h2>Order History</h2>
         <div id="order-history">
-            <!-- Rendered server-side content -->
-            {% for order in order_history %}
-            <div class="order-card">
-                <div class="order-header">Order Date: {{ order.date }}</div>
-                <div class="order-items">
-                    {% for item in order.order_items %}
-                    <div class="item-row">
-                        <img class="item-image" src="{{ item.image }}" alt="Product Image">
-                        <div class="item-details">
-                            <p class="item-name">{{ item.name }} (x{{ item.quantity }})</p>
-                            <p class="item-price">$ {{ item.price }}</p>
+            {% if order_history %}
+                {% for order in order_history %}
+                <div class="order-card">
+                    <div class="order-header">Order Date: {{ order.date or 'Unknown' }}</div>
+                    <div class="order-items">
+                        {% for item in order.order_items %}
+                        <div class="item-row">
+                            <img class="item-image" src="{{ item.image or '/static/img/default.jpg' }}" alt="Product Image">
+                            <div class="item-details">
+                                <p class="item-name">{{ item.name or 'Unnamed Item' }} (x{{ item.quantity or 0 }})</p>
+                                <p class="item-price">Price per Item: ${{ "%.2f"|format(item.price if item.price is not none else 0) }}</p>
+                            </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    <div class="order-summary">
+                        <p>Subtotal: ${{ "%.2f"|format(order.subtotal if order.subtotal is not none else 0) }}</p>
+                        <p>Sales Tax: ${{ "%.2f"|format(order.sales_tax if order.sales_tax is not none else 0) }}</p>
+                        <p>Points Earned: {{ order.points_earned if order.points_earned is not none else 0 }}</p>
+                        <p class="order-total">Total Price: ${{ "%.2f"|format(order.total_price if order.total_price is not none else 0) }}</p>
+                    </div>
                 </div>
-                <div class="order-total">Total Price: ${{ order.total_price }}</div>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>No orders found.</p>
+            {% endif %}
         </div>
     </div>
     {% include 'bottom_navigation.html' %}
@@ -89,9 +97,8 @@
             .then(response => response.json())
             .then(orderHistory => {
                 const orderHistoryContainer = document.getElementById('order-history');
-                // Clear existing content to prevent duplicates
-                orderHistoryContainer.innerHTML = '';
-                if (orderHistory.length === 0) {
+                orderHistoryContainer.innerHTML = ''; // Clear existing content
+                if (!orderHistory || orderHistory.length === 0) {
                     orderHistoryContainer.innerHTML = '<p>No orders found.</p>';
                     return;
                 }
@@ -99,19 +106,24 @@
                     const orderCard = document.createElement('div');
                     orderCard.className = 'order-card';
                     orderCard.innerHTML = `
-                        <div class="order-header">Order Date: ${order.date}</div>
+                        <div class="order-header">Order Date: ${order.date || 'Unknown'}</div>
                         <div class="order-items">
                             ${order.order_items.map(item => `
                                 <div class="item-row">
-                                    <img class="item-image" src="${item.image}" alt="Product Image">
+                                    <img class="item-image" src="${item.image || '/static/img/default.jpg'}" alt="Product Image">
                                     <div class="item-details">
-                                        <p class="item-name">${item.name} (x${item.quantity})</p>
-                                        <p class="item-price">$${item.price}</p>
+                                        <p class="item-name">${item.name || 'Unnamed Item'} (x${item.quantity || 0})</p>
+                                        <p class="item-price">Price per Item: $${(item.price || 0).toFixed(2)}</p>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="order-total">Total Price: $${order.total_price}</div>
+                        <div class="order-summary">
+                            <p>Subtotal: $${(order.subtotal || 0).toFixed(2)}</p>
+                            <p>Sales Tax: $${(order.sales_tax || 0).toFixed(2)}</p>
+                            <p>Points Earned: ${order.points_earned || 0}</p>
+                            <p class="order-total">Total Price: $${(order.total_price || 0).toFixed(2)}</p>
+                        </div>
                     `;
                     orderHistoryContainer.appendChild(orderCard);
                 });

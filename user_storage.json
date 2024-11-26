@@ -5,15 +5,481 @@
         "email": "Potato@gmail.com",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "kevin": {
         "password": "apple",
         "name": "Kevin",
-        "email": "kevingawrinauth@yahoo.com",
+        "email": "maxgusherman@gmail.com",
         "phone": "9174809274",
-        "address": "",
-        "order_history": []
+        "address": "Potato Avenue",
+        "order_history": [
+            {
+                "date": "2024-11-24 19:58:38",
+                "order_items": [
+                    {
+                        "name": "Simple Truth\u00ae Whole Roasted Chicken (Available 11AM-7PM)",
+                        "price": 9.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111006806",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 9.99,
+                "sales_tax": 0.86,
+                "total_price": 10.85,
+                "shipping_details": {
+                    "name": "kevin",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-24 23:44:14",
+                "order_items": [
+                    {
+                        "name": "Simple Truth\u00ae Whole Roasted Chicken (Available 11AM-7PM)",
+                        "price": 9.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111006806",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Ground Beef 93/7",
+                        "price": 8.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111096920",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 18.78,
+                "sales_tax": 1.62,
+                "total_price": 20.4,
+                "shipping_details": {
+                    "name": "k",
+                    "address": "l",
+                    "city": "2",
+                    "zip": "2"
+                }
+            },
+            {
+                "date": "2024-11-25 10:38:19",
+                "order_items": [
+                    {
+                        "name": "Zucchini",
+                        "price": 1.69,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0000000004067",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Ground Beef 93/7",
+                        "price": 8.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111096920",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 10.48,
+                "sales_tax": 0.9,
+                "total_price": 11.38,
+                "shipping_details": {
+                    "name": "kevin",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-25 10:40:15",
+                "order_items": [
+                    {
+                        "name": "Simple Truth\u00ae Whole Roasted Chicken (Available 11AM-7PM)",
+                        "price": 9.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111006806",
+                        "quantity": 3
+                    }
+                ],
+                "subtotal": 29.97,
+                "sales_tax": 2.58,
+                "total_price": 32.55,
+                "shipping_details": {
+                    "name": "k",
+                    "address": "2",
+                    "city": "2",
+                    "zip": "2"
+                }
+            },
+            {
+                "date": "2024-11-25 15:01:18",
+                "order_items": [
+                    {
+                        "name": "Kroger\u00ae Ground Beef 93/7",
+                        "price": 8.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111096920",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Large Raw Shrimp Shell-On",
+                        "price": 8.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0001111096561",
+                        "quantity": 3
+                    },
+                    {
+                        "name": "Beyond Meat Beyond Burger\u00ae Plant-Based Patties",
+                        "price": 10.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0081005729011",
+                        "quantity": 1
+                    }
+                ],
+                "total_price": 46.75,
+                "shipping_details": {
+                    "name": "k",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-25 15:04:51",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 2
+                    },
+                    {
+                        "name": "Kroger\u00ae Ground Beef 93/7",
+                        "price": 8.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111096920",
+                        "quantity": 1
+                    }
+                ],
+                "total_price": 23.369999999999997,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-25 16:14:54",
+                "order_items": [
+                    {
+                        "name": "Kroger\u00ae Ground Beef 93/7",
+                        "price": 8.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111096920",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Large Raw Shrimp Shell-On",
+                        "price": 8.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0001111096561",
+                        "quantity": 3
+                    },
+                    {
+                        "name": "Beyond Meat\u00ae Cookout Classic\u2122 Plant-Based Burger Patties",
+                        "price": 15.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0081005729013",
+                        "quantity": 1
+                    }
+                ],
+                "total_price": 51.75,
+                "shipping_details": {
+                    "name": "k",
+                    "address": "k",
+                    "city": "k",
+                    "zip": "k"
+                }
+            },
+            {
+                "date": "2024-11-25 16:21:32",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Large Raw Shrimp Shell-On",
+                        "price": 8.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0001111096561",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Beyond Meat Beyond Burger\u00ae Plant-Based Patties",
+                        "price": 10.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0081005729011",
+                        "quantity": 1
+                    }
+                ],
+                "total_price": 27.27,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-25 17:52:40",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 7.29,
+                "sales_tax": 0.63,
+                "total_price": 7.92,
+                "points_earned": 21,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-25 20:56:33",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Ground Beef 93/7",
+                        "price": 8.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111096920",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Applegate Natural Oven Roasted Turkey Breast Deli Meat Family Pack",
+                        "price": 9.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0002531716960",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Sirloin 90/10",
+                        "price": 9.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111096963",
+                        "quantity": 3
+                    }
+                ],
+                "subtotal": 53.94,
+                "sales_tax": 4.65,
+                "total_price": 58.59,
+                "points_earned": 161,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 01:04:02",
+                "order_items": [
+                    {
+                        "name": "Kroger\u00ae Breaded Mozzarella Cheese Sticks",
+                        "price": 3.19,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111014271",
+                        "quantity": 2
+                    }
+                ],
+                "subtotal": 6.38,
+                "sales_tax": 0.55,
+                "total_price": 6.93,
+                "points_earned": 19,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 01:08:16",
+                "order_items": [
+                    {
+                        "name": "Jarritos\u00ae Mandarin Soda Bottles",
+                        "price": 4.19,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0009047821413",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Sprite Mexico Lemon Lime Soda Pop Soft Drink",
+                        "price": 2.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0004900004782",
+                        "quantity": 2
+                    },
+                    {
+                        "name": "Olipop\u00ae Watermelon Lime Soda Can",
+                        "price": 2.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0085002770236",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 11.26,
+                "sales_tax": 0.97,
+                "total_price": 12.23,
+                "points_earned": 33,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 01:15:06",
+                "order_items": [
+                    {
+                        "name": "Beyond Meat Beyond Meatballs\u00ae Italian Style Plant-Based Meatballs",
+                        "price": 15.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/left/0085000420798",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Simple Truth\u00ae All Natural Boneless Skinless Fresh Chicken Breast Tenders",
+                        "price": 6.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0024058150000",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "PERDUE\u00ae Fresh Boneless Skinless Chicken Breast Tenderloins",
+                        "price": 5.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0025093600000",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 28.97,
+                "sales_tax": 2.5,
+                "total_price": 31.47,
+                "points_earned": 86,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 13:03:53",
+                "order_items": [
+                    {
+                        "name": "Goya\u00ae Hawaiian Tostones",
+                        "price": 7.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0004133109392",
+                        "quantity": 2
+                    },
+                    {
+                        "name": "Red Seedless Grapes",
+                        "price": 2.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0000000004023",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 18.47,
+                "sales_tax": 1.59,
+                "total_price": 20.06,
+                "points_earned": 55,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 13:15:57",
+                "order_items": [
+                    {
+                        "name": "Green White Seedless Grapes",
+                        "price": 2.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0000000004022",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 2.49,
+                "sales_tax": 0.21,
+                "total_price": 2.7,
+                "points_earned": 7,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 13:20:21",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 7.29,
+                "sales_tax": 0.63,
+                "total_price": 7.92,
+                "points_earned": 21,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-26 13:27:27",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Sourdough Bread Wide Pan",
+                        "price": 3.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0001111008504",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Nature's Own 100% Whole Wheat Bread",
+                        "price": 4.59,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0007225003712",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 8.08,
+                "sales_tax": 0.7,
+                "total_price": 8.78,
+                "points_earned": 24,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            }
+        ],
+        "points_earned": 180,
+        "loyalty_points": 607,
+        "rewards_history": [
+            {
+                "date": "2024-10-15",
+                "description": "Redeemed 10% off coupon",
+                "points_used": 100
+            },
+            {
+                "date": "2024-09-30",
+                "description": "Free delivery voucher",
+                "points_used": 50
+            }
+        ]
     },
     "elijah": {
         "password": "elijah",
@@ -21,7 +487,9 @@
         "email": "elijah.wood@example.com",
         "phone": "555-0103",
         "address": "789 Pine St, Springfield, USA",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "gayathri": {
         "password": "gayathri",
@@ -29,7 +497,9 @@
         "email": "gayathri@gmail.com",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "alex": {
         "password": "alex",
@@ -37,7 +507,9 @@
         "email": "alex@gmail.com",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "scottyj": {
         "password": "scottyj",
@@ -45,7 +517,9 @@
         "email": "",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "eric": {
         "password": "eric",
@@ -53,7 +527,9 @@
         "email": "",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "kevin1": {
         "password": "Kg10316121!",
@@ -61,7 +537,9 @@
         "email": "",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "kgawrinauth1@pride.hofstra.edu": {
         "password": null,
@@ -69,7 +547,9 @@
         "email": "kgawrinauth1@pride.hofstra.edu",
         "phone": "",
         "address": "",
-        "order_history": []
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
     },
     "kevingawrinauth@yahoo.com": {
         "password": null,
@@ -88,31 +568,9 @@
                         "quantity": 2
                     }
                 ],
-                "total_price": 10.0,
-                "shipping_details": {
-                    "name": "k",
-                    "address": "k",
-                    "city": "k",
-                    "zip": "k"
-                }
-            },
-            {
-                "date": "2024-11-22 14:18:11",
-                "order_items": [
-                    {
-                        "name": "Fresh Blueberries",
-                        "price": 4.99,
-                        "image": "https://www.kroger.com/product/images/xlarge/front/0003338322101",
-                        "quantity": 3
-                    },
-                    {
-                        "name": "Kroger\u00ae Deluxe Rocky Road Ice Cream Tub",
-                        "price": 2.99,
-                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111050725",
-                        "quantity": 1
-                    }
-                ],
-                "total_price": 17.96,
+                "subtotal": 10.0,
+                "sales_tax": 0.86,
+                "total_price": 10.86,
                 "shipping_details": {
                     "name": "k",
                     "address": "k",
@@ -120,6 +578,47 @@
                     "zip": "k"
                 }
             }
-        ]
+        ],
+        "loyalty_points": 30,
+        "rewards_history": []
+    },
+    "Kavita": {
+        "password": "GreenGren123!",
+        "order_history": [],
+        "loyalty_points": 0,
+        "rewards_history": []
+    },
+    "kaviraj": {
+        "password": "Kaviraj123!",
+        "order_history": [
+            {
+                "date": "2024-11-25 21:27:23",
+                "order_items": [
+                    {
+                        "name": "Green White Seedless Grapes",
+                        "price": 2.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0000000004022",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Fresh Blueberries",
+                        "price": 4.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0003338322101",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 7.48,
+                "sales_tax": 0.65,
+                "total_price": 8.13,
+                "points_earned": 22,
+                "shipping_details": {
+                    "name": "kaviraj",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            }
+        ],
+        "loyalty_points": 22
     }
 }
