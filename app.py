@@ -770,6 +770,13 @@ def view_cart():
 
         # Calculate the total amount in the guest cart
         total_amount = sum(item['price'] * item['quantity'] for item in cart)
+        
+    return render_template(
+        'cart.html',
+        cart=cart,
+        total_amount=total_amount,
+        saved_items=saved_items
+    )
 
 @app.context_processor
 def inject_cart_count():
