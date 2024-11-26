@@ -32,6 +32,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand img {
@@ -46,6 +47,8 @@
             display: flex;
             align-items: center;
             width: 50%;
+            margin-left: 20px;
+            margin-right: 20px;
         }
 
         .search-bar input {
@@ -56,7 +59,7 @@
         }
 
         .btn-search {
-            padding: 10px 20px;
+            padding: 10px;
             font-size: 1rem;
             display: flex;
             align-items: center;
@@ -67,7 +70,7 @@
         }
 
         .content {
-            padding-top: 80px;
+            padding-top: 90px;
         }
 
         .accessibility-btn {
@@ -84,31 +87,43 @@
         }
 
         .accessibility-btn img {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
         }
 
         .username {
             margin-right: 20px;
             font-weight: bold;
         }
+
         .small-dropdown {
             width: 150px;
         }
+
         .location-dropdown {
-            position: absolute; /* Allows precise positioning */
-            top: 28px; /* Adjust this to align vertically */
-            left: 1200px; /* Adjust this based on the position of the search bar */
-            width: 175px; /* Set the width to fit within available space */
-            z-index: 1000; /* Ensures it stays above other elements */
-        }
-        
-        .form-select-sm {
-            font-size: 12px; /* Adjusts text size */
-            padding: 4px; /* Reduces padding for a smaller dropdown */
+            position: fixed; /* Fixes the element to the viewport */
+            top: 20px; /* Distance from the top of the viewport */
+            left: 1000px; /* Distance from the right of the viewport */
+            z-index: 500px; /* Ensures it appears above other elements */
+            width: 200px;
+            background-color: #fff; /* Optional: Adds a background color */
+            padding: 10px; /* Optional: Adds some padding for better appearance */
+            border-radius: 5px; /* Optional: Rounds the corners */
+          
         }
     
-        
+        .form-select-sm {
+            font-size: 12px; /* Adjust font size for smaller screens */
+            padding: 4px; /* Maintain appropriate padding */
+        }
+    
+        @media (max-width: 768px) {
+            .location-dropdown {
+                position: fixed; /* Fixes the element to the viewport */
+                top: 10px; /* Adjust position for smaller screens */
+                right: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -191,7 +206,6 @@
         </button>
          <!-- Dropdown Menu -->
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
-            <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
             <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
             <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
             <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
