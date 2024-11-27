@@ -1058,42 +1058,6 @@ def api_order_history():
     
     return jsonify(order_history)
 
-
-def send_order_confirmation_email(recipient_email, name, address, city, zip_code):
-    # Set up SendGrid API URL and headers
-    url = "https://api.sendgrid.com/v3/mail/send"
-    headers = {
-        "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}"
-,  # Replace with your SendGrid API Key
-        "Content-Type": "application/json"
-    }
-    
-    # Email data, including the template ID and recipient information
-    data =data = {
-    "personalizations": [
-        {
-            "to": [{"email": recipient_email}],
-            "dynamic_template_data": {
-                "customer_name": name,
-                "address": address,
-                "city": city,
-                "zip_code": zip_code,
-            }
-        }
-    ],
-    "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
-    "template_id": "d-54cbef9f0d5a46c3a5c99a01efb9c0de",
-    "subject": "Order Confirmation"
-}
-    # Send the request
-    response = requests.post(url, headers=headers, json=data)
-    
-    # Check the response
-    if response.status_code == 202:
-        print("Order confirmation email sent successfully!")
-    else:
-        print("Failed to send email. Status Code:", response.status_code)
-        print("Response:", response.json())
         
 @app.route('/process_checkout', methods=['POST'])
 def process_checkout():
