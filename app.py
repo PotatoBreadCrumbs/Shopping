@@ -42,7 +42,7 @@ Session(app)
 
 from dotenv import load_dotenv
 
-load_dotenv()
+'''load_dotenv()
 def send_postmark_forgot_password(to_email, reset_url):
 
     api_key = os.getenv("POSTMARK_API_KEY")
@@ -103,7 +103,7 @@ def send_postmark_order_confirmation(to_email, name, order_details):
         else:
             print(f"Failed to send email: {response.text}")
     except Exception as e:
-        print(f"Error sending email: {e}") 
+        print(f"Error sending email: {e}") '''
 
 #good from here onwards, testing sg above now
 @app.route('/reset-password', methods=['GET', 'POST'])
