@@ -40,6 +40,70 @@ Session(app)
 
 # Add other app routes and functionalities below this line
 
+from dotenv import load_dotenv
+
+load_dotenv()
+def send_postmark_forgot_password(to_email, reset_url):
+
+    api_key = os.getenv("POSTMARK_API_KEY")
+    headers = {
+        "X-Postmark-Server-Token": api_key,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "From": "kgawrinauth1@pride.hofstra.edu",  # Replace with your Postmark verified sender
+        "To": to_email,
+        "TemplateId": 38145706,  # Replace with your Postmark Template ID for forgot password
+        "TemplateModel": {
+            "reset_url": reset_url,  # Dynamic variable in your Postmark template
+            "support_email": "support@example.com",  # Example additional variable
+            "product_name": "GreenGrocer App"  # Example additional variable
+        }
+    }
+    try:
+        response = requests.post(
+            "https://api.postmarkapp.com/email/withTemplate", headers=headers, json=data
+        )
+        if response.status_code == 200:
+            print("Password reset email sent successfully.")
+        else:
+            print(f"Failed to send email: {response.text}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+def send_postmark_order_confirmation(to_email, name, order_details):
+    
+
+    api_key = os.getenv("POSTMARK_API_KEY")
+    headers = {
+        "X-Postmark-Server-Token": api_key,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "From": "kgawrinauth1@pride.hofstra.edu",  # Replace with your Postmark verified sender
+        "To": to_email,
+        "TemplateId": 38149527,  # Replace with your Postmark Template ID for order confirmation
+        "TemplateModel": {
+            "customer_name": name,  # Dynamic variable for customer name
+            "order_details": "".join(
+                f"<li>{item['quantity']}x {item['name']} at ${item['price']} each</li>"
+                for item in order_details
+            ),
+            "total_price": sum(item['price'] * item['quantity'] for item in order_details),
+            "company_name": "GreenGrocer Team",
+            "support_email": "support@example.com"  # Example additional variable
+        }
+    }
+    try:
+        response = requests.post(
+            "https://api.postmarkapp.com/email/withTemplate", headers=headers, json=data
+        )
+        if response.status_code == 200:
+            print("Order confirmation email sent successfully.")
+        else:
+            print(f"Failed to send email: {response.text}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 #good from here onwards, testing sg above now
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password_page():
@@ -439,8 +503,16 @@ def reset_password():
         for username, user_data in users.items():
             if user_data.get('email') == email:
                 user_found = True
-                send_direct_email(email)
-                flash('Password reset instructions have been sent to your email.', 'info')
+
+                reset_url = f"http://127.0.0.1/reset-password?email={email}"
+
+                try:
+                    send_postmark_forgot_password(email, reset_url)
+                    flash('Password reset instructions have been sent to your email.', 'info')
+                except Exception as e:
+                    print(f"Error sending email: {str(e)}")
+                    flash('An error occurred while sending the email. Please try again later.', 'danger')
+
                 break
 
         if not user_found:
@@ -450,8 +522,8 @@ def reset_password():
         return redirect(url_for('login'))
 
     # Render the forgot password page for GET requests
-    return render_template('forgot_password.html')
-
+    return render_template('forgot_password.html') 
+    
 @app.route('/')
 def home():
     selected_location = read_selected_location()  # Get the selected location from locations.json
@@ -1061,7 +1133,7 @@ def api_order_history():
         
 @app.route('/process_checkout', methods=['POST'])
 def process_checkout():
-    from datetime import datetime  # Ensure datetime is imported
+    from datetime import datetime
 
     # Retrieve form data
     name = request.form.get('name')
@@ -1070,7 +1142,6 @@ def process_checkout():
     zip_code = request.form.get('zip')
     to_email = request.form.get('email')  # Get the email entered in the form
 
-    # Debugging: Print the submitted email
     print(f"Email submitted: {to_email}")
 
     # Validate required fields
@@ -1083,7 +1154,7 @@ def process_checkout():
             'email': to_email
         }.items() if not value]
         flash(f"Missing required fields: {', '.join(missing_fields)}", "danger")
-        return redirect(url_for('checkout'))  # Redirect back to the checkout page
+        return redirect(url_for('checkout'))
 
     user_id = session.get("user_id")
 
@@ -1094,7 +1165,7 @@ def process_checkout():
     # Check if cart is empty
     if not cart_items:
         flash("Your cart is empty. Please add items before checking out.", "warning")
-        return redirect(url_for('home'))  # Redirect to home if no items in the cart
+        return redirect(url_for('home'))
 
     # Calculate subtotal, sales tax, total price, and points earned
     try:
@@ -1103,12 +1174,11 @@ def process_checkout():
         flash("Error calculating cart totals. Please review your cart and try again.", "danger")
         return redirect(url_for('checkout'))
 
-    sales_tax_rate = 0.08625  # Example tax rate
+    sales_tax_rate = 0.08625
     sales_tax = round(subtotal * sales_tax_rate, 2)
     total_price = round(subtotal + sales_tax, 2)
-    points_earned = int(subtotal * 3)  # Example: 3 points per dollar spent
+    points_earned = int(subtotal * 3)
 
-    # Debugging: Print calculated values
     print(f"Subtotal: {subtotal}, Sales Tax: {sales_tax}, Total Price: {total_price}, Points Earned: {points_earned}")
 
     # Prepare the order object
@@ -1131,13 +1201,13 @@ def process_checkout():
     users = load_user_storage()
     if user_id in users:
         user_data = users[user_id]
-        user_data.setdefault("order_history", []).append(order)  # Add to order history
-        user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned  # Update loyalty points
-        write_users(users)  # Save back to user_storage.json
+        user_data.setdefault("order_history", []).append(order)
+        user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned
+        write_users(users)
 
     # Clear the cart in cart.json
-    cart_data['cart_items'] = []  # Empty the user's cart
-    write_cart(user_id, cart_data)  # Save changes back to the file
+    cart_data['cart_items'] = []
+    write_cart(user_id, cart_data)
 
     # Clear session cart count
     session['cart_count'] = 0
@@ -1146,15 +1216,12 @@ def process_checkout():
     # Send confirmation email
     if to_email:
         try:
-            print(f"send_order_confirmation_email called with: {to_email}, {name}, {address}, {city}, {zip_code}, {order}")
-            send_order_confirmation_email(to_email, name, address, city, zip_code, order)  # Pass the order object
+            send_postmark_order_confirmation(to_email, name, cart_items)
+            flash("Thank you for your order! A confirmation email has been sent.", "success")
         except Exception as e:
             flash(f"Order placed successfully, but there was an issue sending the email: {e}", "warning")
-            return redirect(url_for('home'))
 
-    flash("Thank you for your order! A confirmation email has been sent.", "success")
     return redirect(url_for('home'))
-
 def read_selected_location():
     if not os.path.exists('locations.json'):
         return None
