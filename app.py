@@ -40,7 +40,7 @@ Session(app)
 
 # Add other app routes and functionalities below this line
 
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 '''load_dotenv()
 def send_postmark_forgot_password(to_email, reset_url):
