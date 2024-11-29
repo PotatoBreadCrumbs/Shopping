@@ -9,8 +9,8 @@
 
     <!-- Bootstrap CSS (version 5.3.0-alpha1) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome (version 5.15.4) -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+        <!-- Font Awesome (version 5.15.4) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -83,12 +83,14 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            margin-left: 20px;
+            margin-left: 15px;
+            background-color: transparent !important; /* Explicitly remove background */
+            margin-right: 15px;
         }
 
         .accessibility-btn img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
         }
 
         .username {
@@ -175,6 +177,10 @@
         </select>
     </div>
     
+    <script src="https://kk-designs.github.io/dark-mode/dark-mode.js"></script>
+
+<!--ENABLE DARK MODE-->
+<script src="../static/js/darkmode.js"></script>
 
 <script>
     function changeLocation() {
@@ -207,7 +213,7 @@
          <!-- Dropdown Menu -->
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
             <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
             <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
             <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
             <li>
@@ -226,9 +232,9 @@
         margin-right: -20px;
     }
 </style>
-
-            <div class="accessibility-btn">
-                <img src="/static/img/AccessabilityButton.png" alt="Accessibility Icon">
+            
+            <div class="accessibility-btn" onclick="changeToDarkMode()">
+                <img src="/static/img/Accessability.svg" alt="Accessibility Icon">
             </div>
         </div>
     </nav>
@@ -357,6 +363,13 @@ const productMapping = {
             }
 
             lastScrollPosition = currentScrollPosition;
+
+            document.addEventListener('DOMContentLoaded', () => {
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'enabled') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            });
         });
     </script>
 
