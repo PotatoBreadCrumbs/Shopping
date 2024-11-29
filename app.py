@@ -344,37 +344,26 @@ def settings():
     user_data = users.get(current_user.id, {})
     return render_template('settings.html', user_data=user_data)
 
-@app.route('/login', methods=['GET', 'POST'], endpoint='login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()  # Use LoginForm for the login form
+    form = LoginForm()  # implementing the login form to be displaed
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-
-        # Load users from JSON file
-        users = read_users()
-        if not users:
-            print("Error: No users loaded from user_storage.json.")
-            return "User data not loaded. Check user_storage.json.", 500
-
-        # Check user credentials
+        users = read_users()  # allow us to read the users from the file saved from mysql lite
         if username in users and users[username]['password'] == password:
-            user = User(username)  # Create a user object
-            login_user(user)  # Log in the user
-
-            # Load the user's cart and calculate the cart count
+            user = User(username)
+            login_user(user)
             cart_data = read_cart(username)
             session['user_id'] = username  # Store user ID in session
             session['cart_count'] = sum(item.get('quantity', 1) for item in cart_data['cart_items'])  # Calculate total quantity
-            session.modified = True  # Ensure session is saved
-
-            flash('Login successful!', 'success')
-            return redirect(url_for('home'))  # Redirect to home or desired page
+            session.modified = True 
+            return jsonify({"message": "Right", "redirect_url": url_for('home')})
+        
+            #return redirect(url_for('home'))  # redirect to home after login
         else:
-            flash('Invalid username or password', 'danger')
-
+           return jsonify({"message": "Wrong"})
     return render_template('login.html', form=form)
-
 @app.route('/save_for_later/<int:index>', methods=['POST'])
 @login_required
 def save_for_later(index):
@@ -522,16 +511,54 @@ def register():
         new_username = form.username.data
         new_password = form.password.data
         users = read_users()  # reads users from the file saved in db 
-        
-        if new_username in users:
-            flash('Username already exists, please choose another.')
+        if (len(new_username) < 5 or len(new_username) > 20):
+            flash(message=Markup("Username must be at least 5 characters."))
+        if new_username in users: 
+            flash(message = Markup("Username already exists, please choose another."))
         else:
             users[new_username] = {'password': new_password}
             write_users(users)  # saves new user to the file
-            flash('User registered successfully! Please log in.')
+            flash('User registered successfully! Please log in.',category="success")
             return redirect(url_for('login'))
     
     return render_template('register.html', form=form)
+
+@app.route('/validate', methods=['POST'])
+def validate():
+    # Access form data from JavaScript
+    username = request.form.get('username')
+    password = request.form.get('password')
+    users = read_users()
+    # Perform validation (this is a basic example)
+    if len(password) < 8:
+        return jsonify({"message": "Password must be at least 8 characters long."})
+    if not any(char.isupper() for char in password):
+        return jsonify({"message": "Password must contain an uppercase letter."})
+    if not any(char.isdigit() for char in password):
+        return jsonify({"message": "Password must contain a number."})
+    if not any(char.islower() for char in password):
+        return jsonify({"message": "Password must contain a lowercase letter."})
+    special_char_pattern = r'[@$!%*?&_-]'
+    
+    # Check if password contains at least one special character
+    if not re.search(special_char_pattern, password):
+        return jsonify({"message": "Password must contain at least one special character (@$!%*?&_-)"})
+    # If all checks pass
+    if username in users:
+        return jsonify({"message": "Already an existing user"})
+    users[username] = {'password': password}
+    write_users(users)  # saves new user to the file
+    return jsonify({"message": "Valid"})
+
+@app.route('/check_username')
+def check_username():
+    username = request.args.get('username')
+    users = read_users()  # Assuming this reads all registered users from your database or file
+    
+    # Check if the username already exists
+    is_taken = username in users
+
+    return jsonify({'is_taken': is_taken})
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def reset_password():
