@@ -1221,7 +1221,10 @@ def process_checkout():
         # Update registered user's order history
         users = load_user_storage()
         user_data = users.get(user_id, {})
-        user_data.setdefault("order_history", []).append(order)
+        user_data.setdefault("order_history", []).append(order) 
+        if 'email' not in user_data or not user_data['email']:
+            user_data['email'] = to_email
+            users[user_id] = user_data
         write_users(users)
         write_cart(user_id, {'cart_items': []})  # Clear cart
     else:
