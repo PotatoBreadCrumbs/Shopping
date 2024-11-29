@@ -10,6 +10,7 @@ import json
 import os
 from flask_session import Session  # Added for server-side session storage
 import redis  # Added for Redis support
+import re
 
 # First we are going to initialize the Flask app
 app = Flask(__name__)
