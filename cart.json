@@ -1,25 +1,55 @@
 {
     "kevin": {
-        "cart_items": [],
-        "saved_items": []
-    },
-    "danny": {
-        "cart_items": [],
-        "saved_items": []
-    },
-    "kgawrinauth1@pride.hofstra.edu": {
         "cart_items": [
             {
-                "name": "Zucchini",
-                "price": 1.69,
-                "image": "https://www.kroger.com/product/images/xlarge/front/0000000004067",
+                "name": "PERDUE\u00ae Fresh Boneless Skinless Chicken Breasts Value Pack",
+                "price": 4.49,
+                "image": "https://www.kroger.com/product/images/xlarge/front/0027061550000",
                 "quantity": 2
             }
         ],
         "saved_items": []
     },
+    "danny": {
+        "cart_items": [
+            {
+                "name": "PERDUE\u00ae Fresh Boneless Skinless Chicken Breasts Value Pack",
+                "price": 4.49,
+                "image": "https://www.kroger.com/product/images/xlarge/front/0027061550000",
+                "quantity": 1
+            }
+        ],
+        "saved_items": []
+    },
+    "kgawrinauth1@pride.hofstra.edu": {
+        "cart_items": [],
+        "saved_items": []
+    },
     "kevingawrinauth@yahoo.com": {
         "cart_items": [],
         "saved_items": []
+    },
+    "Kavita": {
+        "cart_items": [],
+        "saved_items": []
+    },
+    "kaviraj": {
+        "cart_items": [],
+        "saved_items": []
+    },
+    "alex": {
+        "cart_items": [],
+        "saved_items": []
+    },
+    "potatomaster": {
+        "cart_items": [],
+        "saved_items": [
+            {
+                "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                "price": 7.29,
+                "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                "quantity": 1
+            }
+        ]
     }
 }
