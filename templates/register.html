@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - FreshFoods190</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!--<script src="../static/js/login_signup.js"></script>-->
+    <link href="../static/js/notification.css" rel="stylesheet"/>
+    <script src="../static/js/notification.js"></script>
     <style>
+
        body {
             margin: 0;
             padding: 0;
@@ -18,6 +25,7 @@
             height: 100vh;
             font-family: Arial, sans-serif;
             background: linear-gradient(45deg, #007f0e 50%, #d38e1b 50%);
+
         }
 
         .register-container {
@@ -28,18 +36,22 @@
             max-width: 400px;
             width: 100%;
             display: flexbox;
+            transform: translateY(20px); /* Start slightly below */
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            animation: 1s ease-out 20s 1 slideInFromLeft;
         }
 
         .register-container h1 {
             text-align: center;
             margin-bottom: 30px;
             color: green;
+
         }
 
         .form-control {
             margin-bottom: 20px;
         }
-
+        
         .btn-register {
             background-color: #00A600;
             color: white;
@@ -62,7 +74,7 @@
             margin-top: 15px;
         }
 
-        .checklist{
+        .checklist .box{
             color: #000;
             list-style: none;
             display: inline-block;
@@ -307,10 +319,185 @@
         }
 
 
-    </style>
+        .login-btn {
+            justify-content: center;
+            flex-direction: row;
+            display: flex;
+            background-color: rgb(255, 255, 255);
+            justify-content: center;
+            align-items: center;
+            width: 220px;
+            padding: 10px;
+            box-shadow: 3px 3px 3px rgb(170, 170, 170);
+            border-radius: 15px;
+        }
+        .btn-text {
+            justify-content: center;
+            padding: 10px;
+            font-family: 'Poppins', sans-serif;
+            color: rgb(85, 85, 85);
+        }
+
+        .gsi-material-button {
+            
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-appearance: none;
+  background-color: WHITE;
+  background-image: none;
+  border: 1px solid #747775;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #1f1f1f;
+  cursor: pointer;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 16px;
+  height: 50px;
+  letter-spacing: 0.25px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 12px;
+  position: relative;
+  text-align: center;
+  -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
+  transition: background-color .218s, border-color .218s, box-shadow .218s;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: auto;
+  max-width: 400px;
+  min-width: min-content;
+  text-align: center;
+}
+
+.gsi-material-button .gsi-material-button-icon {
+  height: 20px;
+  margin-right: 12px;
+  min-width: 20px;
+  width: 20px;
+}
+
+.gsi-material-button .gsi-material-button-content-wrapper {
+  -webkit-align-items: center;
+  align-items: center;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  height: 100%;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.gsi-material-button .gsi-material-button-contents {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
+.gsi-material-button .gsi-material-button-state {
+  -webkit-transition: opacity .218s;
+  transition: opacity .218s;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.gsi-material-button:disabled {
+  cursor: default;
+  background-color: #ffffff61;
+  border-color: #1f1f1f1f;
+}
+
+.gsi-material-button:disabled .gsi-material-button-contents {
+  opacity: 38%;
+}
+
+.gsi-material-button:disabled .gsi-material-button-icon {
+  opacity: 38%;
+}
+
+.gsi-material-button:not(:disabled):active .gsi-material-button-state, 
+.gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 12%;
+}
+
+.gsi-material-button:not(:disabled):hover {
+  -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15);
+}
+
+.gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 8%;
+}
+
+.un{
+    margin: -20px  0px 20px 27px;
+}
+
+
+.fade-in-fwd {
+	-webkit-animation: fade-in-fwd 1.5s cubic-bezier(0.390, 0.575, 0.565, 1.000) ;
+	        animation: fade-in-fwd 1.5s cubic-bezier(0.390, 0.575, 0.565, 1.000) ;
+}
+
+
+/* ----------------------------------------------
+ * Generated by Animista on 2024-11-28 12:46:38
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation fade-in-fwd
+ * ----------------------------------------
+ */
+ @-webkit-keyframes fade-in-fwd {
+  0% {
+    -webkit-transform: translateZ(-80px);
+            transform: translateZ(-80px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+    opacity: 1;
+  }
+}
+@keyframes fade-in-fwd {
+  0% {
+    -webkit-transform: translateZ(-80px);
+            transform: translateZ(-80px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+    opacity: 1;
+  }
+}
+
+
+
+</style>
 </head>
 <body>
-    <main id="gg-sign-in" class="login-container">
+    <main id="gg-sign-in" class="login-container slideInRight animated">
         <div class="gg-sign-in-header auth-header">
             <h1>
                 <img class="auth-org-logo" src="/static/img/GreenGrocer-removebg-preview.png" alt="" style="display: block; margin-left: auto; margin-right: auto; width: 100%;">
@@ -319,7 +506,7 @@
         </div>
         <div class="login-form">
         <h1>Sign Up</h1>
-        <form method="POST" action="{{ url_for('register') }}" class = registrationForm autocomplete="off">
+        <form method="POST" action="{{ url_for('register') }}" id = registrationForm autocomplete="off">
             {{ form.hidden_tag() }}
     
             <div class="form-group">
@@ -327,7 +514,7 @@
                 <strong style="margin: -10px;">Username</strong>
                 <div class="row">
                     <img src="/static/img/user.svg" alt="" class="user-pass">
-                    {{ form.username(class="form-control", id="username", placeholder="Username", oninput="checkUsernameAvailability()") }}
+                    {{ form.username(class="form-control", id="username", placeholder="Username", onload="checkUsernameAvailability()") }}
                 </div>
                 <div class="un">
                     <small id="usernameFeedback" class="form-text" ></small> 
@@ -340,7 +527,7 @@
                 <strong style="margin: -10px;"> Password </strong>
                 <div class="row">
                     <img src="/static/img/lock.svg" alt="" class="user-pass">
-                    {{ form.password(class="form-control", placeholder="Password", id="password", oninput="toggleChecklist()") }}
+                    {{ form.password(class="form-control", placeholder="Password", id="password", oninput="toggleChecklist()", autocomplete="new-password" ) }}
                     <img src="/static/img/show1.svg" alt="" class="show">
                     
                 </div>
@@ -349,7 +536,7 @@
                 <!-- Checklist positioned below password field -->
 
                     
-                <ul id="passwordChecklist" class="checklist box" hidden>
+                <ul id="passwordChecklist" class="checklist box fade-in-fwd" hidden>
                     <li style="list-style: none;"><strong>Your password must contain:</strong>
                     </li>
                     <li id="length" class="cl-error">
@@ -369,20 +556,19 @@
                     </li>
                 </ul>
     
-            <button type="submit" class="btn btn-register">Sign Up</button>
+            <button type="submit" class="btn btn-register"">Sign Up</button>
         </form>
     
         <div class="text-center login-link">
             Already have an account? <a class="log-in-link" href="{{ url_for('login') }}">Log in</a>
         </div>
-
-        <div class="c6e697ea4 ce3b90bf7">
-            <span>Or</span>
-        </div>
-    </div>
-</div>
 </main>
-<script>
+</div>
+
+
+
+
+<script defer>
     // Get the elements
 const password = document.getElementById('password');
 const passwordMatchMessage = document.getElementById('passwordMatch');
@@ -476,7 +662,7 @@ function checkPasswordCriteria() {
     }
 
     // Check if there is at least one special character
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwdValue)) {
+    if (/[!@#$%^&*(),.?":_{}|<>-]/.test(pwdValue)) {
         mark5.src = checkmark;
         cl5.classList.add('cl-success');
         cl5.classList.remove('cl-error');
@@ -490,21 +676,59 @@ function checkPasswordCriteria() {
 async function validateForm() {
     const formData = new FormData(document.getElementById('registrationForm'));
 
-    // Send data to Python backend
-    const response = await fetch('/validate', {
-        method: 'POST',
-        body: formData
-    });
-    
-    // Process response from Python
-    const result = await response.json();
+    try {
+        // Send data to the backend
+        const response = await fetch('/validate', {
+            method: 'POST',
+            body: formData,
+        });
 
-    // Display validation message from backend
-    document.getElementById('responseMessage').textContent = result.message;
+        if (!response.ok) {
+            console.error("Server returned an error:", response.status, response.statusText);
+            throw new Error("Network response was not ok.");
+        }
 
-    // Display validation message from backend
-    document.getElementById('responseMessage').textContent = "Password needs to be stronger";
+        const result = await response.json();
+
+        console.log("Backend response:", result);
+
+        const responseMessage = document.getElementById('responseMessage');
+
+        if (result.message !== "Valid") {
+            console.log(result.message);
+
+            const popup = Notification({
+                position: 'center',
+                duration: 4000,
+                isHidePrev: false,
+                isHideTitle: false,
+                maxOpened: 3,
+            });
+
+            popup.setProperty({
+                duration: 5000,
+                isHidePrev: true,
+            
+            });
+
+            popup.error({
+                title: `<div class="title-cust title-error">Error</div>`,
+                message: `<div class="wrapper-notification">
+                    <div class="icons icon-error"></div>
+                    <div class="message message-text-error">Your username or password does not meet the required criteria. Please review and try again.</div></div>`,
+            });
+        } else {
+            // Redirect to login page on success
+            sessionStorage.setItem("First","true");
+            window.location.href = "/login";
+        }
+    } catch (error) {
+        console.error("An error occurred during validation:", error);
+        alert("An unexpected error occurred. Please try again later.");
+    }
 }
+
+
 
 function toggleChecklist() {
         const pcl = document.getElementById('passwordChecklist');
@@ -519,7 +743,6 @@ function toggleChecklist() {
          * Force a browser re-paint so the browser will realize the
          * element is no longer `hidden` and allow transitions.
          */
-        const reflow = element.offsetHeight;
 
         // Trigger our CSS transition
         
@@ -539,33 +762,49 @@ function toggleChecklist() {
 
 // Function to check username availability
 function checkUsernameAvailability(username) {
-        fetch(`/check_username?username=${username}`)
-            .then(response => response.json())
-            .then(data => {
-                const feedbackElement = document.getElementById('usernameFeedback');
-                
-                // If the username is taken, display an error message
-                if (data.is_taken) {
-                    feedbackElement.textContent = 'Username is already taken';
-                    feedbackElement.style.color = 'red';
-                } else {
-                    // If the username is available, display success
-                    feedbackElement.textContent = 'Username is available';
-                    feedbackElement.style.color = 'green';
-                }
-            })
-            .catch(error => {
-                console.error('Error checking username:', error);
-            });
+    fetch(`/check_username?username=${encodeURIComponent(username)}`)
+    .then(response => response.json())
+    .then(data => {
+        const feedbackElement = document.getElementById('usernameFeedback');
+        if (username.length < 5 || username.length > 20) {
+            feedbackElement.textContent = 'Username must be between 5-20 characters';
+            feedbackElement.style.color = 'red';
+        } else if (data.is_taken === true) {  // Explicitly check for `true`
+            feedbackElement.textContent = 'Username is already taken';
+            feedbackElement.style.color = 'red';
+        } else if (data.is_taken === false) {  // Explicitly check for `false`
+            feedbackElement.textContent = 'Username is available';
+            feedbackElement.style.color = 'green';
+        } else {
+            feedbackElement.textContent = 'Unexpected response from server';
+            feedbackElement.style.color = 'orange';
+        }
+    })
+    .catch(error => {
+        console.error('Error checking username:', error);
+        const feedbackElement = document.getElementById('usernameFeedback');
+        feedbackElement.textContent = 'Error communicating with server';
+        feedbackElement.style.color = 'red';
+    });
+
     }
 // Add event listeners
 password.addEventListener('input', checkPasswordCriteria);
 password.addEventListener('blur', toggleChecklist); // Hide if empty on blur
-document.getElementById("registrationForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevents the default form submission
-    
-    validateForm(); // Calls the validation function
+document.addEventListener("DOMContentLoaded", function () {
+    const registrationForm = document.getElementById("registrationForm");
+
+    if (registrationForm) {
+        registrationForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            validateForm(); // Call the validation function
+        });
+    } else {
+        console.error("The registration form was not found in the DOM.");
+    }
 });
+
+
 
 </script>
 

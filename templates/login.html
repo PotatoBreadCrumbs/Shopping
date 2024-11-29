@@ -10,9 +10,77 @@
     <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!--<script src="../static/js/login_signup.js"></script>-->
+    <link href="../static/js/notification.css" rel="stylesheet"/>
+    <script src="../static/js/notification.js"></script>
     <title>GreenGrocer Login</title>
     <style>
-        body {
+        /*base code*/
+.animated {
+  -webkit-animation-duration: .3s;
+  animation-duration: .3s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.animated.infinite {
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+/*the animation definition
+@-webkit-keyframes slideInLeft {
+  0% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+  }
+}
+@keyframes slideInLeft {
+  0% {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    -ms-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0)
+  }
+}
+.slideInLeft {
+  -webkit-animation-name: slideInLeft;
+  animation-name: slideInLeft
+}*/
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0
+  }
+  100% {
+    opacity: 1
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0
+  }
+  100% {
+    opacity: 1
+  }
+}
+.fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn
+}
+        body { 
             margin: 0;
             padding: 0;
             display: flex;
@@ -39,6 +107,16 @@
             right: 0;
             transform: scale(0);
             width: 85px;
+            transform: translateY(20px); /* Initial position for subtle vertical adjustment */
+            opacity: 0; /* Initially hidden */
+        }
+
+        .page-enter {
+            animation: slideInFromLeft 0.8s ease-out forwards;
+        }
+
+        .page-exit {
+            animation: slideOutToRight 0.8s ease-in forwards;
         }
 
         .gg-sign-in-header {
@@ -143,10 +221,6 @@
             font-weight: 400;
         }
 
-        #error-box {
-            display: none; /* Hide by default */
-        }
-
         .btn-login:hover {
 
             background-color: #009500;
@@ -242,56 +316,6 @@
             color: #595C5F;
         }
 
-        .o-form-error-container{
-            background: transparent;
-            border: 0;
-            font-size: 100%;
-            font: inherit;
-            margin: 0;
-            outline: 0;
-            padding: 0;
-            vertical-align: baseline;
-        }
-
-        .infobox-error {
-            display: block !important;
-            margin-bottom: 50px;
-        }
-
-        .infobox{
-            background-color: #fbfbfb;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-
-        .infobox-error::before {
-            background-color: #e34843;
-        }
-
-        .infobox {
-            -webkit-hyphens: none;
-            hyphens: none;
-            min-height: 18px;
-            padding: 12px 18px 12px 48px !important;
-            position: relative;
-            word-break: break-word;
-        }
-        
-
-        .infobox::before {
-            border-bottom-left-radius: 3px;
-            border-top-left-radius: 3px;
-            bottom: -1px;
-            content: "";
-            left: -1px;
-            position: absolute;
-            top: -1px;
-        }
-
-        .infobox::before {
-            width: 36px;
-        }
-
         #gg-sign-in p{
             background: transparent;
             border: 0;
@@ -323,9 +347,6 @@
             border-radius: 5px; /* Optional: adjust to match input box style */
         }
 
-        .error-box{
-            display: none;
-        }
 
         .gsi-material-button {
             
@@ -474,28 +495,7 @@
         <div class="login-form">
             <h1>Log In</h1>
 
-            {% if get_flashed_messages(category_filter="incorrect pw or un") %}
-                <div id="error-box" class="o-form-error-container o-form-has-errors" toggleDiv()>
-                    <div>
-                        <div class="gg-form-infobox-error infobox infobox-error">
-                            <img src="/static/img/exclamation-circle-fill.svg" alt="error16" class="icon error-16">
-                            <p autocomplete="false">
-                                {% with messages = get_flashed_messages(with_categories=false) %}
-                                    {% if messages %}
-                                        {{ messages[0] }}  <!-- Display the first message only -->
-                                    {% endif %}
-                                {% endwith %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <script>
-                    // Set flag to show the error message after page load
-                    sessionStorage.setItem('errorMessageVisible', 'true');
-                </script>
-            {% endif %}
-
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm">
                 <!-- CSRF token for protection -->
                 {{ form.hidden_tag() }}
             <div class="form-group">
@@ -526,7 +526,7 @@
 
             <!-- heres the login implementatin for the guest -->
             <a class="su-lg-link" href="{{ url_for('guest_login') }}">
-                <button type="button" class="btn-guest">Login as Guest</button>
+                <button type="button" class="btn-guest" onclick="changePage('register-page')">Login as Guest</button>
             </a>
         
 
@@ -561,55 +561,102 @@
             </div>
         </div>
 </main>
-    <script>
+<script>
+    if(sessionStorage.getItem("First") === 'true'){
+        const popup = Notification({
+        position: 'center',
+        duration: 4000,
+        isHidePrev: false,
+        isHideTitle: false,
+        maxOpened: 3,
+        });
 
-function toggleDiv() {
-        const div = document.getElementById('error-box');
-        if (div.style.display === 'none') {
-            div.style.display = 'block';
-            localStorage.setItem('divVisible', 'true');
-        } else {
-            div.style.display = 'none';
-            localStorage.setItem('divVisible', 'false');
-        }
+        popup.setProperty({
+        duration: 5000,
+        isHidePrev: true,
+        });
+
+        popup.success({
+        title: 'Success!',
+        message: "Thank you for signing up! Please log in to continue."
+        });
+        sessionStorage.clear();
     }
+// Check visibility state on page load
 
-    // Check visibility state on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const div = document.getElementById('error-box');
-        const isVisible = localStorage.getItem('divVisible');
+    let eyeIcon = document.getElementsByClassName('show');
+    const password = document.getElementById('password');
+    //Show pw on click
+eyeIcon[0].onclick = function(){
+if(password.type == "password"){
+    password.type = "text"
+    eyeIcon[0].src = "/static/img/hide1.svg"
+}else{
+    password.type = "password";
+    eyeIcon[0].src = "/static/img/show1.svg"
+}
+}
+document.addEventListener("DOMContentLoaded", function () {
+const loginForm = document.getElementById("loginForm");
 
-        if (isVisible === 'false') {
-            div.style.display = 'none';
-        } else {
-            div.style.display = 'block';
+if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData(loginForm); // Collect the form data
+
+        try {
+            // Send the login request to the Flask backend
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: formData,
+            });
+
+            // Ensure the response is valid JSON
+            if (!response.ok) {
+                throw new Error("Server returned an error: " + response.statusText);
+            }
+
+            const result = await response.json();
+
+            console.log("Backend response:", result);
+
+            if (result.message === "Wrong") {
+                // Display the error notification
+                const popup = Notification({
+                    position: 'center',
+                    duration: 4000,
+                    isHidePrev: false,
+                    isHideTitle: false,
+                    maxOpened: 3,
+                });
+
+                popup.setProperty({
+                    duration: 5000,
+                    isHidePrev: true,
+                });
+
+                popup.error({
+                    title: `<div class="title-cust title-error">Error</div>`,
+                    message: `<div class="wrapper-notification">
+                        <div class="icons icon-error"></div>
+                        <div class="message message-text-error">Invalid username or password. Please try again.</div></div>`,
+                });
+            } else if (result.message == "Right"){
+                window.location.href = result.redirect_url;
+            }
+        } catch (error) {
+            console.error("An error occurred during validation:", error);
+
+            // Display a fallback error message
+            alert("An unexpected error occurred. Please try again later.");
         }
     });
-
-
-        let eyeIcon = document.getElementsByClassName('show');
-        const password = document.getElementById('password');
-        //Show pw on click
-    eyeIcon[0].onclick = function(){
-    if(password.type == "password"){
-        password.type = "text"
-        eyeIcon[0].src = "/static/img/hide1.svg"
-    }else{
-        password.type = "password";
-        eyeIcon[0].src = "/static/img/show1.svg"
-    }
 }
+});
 
-    window.onload = function() {
-                const errorBox = document.getElementById('error-box');
-                if (sessionStorage.getItem('errorMessageVisible') === 'true') {
-                    errorBox.style.display = 'block';
-                    sessionStorage.removeItem('errorMessageVisible');
-                    console.log(sessionStorage)
-                }
-            };
 
-    </script>
+</script>
 
 </body>
 </html>
