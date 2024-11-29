@@ -10,7 +10,7 @@
         "rewards_history": []
     },
     "kevin": {
-        "password": "apple",
+        "password": "kevin123",
         "name": "Kevin",
         "email": "maxgusherman@gmail.com",
         "phone": "9174809274",
@@ -464,10 +464,109 @@
                     "city": "1",
                     "zip": "1"
                 }
+            },
+            {
+                "date": "2024-11-27 01:12:22",
+                "order_items": [
+                    {
+                        "name": "Goya\u00ae Hawaiian Tostones",
+                        "price": 7.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0004133109392",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 7.99,
+                "sales_tax": 0.69,
+                "total_price": 8.68,
+                "points_earned": 23,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-27 16:28:41",
+                "order_items": [
+                    {
+                        "name": "Bakery Fresh Crisp & Soft French Bread",
+                        "price": 2.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/left/0004157322506",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 2.49,
+                "sales_tax": 0.21,
+                "total_price": 2.7,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-28 19:50:45",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Goya\u00ae Hawaiian Tostones",
+                        "price": 7.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0004133109392",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 15.280000000000001,
+                "sales_tax": 1.32,
+                "total_price": 16.6,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-28 19:54:26",
+                "order_items": [
+                    {
+                        "name": "Private Selection\u00ae Angus Ground Chuck 80/20",
+                        "price": 7.29,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0001111097139",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Kroger\u00ae Beef Shaved Steak",
+                        "price": 6.0,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0001111034567",
+                        "quantity": 1
+                    },
+                    {
+                        "name": "Beyond Meat Beyond Burger\u00ae Plant-Based Patties",
+                        "price": 10.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0081005729011",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 24.28,
+                "sales_tax": 2.09,
+                "total_price": 26.37,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
             }
         ],
         "points_earned": 180,
-        "loyalty_points": 607,
+        "loyalty_points": 630,
         "rewards_history": [
             {
                 "date": "2024-10-15",
@@ -507,8 +606,48 @@
         "email": "alex@gmail.com",
         "phone": "",
         "address": "",
-        "order_history": [],
-        "loyalty_points": 0,
+        "order_history": [
+            {
+                "date": "2024-11-26 16:36:30",
+                "order_items": [
+                    {
+                        "name": "Jarritos\u00ae Mandarin Soda Bottles",
+                        "price": 4.19,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0009047821413",
+                        "quantity": 7
+                    },
+                    {
+                        "name": "Mountain Dew\u00ae Soda Cans",
+                        "price": 9.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/right/0001200080996",
+                        "quantity": 7
+                    },
+                    {
+                        "name": "Sangria Senorial Non-Alcoholic Soda",
+                        "price": 1.79,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0009047832110",
+                        "quantity": 10
+                    },
+                    {
+                        "name": "IZZE No Sugar Added Strawberry Sparkling Juice Beverage Blend",
+                        "price": 7.99,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0083609301148",
+                        "quantity": 10
+                    }
+                ],
+                "subtotal": 197.06,
+                "sales_tax": 17.0,
+                "total_price": 214.06,
+                "points_earned": 591,
+                "shipping_details": {
+                    "name": "Alex Pat",
+                    "address": "asdfghjkl;",
+                    "city": "azsdfghjkl",
+                    "zip": "12345"
+                }
+            }
+        ],
+        "loyalty_points": 591,
         "rewards_history": []
     },
     "scottyj": {
@@ -547,8 +686,51 @@
         "email": "kgawrinauth1@pride.hofstra.edu",
         "phone": "",
         "address": "",
-        "order_history": [],
-        "loyalty_points": 0,
+        "order_history": [
+            {
+                "date": "2024-11-27 01:26:07",
+                "order_items": [
+                    {
+                        "name": "Zucchini",
+                        "price": 1.69,
+                        "image": "https://www.kroger.com/product/images/xlarge/front/0000000004067",
+                        "quantity": 2
+                    }
+                ],
+                "subtotal": 3.38,
+                "sales_tax": 0.29,
+                "total_price": 3.67,
+                "points_earned": 10,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            },
+            {
+                "date": "2024-11-27 02:21:01",
+                "order_items": [
+                    {
+                        "name": "Olipop\u00ae Watermelon Lime Soda Can",
+                        "price": 2.49,
+                        "image": "https://www.kroger.com/product/images/xlarge/back/0085002770236",
+                        "quantity": 1
+                    }
+                ],
+                "subtotal": 2.49,
+                "sales_tax": 0.21,
+                "total_price": 2.7,
+                "points_earned": 7,
+                "shipping_details": {
+                    "name": "1",
+                    "address": "1",
+                    "city": "1",
+                    "zip": "1"
+                }
+            }
+        ],
+        "loyalty_points": 17,
         "rewards_history": []
     },
     "kevingawrinauth@yahoo.com": {
@@ -583,7 +765,7 @@
         "rewards_history": []
     },
     "Kavita": {
-        "password": "GreenGren123!",
+        "password": "kevin123",
         "order_history": [],
         "loyalty_points": 0,
         "rewards_history": []
@@ -620,5 +802,8 @@
             }
         ],
         "loyalty_points": 22
+    },
+    "potatomaster": {
+        "password": "potatomaster"
     }
 }

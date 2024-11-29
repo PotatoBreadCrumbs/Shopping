@@ -28,54 +28,74 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 mail = Mail(app)
 
 import requests
-
-'''
 from dotenv import load_dotenv
 import os
 
 # Load environment variables from .env file
 load_dotenv()
+def send_postmark_forgot_password(to_email, reset_url):
+   
 
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
-
-
-
-def send_direct_email(to_email):
+    api_key = os.getenv("POSTMARK_API_KEY")
+    headers = {
+        "X-Postmark-Server-Token": api_key,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "From": "kgawrinauth1@pride.hofstra.edu",  # Replace with your Postmark verified sender
+        "To": to_email,
+        "TemplateId": 38145706,  # Replace with your Postmark Template ID for forgot password
+        "TemplateModel": {
+            "reset_url": reset_url,  # Dynamic variable in your Postmark template
+            "support_email": "support@example.com",  # Example additional variable
+            "product_name": "GreenGrocer App"  # Example additional variable
+        }
+    }
     try:
-        url = "https://api.sendgrid.com/v3/mail/send"
-        headers = {
-            "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
-            "Content-Type": "application/json"
-        }
-        data = {
-            "personalizations": [
-                {
-                    "to": [{"email": to_email}],
-                    "dynamic_template_data": {
-                        "reset_url": "http://127.0.0.1/reset-password",  # Temporary URL for local testing
-                        "username": to_email  
-                    }
-                }
-            ],
-            "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
-            "template_id": "d-9c2c93acfa0e40cbbeea3cf01582af1b"  # Custom SendGrid template
-        }
-        
-        response = requests.post(url, headers=headers, json=data)
-        
-        print(f"SendGrid Response Status Code: {response.status_code}")
-        print(f"SendGrid Response Headers: {response.headers}")
-        print(f"SendGrid Response Body: {response.text}")
-        
-        if response.status_code != 202:
-            raise Exception(f"Failed to send email. Response: {response.text}")
-        
-        print("Password reset email sent successfully.")
+        response = requests.post(
+            "https://api.postmarkapp.com/email/withTemplate", headers=headers, json=data
+        )
+        if response.status_code == 200:
+            print("Password reset email sent successfully.")
+        else:
+            print(f"Failed to send email: {response.text}")
     except Exception as e:
-        print(f"Error sending email: {str(e)}")
-        raise
-'''
+        print(f"Error sending email: {e}")
+
+def send_postmark_order_confirmation(to_email, name, order_details):
+    import requests
+
+    api_key = os.getenv("POSTMARK_API_KEY")
+    headers = {
+        "X-Postmark-Server-Token": api_key,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "From": "kgawrinauth1@pride.hofstra.edu",  # Replace with your Postmark verified sender
+        "To": to_email,
+        "TemplateId": 38149527,  # Replace with your Postmark Template ID for order confirmation
+        "TemplateModel": {
+            "customer_name": name,  # Dynamic variable for customer name
+            "order_details": "".join(
+                f"<li>{item['quantity']}x {item['name']} at ${item['price']} each</li>"
+                for item in order_details
+            ),
+            "total_price": sum(item['price'] * item['quantity'] for item in order_details),
+            "company_name": "GreenGrocer Team",
+            "support_email": "support@example.com"  # Example additional variable
+        }
+    }
+    try:
+        response = requests.post(
+            "https://api.postmarkapp.com/email/withTemplate", headers=headers, json=data
+        )
+        if response.status_code == 200:
+            print("Order confirmation email sent successfully.")
+        else:
+            print(f"Failed to send email: {response.text}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
 
 
 
@@ -84,23 +104,37 @@ def reset_password_page():
     if request.method == 'POST':
         email = request.form.get('email')
         new_password = request.form.get('new_password')
-        
-       
+
+        # Load user data
         users = read_users()
-        
+        user_found = False
 
-        for username, user_info in users.items():
-            if user_info.get('email') == email:
-               
-                user_info['password'] = new_password
-                write_users(users)  
-                flash('Password updated successfully!', 'success')
-                return redirect(url_for('login'))
-        
-        flash('Email not found. Please check and try again.', 'danger')
+        # Check if email is a key or within nested data
+        for key, user_info in users.items():
+            if key == email or user_info.get('email') == email:
+                # Update the password
+                if key == email:
+                    users[key]['password'] = new_password
+                else:
+                    user_info['password'] = new_password
+                user_found = True
+                break
 
+        if user_found:
+            # Save changes to user JSON
+            write_users(users)
+            flash('Password updated successfully!', 'success')
+        else:
+            flash('Email not found. Please check and try again.', 'danger')
+
+        return redirect(url_for('login'))
 
     return render_template('reset_password_updated.html')
+
+
+
+
+
 
 # We created a file to store user data (this simulates a database using mysql lite) x
 USER_FILE = 'user_storage.json'
@@ -207,20 +241,36 @@ def read_user(username):
     return users.get(username)
 
 def write_users(users, source='regular'):
+  
+   
     file_path = 'google_accounts.json' if source == 'google' else USER_FILE
+    
+    # Initialize the existing_users as empty
+    existing_users = {}
+    
     if os.path.exists(file_path):
         try:
             with open(file_path, 'r') as file:
+                # Read existing user data
                 existing_users = json.load(file)
-        except json.JSONDecodeError:
-            existing_users = {}  # Start fresh if JSON is invalid
-    else:
-        existing_users = {}
-
+                if not isinstance(existing_users, dict):
+                    raise ValueError("Invalid JSON format: Expected a dictionary.")
+        except (json.JSONDecodeError, ValueError) as e:
+            print(f"Warning: {file_path} contains invalid JSON or is not a dictionary. Overwriting. Error: {e}")
+            existing_users = {}  # Reset to empty if invalid
+    
+    # Update existing users with the new user data
+    if not isinstance(users, dict):
+        raise ValueError("The 'users' parameter must be a dictionary.")
     existing_users.update(users)
 
-    with open(file_path, 'w') as file:
-        json.dump(existing_users, file, indent=4)
+    try:
+        with open(file_path, 'w') as file:
+            # Write updated data back to the file
+            json.dump(existing_users, file, indent=4)
+        print(f"Successfully updated {file_path}")
+    except Exception as e:
+        print(f"Error writing to {file_path}: {e}")
 
 
 # User class for Flask-Login
@@ -399,55 +449,74 @@ def get_product(product_id):
 
 FAVORITES_FILE = "favorites.json"
 
-def read_favorites():
+def read_favorites(user_id):
     if os.path.exists(FAVORITES_FILE):
         with open(FAVORITES_FILE, 'r') as file:
             try:
-                return json.load(file)
+                favorites = json.load(file)
+                return favorites.get(user_id, [])  # Return favorites for the specific user
             except json.JSONDecodeError:
                 print("Error reading favorites file: malformed JSON.")
                 return []
     return []
 
-def write_favorites(favorites):
+def write_favorites(user_id, user_favorites):
+    favorites = {}
+    if os.path.exists(FAVORITES_FILE):
+        with open(FAVORITES_FILE, 'r') as file:
+            try:
+                favorites = json.load(file)
+            except json.JSONDecodeError:
+                print("Error reading favorites file. Overwriting with new data.")
+    
+    favorites[user_id] = user_favorites  # Update the user's favorites
     with open(FAVORITES_FILE, 'w') as file:
         json.dump(favorites, file, indent=4)
 
-@app.route('/toggle_favorite', methods=['POST'])
-def toggle_favorite():
-    data = request.get_json()
 
-    
+@app.route('/toggle_favorite', methods=['POST'])
+@login_required
+def toggle_favorite():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Unauthorized access", "status": "error"}), 401
+
+    data = request.get_json()
     required_fields = ['name', 'price', 'image_url']
     for field in required_fields:
         if not data.get(field):
-            print(f"Missing or empty field: {field}")
             return jsonify({"message": f"Missing field: {field}", "status": "error"}), 400
 
-    favorites = read_favorites()
+    favorites = read_favorites(user_id)
     item_exists = any(fav['name'] == data['name'] for fav in favorites)
 
-    # Toggle the favorite item based on the name
     if item_exists:
-        favorites = [fav for fav in favorites if fav['name'] != data['name']]
+        favorites = [fav for fav in favorites if fav['name'] != data['name']]  # Remove favorite
         status = "removed"
     else:
         favorites.append({
             'name': data['name'],
             'price': data['price'],
             'image_url': data['image_url']
-        })
+        })  # Add favorite
         status = "added"
 
-   
-    write_favorites(favorites)
+    write_favorites(user_id, favorites)
     return jsonify({"message": f"Favorite {status} successfully", "status": status})
 
 
+ 
+
 @app.route('/get_favorites', methods=['GET'])
+@login_required
 def get_favorites():
-    favorites = read_favorites()
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Unauthorized access", "status": "error"}), 401
+
+    favorites = read_favorites(user_id)
     return jsonify(favorites)
+
 
 # the route for our user registration
 @app.route('/register', methods=['GET', 'POST'])
@@ -481,8 +550,18 @@ def reset_password():
         for username, user_data in users.items():
             if user_data.get('email') == email:
                 user_found = True
-                send_direct_email(email)
-                flash('Password reset instructions have been sent to your email.', 'info')
+                
+                # Set the reset URL
+                reset_url = f"https://thegreengrocer-e1dcd2bb05bd.herokuapp.com/reset-password?email={email}"
+                
+                # Send the password reset email
+                try:
+                    send_postmark_forgot_password(email, reset_url)
+                    flash('Password reset instructions have been sent to your email.', 'info')
+                except Exception as e:
+                    print(f"Error sending email: {str(e)}")
+                    flash('An error occurred while sending the email. Please try again later.', 'danger')
+                
                 break
 
         if not user_found:
@@ -493,6 +572,7 @@ def reset_password():
 
     # Render the forgot password page for GET requests
     return render_template('forgot_password.html')
+
 
 @app.route('/')
 def home():
@@ -506,10 +586,15 @@ def home():
     return render_template('index.html', username=username, form=form, locations=locations, selected_location=selected_location)
 
 @app.route('/favorites')
-@login_required
 def view_favorites():
-    favorites = read_favorites()  # Retrieve all favorite items directly
+    user_id = session.get("user_id")  # Get the logged-in user's ID from the session
+    if not user_id:
+        flash("Please log in to view your favorites.", "danger")
+        return redirect(url_for("login"))
+
+    favorites = read_favorites(user_id)  # Pass the user_id to read_favorites
     return render_template('favorites.html', favorites=favorites)
+
 
 def get_locations():
     access_token = get_kroger_token(client_id, client_secret)
@@ -617,79 +702,44 @@ def remove_item_from_cart(username, item_name):
 def add_to_cart():
     user_id = session.get("user_id")
 
-    # Retrieve product details from the form
-    product_name = request.form.get('product_name')
-    product_price = request.form.get('product_price')
-    product_image = request.form.get('product_image')
-    category = request.form.get('category')  # For redirect after adding to cart
-    product_quantity = request.form.get('product_quantity', 1)  # Default to 1 if not provided
+    # Check the request content type
+    if request.content_type == 'application/json':
+        # Retrieve product details from a JSON request
+        data = request.get_json()
+        product_name = data.get('product_name')
+        product_price = data.get('product_price')
+        product_image = data.get('product_image')
+        product_quantity = data.get('product_quantity', 1)
+        category = data.get('category')  # This may be missing for items added from favorites
+    else:
+        # Retrieve product details from a form submission
+        product_name = request.form.get('product_name')
+        product_price = request.form.get('product_price')
+        product_image = request.form.get('product_image')
+        product_quantity = request.form.get('product_quantity', 1)
+        category = request.form.get('category')  # This may be missing for items added from favorites
 
-    # Validate and convert product_price to float
+    # Validate inputs
+    if not product_name or product_price is None or not product_image:
+        return jsonify({"message": "Invalid product data"}), 400
+
+    # Convert price and quantity to appropriate types
     try:
         product_price = float(product_price)
-    except (ValueError, TypeError):
-        product_price = 0.0  # Default to 0.0 if invalid
-        print(f"Warning: Invalid price for {product_name}. Defaulting to 0.0.")
-
-    # Validate and convert product_quantity to int
-    try:
         product_quantity = int(product_quantity)
-    except (ValueError, TypeError):
-        product_quantity = 1  # Default to 1 if invalid
-        print(f"Warning: Invalid quantity for {product_name}. Defaulting to 1.")
+    except ValueError:
+        return jsonify({"message": "Invalid price or quantity"}), 400
 
-    # If user is logged in, use their cart from cart.json
     if user_id:
-        # Load the user's cart data from cart.json
+        # Add to the user's cart
         cart_data = read_cart(user_id)
+        cart = cart_data.get('cart_items', [])
 
-        # Ensure cart_items is a list
-        if not isinstance(cart_data.get('cart_items'), list):
-            cart_data['cart_items'] = []
-
-        cart = cart_data['cart_items']
-
-        # Check if the product already exists in the cart
-        item_exists = False
-        for item in cart:
-            if item.get('name') == product_name:
-                item['quantity'] += product_quantity  # Update quantity based on form input
-                item_exists = True
-                break
-
-        # If the product is new, add it to the cart
-        if not item_exists:
-            cart.append({
-                'name': product_name,
-                'price': product_price,
-                'image': product_image,
-                'quantity': product_quantity  # Set quantity from form input
-            })
-
-        # Save the updated cart back to cart.json
-        write_cart(user_id, cart_data)
-
-        # Update the session cart count based on the total quantity of items
-        session['cart_count'] = sum(item['quantity'] for item in cart)
-        session.modified = True  # Ensure session updates are saved
-
-    else:
-        # Guest user logic: use session to store cart temporarily
-        if 'guest_cart' not in session:
-            session['guest_cart'] = []
-
-        cart = session['guest_cart']
-
-        # Check if the product already exists in the guest cart
-        item_exists = False
-        for item in cart:
-            if item.get('name') == product_name:
-                item['quantity'] += product_quantity  # Update quantity
-                item_exists = True
-                break
-
-        # If the product is new, add it to the guest cart
-        if not item_exists:
+        # Check if the item already exists in the cart
+        item_exists = next((item for item in cart if item['name'] == product_name), None)
+        if item_exists:
+            item_exists['quantity'] += product_quantity
+        else:
             cart.append({
                 'name': product_name,
                 'price': product_price,
@@ -697,13 +747,36 @@ def add_to_cart():
                 'quantity': product_quantity
             })
 
-        # Update the session cart count for guest user
+        # Save the updated cart
+        write_cart(user_id, {'cart_items': cart, 'saved_items': cart_data.get('saved_items', [])})
         session['cart_count'] = sum(item['quantity'] for item in cart)
-        session['guest_cart'] = cart
-        session.modified = True  # Ensure session updates are saved
+        session.modified = True
+    else:
+        # Handle guest cart
+        if 'guest_cart' not in session:
+            session['guest_cart'] = []
 
-    flash(f"{product_quantity}x {product_name} added to your cart.", "success")
-    return redirect(url_for('get_products', category=category))
+        cart = session['guest_cart']
+        item_exists = next((item for item in cart if item['name'] == product_name), None)
+        if item_exists:
+            item_exists['quantity'] += product_quantity
+        else:
+            cart.append({
+                'name': product_name,
+                'price': product_price,
+                'image': product_image,
+                'quantity': product_quantity
+            })
+
+        session['cart_count'] = sum(item['quantity'] for item in cart)
+        session.modified = True
+
+    # If category is provided, redirect to the products page; otherwise, return JSON
+    if category:
+        return redirect(url_for('get_products', category=category))
+    else:
+        return jsonify({"message": f"{product_name} added to cart", "cart_count": session['cart_count']}), 200
+
 
 
 from urllib.parse import unquote
@@ -999,7 +1072,7 @@ def discounts(category=None):
 
 
 
-from datetime import datetime  # Ensure this is imported at the top
+   # Ensure this is imported at the top
 
 def calculate_cart_totals(cart):
     """Helper function to calculate subtotal, sales tax, and total."""
@@ -1110,61 +1183,10 @@ def api_order_history():
             order['points_earned'] = int(order.get('subtotal', 0) * 3)
 
     return jsonify(order_history)
-'''
-def send_order_confirmation_email(to_email, name, address, city, zip_code, order):
-    try:
-        # Set up SendGrid API URL and headers
-        url = "https://api.sendgrid.com/v3/mail/send"
-        headers = {
-            "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",  # Replace with your SendGrid API Key
-            "Content-Type": "application/json"
-        }
-        
-        # Prepare the email data using the template ID
-        data = {
-            "personalizations": [
-                {
-                    "to": [{"email": to_email}],
-                    "dynamic_template_data": {
-                        "customer_name": name,
-                        "address": address,
-                        "city": city,
-                        "zip_code": zip_code,
-                        "order_items": "".join(
-                            f"<li>{item['quantity']}x {item['name']} at ${item['price']} each</li>"
-                            for item in order.get("order_items", [])
-                        ),
-                        "total_price": order.get("total_price", 0.0)
-                    }
-                }
-            ],
-            "from": {"email": "kgawrinauth1@pride.hofstra.edu"},
-            "template_id": "d-54cbef9f0d5a46c3a5c99a01efb9c0de",  # Replace with your active template ID
-            "subject": "Order Confirmation"
-        }
-        
-        # Send the request
-        response = requests.post(url, headers=headers, json=data)
-        
-        # Logging SendGrid response
-        print(f"SendGrid Response Status Code: {response.status_code}")
-        print(f"SendGrid Response Body: {response.text}")
-        
-        # Check the response
-        if response.status_code == 202:
-            print("Order confirmation email sent successfully!")
-        else:
-            raise Exception(f"Failed to send email. Response: {response.text}")
-    except Exception as e:
-        print(f"Error sending email: {str(e)}")
-        raise
-'''
 
-
-    
 @app.route('/process_checkout', methods=['POST'])
 def process_checkout():
-    from datetime import datetime  # Ensure datetime is imported
+    from datetime import datetime
 
     # Retrieve form data
     name = request.form.get('name')
@@ -1173,7 +1195,6 @@ def process_checkout():
     zip_code = request.form.get('zip')
     to_email = request.form.get('email')  # Get the email entered in the form
 
-    # Debugging: Print the submitted email
     print(f"Email submitted: {to_email}")
 
     # Validate required fields
@@ -1186,42 +1207,27 @@ def process_checkout():
             'email': to_email
         }.items() if not value]
         flash(f"Missing required fields: {', '.join(missing_fields)}", "danger")
-        return redirect(url_for('checkout'))  # Redirect back to the checkout page
-
-    user_id = session.get("user_id")
-
-    # Load the cart data
-    cart_data = read_cart(user_id)
-    cart_items = cart_data.get('cart_items', [])
-
-    # Check if cart is empty
-    if not cart_items:
-        flash("Your cart is empty. Please add items before checking out.", "warning")
-        return redirect(url_for('home'))  # Redirect to home if no items in the cart
-
-    # Calculate subtotal, sales tax, total price, and points earned
-    try:
-        subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in cart_items)
-    except (ValueError, TypeError):
-        flash("Error calculating cart totals. Please review your cart and try again.", "danger")
         return redirect(url_for('checkout'))
 
-    sales_tax_rate = 0.08625  # Example tax rate
-    sales_tax = round(subtotal * sales_tax_rate, 2)
-    total_price = round(subtotal + sales_tax, 2)
-    points_earned = int(subtotal * 3)  # Example: 3 points per dollar spent
+    user_id = session.get("user_id")
+    cart_data = read_cart(user_id) if user_id else {'cart_items': session.get('guest_cart', [])}
 
-    # Debugging: Print calculated values
-    print(f"Subtotal: {subtotal}, Sales Tax: {sales_tax}, Total Price: {total_price}, Points Earned: {points_earned}")
+    # Validate cart data
+    cart_items = cart_data.get('cart_items', [])
+    if not cart_items:
+        flash("Your cart is empty. Please add items before checking out.", "warning")
+        return redirect(url_for('home'))
 
-    # Prepare the order object
+    # Calculate subtotal, sales tax, and total price
+    subtotal, sales_tax, total_price = calculate_cart_totals(cart_items)
+
+    # Create the order object
     order = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "order_items": cart_items,
-        "subtotal": round(subtotal, 2),
+        "subtotal": subtotal,
         "sales_tax": sales_tax,
         "total_price": total_price,
-        "points_earned": points_earned,
         "shipping_details": {
             "name": name,
             "address": address,
@@ -1230,34 +1236,31 @@ def process_checkout():
         }
     }
 
-    # Update user's order history in user_storage.json
-    users = load_user_storage()
-    if user_id in users:
-        user_data = users[user_id]
-        user_data.setdefault("order_history", []).append(order)  # Add to order history
-        user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned  # Update loyalty points
-        write_users(users)  # Save back to user_storage.json
+    if user_id:
+        # Update registered user's order history
+        users = load_user_storage()
+        user_data = users.get(user_id, {})
+        user_data.setdefault("order_history", []).append(order)
+        write_users(users)
+        write_cart(user_id, {'cart_items': []})  # Clear cart
+    else:
+        # Clear guest cart in session
+        session['guest_cart'] = []
 
-    # Clear the cart in cart.json
-    cart_data['cart_items'] = []  # Empty the user's cart
-    write_cart(user_id, cart_data)  # Save changes back to the file
-
-    # Clear session cart count
+    # Reset cart count in session
     session['cart_count'] = 0
     session.modified = True
 
     # Send confirmation email
     if to_email:
         try:
-            print(f"send_order_confirmation_email called with: {to_email}, {name}, {address}, {city}, {zip_code}, {order}")
-            send_order_confirmation_email(to_email, name, address, city, zip_code, order)  # Pass the order object
+            send_postmark_order_confirmation(to_email, name, cart_items)
+            flash("Thank you for your order! A confirmation email has been sent.", "success")
         except Exception as e:
-            flash(f"Order placed successfully, but there was an issue sending the email: {e}", "warning")
-            return redirect(url_for('home'))
+            print(f"Error sending confirmation email: {str(e)}")
+            flash("Order placed successfully, but there was an issue sending the confirmation email.", "warning")
 
-    flash("Thank you for your order! A confirmation email has been sent.", "success")
     return redirect(url_for('home'))
-
 
 
 
@@ -1336,8 +1339,6 @@ def loyalty_rewards():
         rewards_history=rewards_history
     )
 
-
-
 @app.context_processor
 def inject_locations():
     # Only fetch locations if not already in the session
@@ -1377,7 +1378,6 @@ def translate_text():
 @app.context_processor
 def inject_selected_location_and_locations():
     selected_location = read_selected_location()  # Retrieves selected location if stored
-    
     # Access token and Kroger API endpoint
     access_token = get_kroger_token(client_id, client_secret)
     location_url = "https://api.kroger.com/v1/locations"
@@ -1408,7 +1408,6 @@ CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
 
 from authlib.integrations.flask_client import OAuth
 import uuid
-
 # Initialize OAuth
 oauth = OAuth(app)
 oauth.register(
@@ -1418,8 +1417,6 @@ oauth.register(
     server_metadata_url=CONF_URL,
     client_kwargs={'scope': 'openid email profile'}
 )
-
-
 # Google Authentication
 @app.route('/google/')
 def google():
@@ -1480,7 +1477,6 @@ def google_auth():
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='None'  # For cross-site cookies
 )
-
 @app.route('/saved_items')
 @login_required
 def view_saved_items():
