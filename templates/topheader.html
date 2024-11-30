@@ -109,44 +109,7 @@
             padding: 4px; /* Reduces padding for a smaller dropdown */
         }
     
-        @media (max-width: 768px) {
-            .location-dropdown {
-                position: fixed; /* Fixes the element to the viewport */
-                top: 10px; /* Adjust position for smaller screens */
-                right: 10px;
-            }
-        }
-
-        @media (max-width: 768px) {
-        /* Hide everything except logo and hamburger menu */
-        .search-bar,
-        .location-dropdown,
-        .nav-item,
-        .accessibility-btn {
-            display: none;
-        }
-
-        .navbar {
-            justify-content: space-between;
-        }
-
-        .hamburger-menu {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.5rem;
-            margin-left: auto; /* Pushes the icon to the right */
-            padding-right: 15px; /* Adds spacing from the right edge */
-            position: relative;
-        }
-
-    }
-
-    @media (min-width: 769px) {
-        .hamburger-menu {
-            display: none; /* Hide hamburger menu on larger screens */
-        }
-    }
+        
     </style>
 </head>
 
