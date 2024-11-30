@@ -551,6 +551,25 @@ def validate():
     write_users(users)  # saves new user to the file
     return jsonify({"message": "Valid"})
 
+@app.route('/validate_checkout', methods=['POST'])
+def validate_checkout():
+    user_id = session.get("user_id")
+    cart = []
+
+    if user_id:
+        # Retrieve cart data for the logged-in user
+        user_data = read_cart(user_id)
+        cart = user_data.get('cart_items', [])
+    else:
+        # Retrieve cart data for the guest user
+        cart = session.get('guest_cart', [])
+
+    if not cart or len(cart) == 0:
+        return jsonify({"message": "Empty"})  # Return error if cart is empty
+
+    return jsonify({"message": "Proceed", "redirect_url": url_for('checkout')})
+
+
 @app.route('/check_username')
 def check_username():
     username = request.args.get('username')
@@ -574,28 +593,28 @@ def reset_password():
         for username, user_data in users.items():
             if user_data.get('email') == email:
                 user_found = True
-
-#Set the reset URL
-                reset_url = f"https://thegreengrocer-e1dcd2bb05bd.herokuapp.com/reset-password?email={email}"
-
-#Send the password reset email
+                
+                # Set the reset URL
+                reset_url = f"https://www.the-greengrocer.com/reset-password?email={email}"
+                
+                # Send the password reset email
                 try:
                     send_postmark_forgot_password(email, reset_url)
                     flash('Password reset instructions have been sent to your email.', 'info')
                 except Exception as e:
                     print(f"Error sending email: {str(e)}")
                     flash('An error occurred while sending the email. Please try again later.', 'danger')
-
-                break
-
+                
+                return jsonify({"message": "Valid", "redirect_url": url_for('login')})
+                
         if not user_found:
-            flash('Email address not found.', 'danger')
+            return jsonify({"message": "Invalid"})
 
         # Redirect to the login page or another confirmation page
         return redirect(url_for('login'))
 
     # Render the forgot password page for GET requests
-    return render_template('forgot_password.html')    
+    return render_template('forgot_password.html')   
 @app.route('/')
 def home():
     selected_location = read_selected_location()  # Get the selected location from locations.json
@@ -1219,39 +1238,43 @@ def process_checkout():
     from datetime import datetime
 
     # Retrieve form data
-    name = request.form.get('name')
-    address = request.form.get('address')
-    city = request.form.get('city')
-    zip_code = request.form.get('zip')
-    to_email = request.form.get('email')  # Get the email entered in the form
-
-    print(f"Email submitted: {to_email}")
+    name = request.form.get('name', '').strip()
+    cvv = request.form.get('cvv','').strip()
+    exp_date = request.form.get('expiry','').strip()
+    cn = request.form.get('card_number','').strip()
+    address = request.form.get('address', '').strip()
+    city = request.form.get('city', '').strip()
+    zip_code = request.form.get('zip', '').strip()
+    to_email = request.form.get('email', '').strip()
+    
 
     # Validate required fields
-    if not all([name, address, city, zip_code, to_email]):
-        missing_fields = [field for field, value in {
-            'name': name,
-            'address': address,
-            'city': city,
-            'zip_code': zip_code,
-            'email': to_email
-        }.items() if not value]
-        flash(f"Missing required fields: {', '.join(missing_fields)}", "danger")
-        return redirect(url_for('checkout'))
+    missing_fields = [field for field, value in {
+        'Name on Card': name,
+        'Card Number':cn,
+        'Expiry Date':exp_date,
+        'CVV':cvv,
+        'Shipping Address': address,
+        'City': city,
+        'Zip Code': zip_code,
+        'Email': to_email,
+    }.items() if not value]
 
+    if missing_fields:
+        return jsonify({"message": "MissingFields", "errors": missing_fields})
+
+    # Get user or guest cart
     user_id = session.get("user_id")
     cart_data = read_cart(user_id) if user_id else {'cart_items': session.get('guest_cart', [])}
-
-    # Validate cart data
     cart_items = cart_data.get('cart_items', [])
-    if not cart_items:
-        flash("Your cart is empty. Please add items before checking out.", "warning")
-        return redirect(url_for('home'))
 
-    # Calculate subtotal, sales tax, and total price
+    if not cart_items:
+        return jsonify({"message": "EmptyCart"})
+
+    # Calculate totals
     subtotal, sales_tax, total_price = calculate_cart_totals(cart_items)
 
-    # Create the order object
+    # Create the order
     order = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "order_items": cart_items,
@@ -1266,18 +1289,16 @@ def process_checkout():
         }
     }
 
+    # Update user data or clear guest cart
     if user_id:
-        # Update registered user's order history
         users = load_user_storage()
         user_data = users.get(user_id, {})
-        user_data.setdefault("order_history", []).append(order) 
-        if 'email' not in user_data or not user_data['email']:
-            user_data['email'] = to_email
-            users[user_id] = user_data
+        user_data.setdefault("order_history", []).append(order)
+        points_earned = int(subtotal * 3)  # Assuming 3x multiplier for points
+        user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned
         write_users(users)
-        write_cart(user_id, {'cart_items': []})  # Clear cart
+        write_cart(user_id, {'cart_items': []})
     else:
-        # Clear guest cart in session
         session['guest_cart'] = []
 
     # Reset cart count in session
@@ -1288,19 +1309,11 @@ def process_checkout():
     if to_email:
         try:
             send_postmark_order_confirmation(to_email, name, cart_items)
-            flash("Thank you for your order! A confirmation email has been sent.", "success")
         except Exception as e:
             print(f"Error sending confirmation email: {str(e)}")
-            flash("Order placed successfully, but there was an issue sending the confirmation email.", "warning")
+            return jsonify({"message": "EmailIssue"}), 500
 
-    return redirect(url_for('home'))
-def read_selected_location():
-    if not os.path.exists('locations.json'):
-        return None
-    with open('locations.json', 'r') as file:
-        data = json.load(file)
-    return data.get('selected_location', None)
-
+    return jsonify({"message": "OrderComplete", "redirect_url": url_for('home')})
 @app.route('/account_info')
 @login_required
 def account_info():
