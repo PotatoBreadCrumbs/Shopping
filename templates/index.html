@@ -6,6 +6,8 @@
     <title>Explore Categories - GreenGrocer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="../static/js/notification.css" rel="stylesheet"/>
+    <script src="../static/js/notification.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -238,6 +240,28 @@
 
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or overscroll fix
         });
+
+        if(sessionStorage.getItem("OrderComplete") === 'true'){
+        const popup = Notification({
+        position: 'top-right',
+        duration: 4000,
+        isHidePrev: false,
+        isHideTitle: false,
+        maxOpened: 3,
+
+        });
+
+        popup.setProperty({
+        duration: 5000,
+        isHidePrev: true,
+        });
+
+        popup.success({
+        title: 'Success!',
+        message: "Thank you for your purchase! A confirmation email with your receipt has been sent to your email address. Please check your inbox."
+        });
+        sessionStorage.clear();
+    }
     </script>
 </body>
 </html>
