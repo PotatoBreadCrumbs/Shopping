@@ -347,35 +347,23 @@ def settings():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-
+    form = LoginForm()  # implementing the login form to be displaed
     if form.validate_on_submit():
-        username = form.username.data.strip()
-        password = form.password.data.strip()
-        users = read_users()
-
-        # Validate credentials
+        username = form.username.data
+        password = form.password.data
+        users = read_users()  # allow us to read the users from the file saved from mysql lite
         if username in users and users[username]['password'] == password:
-            # Clear session data for consistency
-            session.clear()
-
-            # Log in the user
             user = User(username)
             login_user(user)
-            session['user_id'] = username
             cart_data = read_cart(username)
-            session['cart_count'] = sum(
-                item.get('quantity', 1) for item in cart_data.get('cart_items', [])
-            )
-            session.modified = True
-
-            # Redirect to next or home
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
-
-        flash("Invalid username or password. Please try again.", "danger")
-        return redirect(url_for('login'))
-
+            session['user_id'] = username  # Store user ID in session
+            session['cart_count'] = sum(item.get('quantity', 1) for item in cart_data['cart_items'])  # Calculate total quantity
+            session.modified = True 
+            return jsonify({"message": "Right", "redirect_url": url_for('home')})
+        
+            #return redirect(url_for('home'))  # redirect to home after login
+        else:
+           return jsonify({"message": "Wrong"})
     return render_template('login.html', form=form)
 @app.route('/save_for_later/<int:index>', methods=['POST'])
 @login_required
@@ -427,20 +415,11 @@ def move_to_cart(index):
 # our guest login route
 @app.route('/guest_login')
 def guest_login():
-    # Debug: Clear session and log status
-    session.clear()
-    print("Session cleared for guest login.")
-
-    # Set up guest user session
+    # automatically log in as a guest
     guest_user = User('guest')
     login_user(guest_user)
-    session['user_id'] = 'guest'
-    session['cart_count'] = 0
-    session.modified = True
+    return redirect(url_for('home'))  # should allow us redirect to home after guest login
 
-    print(f"Guest session initialized: {session}")
-    flash("You are logged in as a guest.", "info")
-    return redirect(url_for('home'))
 
 @app.route('/api/product/<product_id>', methods=['GET'])
 def get_product(product_id):
@@ -979,16 +958,16 @@ def inject_cart_count():
     return {'cart_count': session.get('cart_count', 0)}
 
 # Logout route (POST only with CSRF protection)
-app.route('/logout', methods=['POST', 'GET'])
+@app.route('/logout', methods=['POST'])
+@login_required
 def logout():
-    # Debug: Clear session and log status
-    print("Clearing session during logout.")
-    session.clear()
-
-    # Log out the user
-    logout_user()
-    flash("You have been logged out.", "info")
+    session.clear()  # Explicitly clear the session
+    logout_user()  # Log out the user
+    
     return redirect(url_for('login'))
+
+
+
 
 @app.route('/products/<category>')
 @login_required
@@ -1335,23 +1314,11 @@ def process_checkout():
             return jsonify({"message": "EmailIssue"}), 500
 
     return jsonify({"message": "OrderComplete", "redirect_url": url_for('home')})
-    
 @app.route('/account_info')
+@login_required
 def account_info():
-    # Debug: Print session state for verification
-    print(f"Session data: {session}")
-    print(f"Current user: {current_user}")
-
-    # Ensure the user is logged in and not a guest
-    if not current_user.is_authenticated or session.get('user_id') == 'guest':
-        flash("Access denied. Please log in to view your account information.", "danger")
-        return redirect(url_for('login'))
-
-    # Fetch user data
     users = read_users()
-    user_data = users.get(session.get('user_id'), {})
-
-Render account information
+    user_data = users.get(current_user.id, {})
     return render_template('account_info.html', user_data=user_data)
 
 @app.route('/set_location')
