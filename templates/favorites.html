@@ -41,7 +41,7 @@
             color: #6c757d; /* Lighter color for the price */
         }
         .favorite-btn { 
-            background-color: #dc3545; /* Red button color for remove */
+            background-color: #28a745; /* Green button color */
             color: white; 
             border: none; 
             border-radius: 5px; 
@@ -51,23 +51,8 @@
             width: 100%; /* Full width for button */
         }
         .favorite-btn:hover { 
-            background-color: #c82333; /* Darker red on hover */
+            background-color: #218838; /* Darker green on hover */
             cursor: pointer; 
-        }
-        .cart-btn {
-            background-color: #007bff; /* Blue button color for Add to Cart */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            width: 100%; /* Full width for button */
-            margin-top: 10px; /* Add spacing between buttons */
-        }
-        .cart-btn:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-            cursor: pointer;
         }
     </style>
 </head>
@@ -102,7 +87,6 @@
                                         <h5 class="card-title">${item.name}</h5>
                                         <p class="card-text">Price: $${item.price}</p>
                                         <button onclick="toggleFavorite('${item.name}', '${item.price}', '${item.image_url}')" class="btn favorite-btn">Remove from Favorites</button>
-                                        <button onclick="addToCart('${item.name}', '${item.price}', '${item.image_url}')" class="btn cart-btn">Add to Cart</button>
                                     </div>
                                 </div>
                             </div>
@@ -124,45 +108,10 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data.message);
-                if (data.status === "added") {
-                    const cartCountElement = document.getElementById('cart-count');
-                    if (cartCountElement) {
-                        cartCountElement.textContent = data.cart_count; // Update cart count dynamically
-                    }
-                }
-                location.reload(); // Refresh the page
+                loadFavorites(); // Reload favorites to reflect changes
             })
             .catch(error => console.error('Error toggling favorite:', error));
         }
-
-        function addToCart(name, price, imageUrl) {
-            fetch('/add_to_cart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_name: name,
-                    product_price: parseFloat(price),
-                    product_image: imageUrl,
-                    product_quantity: 1
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Failed to add item to cart');
-            })
-            .then(data => {
-                console.log(data.message);
-                const cartCountElement = document.getElementById('cart-count');
-                if (cartCountElement) {
-                    cartCountElement.textContent = data.cart_count; // Update cart count
-                }
-                location.reload(); // Refresh the page to show updates
-            })
-            .catch(error => console.error('Error adding to cart:', error));
-        }
-        
 
         // Call loadFavorites once on page load
         document.addEventListener("DOMContentLoaded", loadFavorites);

@@ -562,6 +562,27 @@
         </div>
 </main>
 <script>
+    if(sessionStorage.getItem("resetPassword")==='true'){
+        const popup = Notification({
+        position: 'center',
+        duration: 4000,
+        isHidePrev: false,
+        isHideTitle: false,
+        maxOpened: 3,
+        });
+
+        popup.setProperty({
+        duration: 5000,
+        isHidePrev: true,
+        });
+
+        popup.success({
+        title: 'Success!',
+        message: "A password reset link has been sent to your email address. Please check your inbox (and spam folder)."
+        });
+        sessionStorage.clear();
+    }
+
     if(sessionStorage.getItem("First") === 'true'){
         const popup = Notification({
         position: 'center',

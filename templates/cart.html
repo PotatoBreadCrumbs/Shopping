@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/js/notification.css" rel="stylesheet"/>
+    <script src="../static/js/notification.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -174,7 +176,7 @@
                     <span>${{ '%.2f' | format(total_amount + (total_amount * 0.08625)) }}</span>
                 </div>
                 <div class="mt-4">
-                    <a href="{{ url_for('checkout') }}" class="btn btn-primary w-100">Proceed to Checkout</a>
+                    <a href="{{ url_for('checkout') }}" class="btn btn-primary w-100" id="checkOutButton" >Proceed to Checkout</a>
                     <a href="/" class="btn btn-success mt-3 w-100">Continue Shopping</a>
                 </div>
             </div>
@@ -203,6 +205,69 @@
     </div>
 </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const checkOutButton = document.getElementById("checkOutButton");
+
+    if (checkOutButton) {
+        checkOutButton.addEventListener("click", async function (event) {
+            event.preventDefault(); // Prevent default button behavior (e.g., navigation)
+
+            try {
+                // Send a request to validate cart or proceed to checkout
+                const response = await fetch('/validate_checkout', {
+                    method: 'POST', // POST request to validate checkout
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: "proceed_checkout" }), // Example payload
+                });
+
+                // Ensure the response is valid JSON
+                if (!response.ok) {
+                    throw new Error("Server returned an error: " + response.statusText);
+                }
+
+                const result = await response.json();
+
+                console.log("Backend response:", result);
+
+                if (result.message === "Empty") {
+                    // Display the error notification
+                    const popup = Notification({
+                        position: 'center',
+                        duration: 4000,
+                        isHidePrev: false,
+                        isHideTitle: false,
+                        maxOpened: 3,
+                    });
+
+                    popup.setProperty({
+                        duration: 5000,
+                        isHidePrev: true,
+                    });
+
+                    popup.error({
+                        title: `<div class="title-cust title-error">Empty Cart</div>`,
+                        message: `<div class="wrapper-notification">
+                            <div class="icons icon-error"></div>
+                            <div class="message message-text-error">Your cart is empty. Please add items to proceed to checkout.</div></div>`,
+                    });
+                } else if (result.message === "Proceed") {
+                    // Redirect to the checkout page
+                    window.location.href = result.redirect_url;
+                }
+            } catch (error) {
+                console.error("An error occurred during checkout validation:", error);
+
+                // Display a fallback error message
+                alert("An unexpected error occurred. Please try again later.");
+            }
+        });
+    }
+});
+
+    </script>
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
