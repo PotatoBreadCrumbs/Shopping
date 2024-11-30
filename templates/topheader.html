@@ -32,11 +32,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand img {
             width: 150px;
+            margin-right: 50px;
         }
 
         .nav-item .dropdown-toggle {
@@ -47,8 +47,6 @@
             display: flex;
             align-items: center;
             width: 50%;
-            margin-left: 20px;
-            margin-right: 20px;
         }
 
         .search-bar input {
@@ -59,18 +57,21 @@
         }
 
         .btn-search {
-            padding: 10px;
+            padding: 10px 20px;
             font-size: 1rem;
             display: flex;
             align-items: center;
         }
 
-        .dropdown-menu {
-            min-width: 160px;
+        .nav-item .dropdown-menu {
+            left: 50%;
+            width: 200px;
+            transform: translateX(-55%);
         }
 
+
         .content {
-            padding-top: 90px;
+            padding-top: 80px;
         }
 
         .accessibility-btn {
@@ -89,34 +90,23 @@
         }
 
         .accessibility-btn img {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
         }
 
         .username {
-            margin-right: 20px;
+            margin-right: 10px;
             font-weight: bold;
         }
-
-        .small-dropdown {
-            width: 150px;
-        }
-
         .location-dropdown {
-            position: fixed; /* Fixes the element to the viewport */
-            top: 20px; /* Distance from the top of the viewport */
-            left: 1000px; /* Distance from the right of the viewport */
-            z-index: 500px; /* Ensures it appears above other elements */
-            width: 200px;
-            background-color: #fff; /* Optional: Adds a background color */
-            padding: 10px; /* Optional: Adds some padding for better appearance */
-            border-radius: 5px; /* Optional: Rounds the corners */
-          
+            width: 250px;
+            margin-left: auto; /* Pushes the dropdown to the far right */
+            z-index: 1000; /* Ensures it stays above other elements */
         }
-    
+                
         .form-select-sm {
-            font-size: 12px; /* Adjust font size for smaller screens */
-            padding: 4px; /* Maintain appropriate padding */
+            font-size: 12px; /* Adjusts text size */
+            padding: 4px; /* Reduces padding for a smaller dropdown */
         }
     
         @media (max-width: 768px) {
@@ -126,6 +116,37 @@
                 right: 10px;
             }
         }
+
+        @media (max-width: 768px) {
+        /* Hide everything except logo and hamburger menu */
+        .search-bar,
+        .location-dropdown,
+        .nav-item,
+        .accessibility-btn {
+            display: none;
+        }
+
+        .navbar {
+            justify-content: space-between;
+        }
+
+        .hamburger-menu {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            margin-left: auto; /* Pushes the icon to the right */
+            padding-right: 15px; /* Adds spacing from the right edge */
+            position: relative;
+        }
+
+    }
+
+    @media (min-width: 769px) {
+        .hamburger-menu {
+            display: none; /* Hide hamburger menu on larger screens */
+        }
+    }
     </style>
 </head>
 
@@ -135,10 +156,14 @@
     <nav id="stickyHeader" class="navbar">
         <div class="navbar-brand">
             <a href="{{ url_for('home') }}">
-                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo"style"width:250px;height:auto;">
+                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 180px; height: auto;">
             </a>
         </div>
-        
+
+         <!-- Hamburger menu for smaller screens -->
+        <div class="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </div>
 
         <!-- Search Bar with Category Dropdown -->
         <div class="search-bar">
@@ -208,18 +233,28 @@
 <div class="d-flex align-items-center ms-auto" style="margin-right: 85px;">
     <div class="nav-item dropdown">
         <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ username if username else "Guest" }}
+            {{ username if session.get('user_id') and session.get('user_id') != 'guest' else "Guest" }}
         </button>
-         <!-- Dropdown Menu -->
+        <!-- Dropdown Menu -->
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
-            <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+            {% if session.get('user_id') and session.get('user_id') != 'guest' %}
+                <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+            {% else %}
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Account Information</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Loyalty and Rewards</a></li>
+            {% endif %}
             <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
             <li>
-                <form action="{{ url_for('logout') }}" method="POST">
-                    <button class="dropdown-item" type="submit">Sign Out</button>
-                </form>
+                {% if session.get('user_id') and session.get('user_id') != 'guest' %}
+                    <form action="{{ url_for('logout') }}" method="POST">
+                        <button class="dropdown-item" type="submit">Sign Out</button>
+                    </form>
+                {% else %}
+                    <a class="dropdown-item" href="{{ url_for('login') }}">Sign In</a>
+                {% endif %}
             </li>
         </ul>
     </div>
@@ -239,11 +274,7 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="content">
-        <!-- Add your page content here -->
-      
-    </div>
+    <div style="height: 150px;"></div> <!-- Adjust the height as needed -->
 
     <!-- Bootstrap JS, Popper.js, 
      and Font Awesome JS -->
@@ -356,7 +387,7 @@ const productMapping = {
 
             if (currentScrollPosition > lastScrollPosition) {
                 // Scroll down, hide header
-                header.style.top = '-60px';
+                header.style.top = '-150px';
             } else {
                 // Scroll up, show header
                 header.style.top = '0';
