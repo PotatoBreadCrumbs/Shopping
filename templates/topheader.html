@@ -9,8 +9,8 @@
 
     <!-- Bootstrap CSS (version 5.3.0-alpha1) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome (version 5.15.4) -->
+    <script src="https://cdn.jsdelivr.net/npm/darkreader/darkreader.min.js"></script>
+        <!-- Font Awesome (version 5.15.4) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -36,6 +36,7 @@
 
         .navbar-brand img {
             width: 150px;
+            margin-right: 50px;
         }
 
         .nav-item .dropdown-toggle {
@@ -83,20 +84,22 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            margin-left: 20px;
+            margin-left: 15px;
+            background-color: transparent !important; /* Explicitly remove background */
+            margin-right: 15px;
         }
 
         .accessibility-btn img {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
         }
 
         .username {
-            margin-right: 20px;
+            margin-right: 10px;
             font-weight: bold;
         }
         .location-dropdown {
-            width: 175px;
+            width: 250px;
             margin-left: auto; /* Pushes the dropdown to the far right */
             z-index: 1000; /* Ensures it stays above other elements */
         }
@@ -106,7 +109,44 @@
             padding: 4px; /* Reduces padding for a smaller dropdown */
         }
     
-        
+        @media (max-width: 768px) {
+            .location-dropdown {
+                position: fixed; /* Fixes the element to the viewport */
+                top: 10px; /* Adjust position for smaller screens */
+                right: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+        /* Hide everything except logo and hamburger menu */
+        .search-bar,
+        .location-dropdown,
+        .nav-item,
+        .accessibility-btn {
+            display: none;
+        }
+
+        .navbar {
+            justify-content: space-between;
+        }
+
+        .hamburger-menu {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            margin-left: auto; /* Pushes the icon to the right */
+            padding-right: 15px; /* Adds spacing from the right edge */
+            position: relative;
+        }
+
+    }
+
+    @media (min-width: 769px) {
+        .hamburger-menu {
+            display: none; /* Hide hamburger menu on larger screens */
+        }
+    }
     </style>
 </head>
 
@@ -116,10 +156,14 @@
     <nav id="stickyHeader" class="navbar">
         <div class="navbar-brand">
             <a href="{{ url_for('home') }}">
-                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 250px; height: auto;">
+                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 180px; height: auto;">
             </a>
         </div>
-        
+
+         <!-- Hamburger menu for smaller screens -->
+        <div class="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </div>
 
         <!-- Search Bar with Category Dropdown -->
         <div class="search-bar">
@@ -158,6 +202,10 @@
         </select>
     </div>
     
+    <script src="https://kk-designs.github.io/dark-mode/dark-mode.js"></script>
+
+<!--ENABLE DARK MODE-->
+<script src="../static/js/darkmode.js"></script>
 
 <script>
     function changeLocation() {
@@ -182,34 +230,49 @@
 </script>
 
 
-      <!-- Username and Accessibility Button -->
-<div class="d-flex align-items-center">
+<div class="d-flex align-items-center ms-auto" style="margin-right: 85px;">
     <div class="nav-item dropdown">
-        <a class="dropdown-toggle username" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ username }}
-        </a>
-
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <li><a class="dropdown-item" href="{{ url_for('settings') }}">Settings</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('orderhistory') }}">Order History</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ username if session.get('user_id') and session.get('user_id') != 'guest' else "Guest" }}
+        </button>
+        <!-- Dropdown Menu -->
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+            {% if session.get('user_id') and session.get('user_id') != 'guest' %}
+                <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('loyalty_rewards') }}">Loyalty and Rewards</a></li>
+            {% else %}
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Account Information</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Loyalty and Rewards</a></li>
+            {% endif %}
             <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
             <li>
-                <form action="{{ url_for('logout') }}" method="POST">
-                    <button class="dropdown-item text-center" type="submit" style="color: red; display: block; width: 100%; text-align: center;">Sign Out</button>
-                </form>
+                {% if session.get('user_id') and session.get('user_id') != 'guest' %}
+                    <form action="{{ url_for('logout') }}" method="POST">
+                        <button class="dropdown-item" type="submit">Sign Out</button>
+                    </form>
+                {% else %}
+                    <a class="dropdown-item" href="{{ url_for('login') }}">Sign In</a>
+                {% endif %}
             </li>
         </ul>
     </div>
-
-    <div class="accessibility-btn">
-        <img src="/static/img/AccessabilityButton.png" alt="Accessibility Icon">
-    </div>
-    </div>
-    
+</div>
+<style>
+    .dropdown-menu-end {
+        right: 5; /* Aligns the dropdown menu to the right */
+    }
+    .nav-item dropdown{
+        margin-right: -20px;
+    }
+</style>
+            
+            <div class="accessibility-btn" onclick="changeToDarkMode()">
+                <img src="/static/img/Accessability.svg" alt="Accessibility Icon">
+            </div>
+        </div>
     </nav>
-    
 
     <div style="height: 150px;"></div> <!-- Adjust the height as needed -->
 
@@ -231,68 +294,61 @@
             const query = document.getElementById('searchInput').value.toLowerCase();
 // Mapping categories to products
 const productMapping = {
-    "All Categories": [
-        "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", 
-        "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", 
-        "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
-        "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", 
-        "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", 
-        "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", 
-        "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", 
-        "canned beans", "canned tomatoes", "canned soup", "canned corn", "canned peas", 
-        "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", 
-        "shampoo", "conditioner", "soap", "toothpaste", "mouthwash", "lotion", "deodorant", "razor"
-    ],
-    "Meats": [
-        "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", "ground beef", "steak", "ribs", 
-        "duck", "quail", "goat", "veal", "fish", "shrimp", "salmon", "lobster", "crab", "clams", "oysters", "mussels"
-    ],
-    "Fruits": [
-        "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", 
-        "blackberries", "raspberries", "watermelon", "cantaloupe", "mango", "papaya", "peach", "plum", "nectarine", 
-        "apricot", "cherries", "figs", "dates", "pomegranate", "dragonfruit", "lychee"
-    ],
-    "Vegetables": [
-        "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
-        "zucchini", "squash", "asparagus", "mushrooms", "kale", "cauliflower", "green beans", "peas", "corn", 
-        "eggplant", "cabbage", "brussels sprouts", "artichoke", "avocado", "radish", "turnip", "beet", "okra"
-    ],
-    "Dairy": [
-        "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", "sour cream", "cottage cheese", 
-        "cream cheese", "half-and-half", "ghee", "kefir", "buttermilk", "ricotta", "mozzarella", "cheddar", "parmesan", 
-        "feta", "brie", "gouda", "blue cheese", "goat cheese", "provolone", "swiss cheese", "havarti"
-    ],
-    "Bread": [
-        "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", "tortilla", "wrap", "sourdough", 
-        "rye bread", "whole wheat bread", "white bread", "french bread", "ciabatta", "brioche", "focaccia", "biscuit", 
-        "cornbread", "English muffin", "panini bread"
-    ],
-    "Drinks": [
-        "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", "sports drink", "milkshake", "smoothie", 
-        "iced tea", "sparkling water", "coconut water", "kombucha", "beer", "wine", "vodka", "whiskey", "rum", "gin", 
-        "tequila", "brandy", "cider", "cocktail mix", "mocktail", "chai", "latte", "espresso"
-    ],
-    "Frozen": [
-        "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", "frozen berries", 
-        "frozen dumplings", "frozen waffles", "frozen pancakes", "frozen chicken nuggets", "frozen fish sticks", 
-        "frozen lasagna", "frozen pies", "frozen yogurt", "frozen fruit bars", "frozen hashbrowns", "frozen burritos"
-    ],
-    "Canned": [
-        "canned beans", "canned tomatoes", "canned soup", "canned corn", "canned peas", "canned carrots", 
-        "canned pineapple", "canned peaches", "canned pears", "canned olives", "canned tuna", "canned salmon", 
-        "canned chicken", "canned beef", "canned chili", "canned pasta", "canned spaghetti sauce", 
-        "canned coconut milk", "canned evaporated milk", "canned condensed milk", "canned pumpkin"
-    ],
-    "Snacks": [
-        "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", "trail mix", "granola bars", 
-        "protein bars", "beef jerky", "fruit snacks", "rice cakes", "potato chips", "tortilla chips", "nachos", 
-        "salsa", "guacamole", "hummus", "dips", "cheese sticks", "yogurt snacks", "fruit bars"
-    ],
-    "Personal Care": [
-        "shampoo", "conditioner", "soap", "toothpaste", "mouthwash", "lotion", "deodorant", "razor", "shaving cream", 
-        "face wash", "moisturizer", "sunscreen", "hand sanitizer", "body wash", "hair gel", "hair spray", "hair mousse", 
-        "makeup remover", "lip balm", "nail polish remover", "cotton swabs", "cotton balls", "tissues", "wet wipes"
-    ]
+  "All Categories": [
+    // Meats
+    "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", "duck", "venison", "rabbit", "goose", 
+    "bison", "quail", "pheasant", "goat", "ox", "veal", "buffalo", "horsemeat", "kangaroo", "ostrich", "alligator", "frog legs",
+    
+    // Fruits
+    "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", "mango", 
+    "papaya", "pomegranate", "cherry", "watermelon", "melon", "cantaloupe", "dragon fruit", "lychee", "starfruit", "plum", 
+    "peach", "apricot", "nectarine", "fig", "date", "persimmon", "blackberry", "raspberry", "cranberry", "tamarind", "avocado",
+    
+    // Vegetables
+    "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
+    "cauliflower", "zucchini", "eggplant", "beet", "asparagus", "brussels sprouts", "cabbage", "radish", "turnip", "parsnip", 
+    "yam", "chard", "collard greens", "kale", "okra", "pumpkin", "butternut squash", "acorn squash", "watercress", "bamboo shoots",
+    
+    // Dairy and Desserts
+    "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", "sour cream", "kefir", "goat milk", "cottage cheese", 
+    "cream cheese", "ghee", "condensed milk", "evaporated milk", "lactose-free milk", "ricotta", "mascarpone", "paneer", 
+    "feta cheese", "parmesan", "mozzarella", "camembert", "brie", "cheddar", "gouda", "roquefort", "stilton", "swiss cheese",
+    "ice cream", "pudding", "custard", "cheesecake", "tiramisu", "flan", "yogurt parfait", "milkshake", "gelato", "panna cotta",
+    
+    // Breads and Bakery
+    "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", "sourdough", "rye bread", "whole wheat bread", 
+    "brioche", "focaccia", "ciabatta", "lavash", "chapati", "roti", "tortilla", "flatbread", "english muffin", "paratha", 
+    "biscuit", "doughnut", "danish", "pancake", "waffle", "pie", "cake", "cupcake", "brownie", "pastry", "scone", "pretzel", "shortbread",
+    
+    // Beverages
+    "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", "smoothie", "milkshake", "coconut water", "iced tea", 
+    "kombucha", "sports drink", "aloe vera drink", "sparkling water", "tonic water", "root beer", "ginger ale", "chai", 
+    "hot chocolate", "matcha", "mocha", "espresso", "latte", "cappuccino", "green tea", "black tea", "herbal tea", "yerba mate",
+    
+    // Frozen Foods
+    "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", "frozen berries", "frozen fish", "frozen shrimp", 
+    "frozen dumplings", "frozen spring rolls", "frozen waffles", "frozen yogurt", "frozen pie", "frozen burritos", "frozen meatballs", 
+    "frozen sausages", "frozen empanadas", "frozen falafel", "frozen samosas", "frozen chicken tenders", "frozen lasagna",
+    
+    // Canned Goods
+    "canned beans", "canned tomatoes", "canned soup", "canned corn", "canned peas", "canned carrots", "canned pineapple", 
+    "canned tuna", "canned salmon", "canned chicken", "canned coconut milk", "canned green beans", "canned peaches", 
+    "canned apricots", "canned sardines", "canned anchovies", "canned olives", "canned mushrooms", "canned chickpeas", 
+    "canned artichoke hearts", "canned pumpkin", "canned clams",
+    
+    // Snacks and Sweets
+    "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", "granola bar", "trail mix", "beef jerky", 
+    "pita chips", "rice cakes", "fruit snacks", "gummy bears", "licorice", "marshmallows", "peanut butter", "jelly", "honey", 
+    "jam", "caramel", "toffee", "nougat", "chewing gum", "hard candy", "cotton candy", "fruit leather", "yogurt raisins", "salsa",
+    "truffles", "fudge", "macarons", "baklava", "churros", "mousse", "tarts", "eclairs", "popsicles", "fruit pie", "cupcakes", "madeleines",
+    
+    // Personal Care
+    "shampoo", "conditioner", "soap", "toothpaste", "mouthwash", "lotion", "deodorant", "razor", "shaving cream", "toilet paper", 
+    "tissue", "hand sanitizer", "body wash", "facial cleanser", "body scrub", "face mask", "lip balm", "sunscreen", 
+    "hand lotion", "moisturizer", "face cream", "eye drops", "makeup remover", "cotton pads", "toothbrush", "hair gel", 
+    "hair spray", "nail polish", "hand soap", "essential oils", "bath salts", "foot cream", "body butter", "eye cream"
+]
+
 };
 
 
@@ -331,13 +387,20 @@ const productMapping = {
 
             if (currentScrollPosition > lastScrollPosition) {
                 // Scroll down, hide header
-                header.style.top = '-60px';
+                header.style.top = '-150px';
             } else {
                 // Scroll up, show header
                 header.style.top = '0';
             }
 
             lastScrollPosition = currentScrollPosition;
+
+            document.addEventListener('DOMContentLoaded', () => {
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'enabled') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            });
         });
     </script>
 
