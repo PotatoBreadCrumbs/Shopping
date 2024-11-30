@@ -12,7 +12,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from flask import g
-
+from markupsafe import Markup
+import re
 
 # First we are going to initialize the Flask app
 app = Flask(__name__)
@@ -348,36 +349,29 @@ def settings():
     user_data = users.get(current_user.id, {})
     return render_template('settings.html', user_data=user_data)
 
-@app.route('/login', methods=['GET', 'POST'], endpoint='login')
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm() 
+    form = LoginForm()  # implementing the login form to be displaed
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-
-       
-        users = read_users()
-        if not users:
-            print("Error: No users loaded from user_storage.json.")
-            return "User data not loaded. Check user_storage.json.", 500
-
-      
+        users = read_users()  # allow us to read the users from the file saved from mysql lite
         if username in users and users[username]['password'] == password:
-            user = User(username)  # Create a user object
-            login_user(user)  # Log in the user
-
-           
+            user = User(username)
+            login_user(user)
             cart_data = read_cart(username)
             session['user_id'] = username  # Store user ID in session
             session['cart_count'] = sum(item.get('quantity', 1) for item in cart_data['cart_items'])  # Calculate total quantity
             session.modified = True 
-
-            flash('Login successful!', 'success')
-            return redirect(url_for('home'))  
+            return jsonify({"message": "Right", "redirect_url": url_for('home')})
+        
+            #return redirect(url_for('home'))  # redirect to home after login
         else:
-            flash('Invalid username or password', 'danger')
-
+           return jsonify({"message": "Wrong"})
     return render_template('login.html', form=form)
+
 
 @app.route('/save_for_later/<int:index>', methods=['POST'])
 @login_required
@@ -526,16 +520,56 @@ def register():
         new_username = form.username.data
         new_password = form.password.data
         users = read_users()  # reads users from the file saved in db 
-        
-        if new_username in users:
-            flash('Username already exists, please choose another.')
+        if (len(new_username) < 5 or len(new_username) > 20):
+            flash(message=Markup("Username must be at least 5 characters."))
+        if new_username in users: 
+            flash(message = Markup("Username already exists, please choose another."))
         else:
             users[new_username] = {'password': new_password}
             write_users(users)  # saves new user to the file
-            flash('User registered successfully! Please log in.')
+            flash('User registered successfully! Please log in.',category="success")
             return redirect(url_for('login'))
     
     return render_template('register.html', form=form)
+
+@app.route('/validate', methods=['POST'])
+def validate():
+    # Access form data from JavaScript
+    username = request.form.get('username')
+    password = request.form.get('password')
+    users = read_users()
+    # Perform validation (this is a basic example)
+    if len(password) < 8:
+        return jsonify({"message": "Password must be at least 8 characters long."})
+    if not any(char.isupper() for char in password):
+        return jsonify({"message": "Password must contain an uppercase letter."})
+    if not any(char.isdigit() for char in password):
+        return jsonify({"message": "Password must contain a number."})
+    if not any(char.islower() for char in password):
+        return jsonify({"message": "Password must contain a lowercase letter."})
+    special_char_pattern = r'[@$!%*?&_-]'
+    
+    # Check if password contains at least one special character
+    if not re.search(special_char_pattern, password):
+        return jsonify({"message": "Password must contain at least one special character (@$!%*?&_-)"})
+    # If all checks pass
+    if username in users:
+        return jsonify({"message": "Already an existing user"})
+    users[username] = {'password': password}
+    write_users(users)  # saves new user to the file
+    return jsonify({"message": "Valid"})
+
+
+
+@app.route('/check_username')
+def check_username():
+    username = request.args.get('username')
+    users = read_users()  # Assuming this reads all registered users from your database or file
+    
+    # Check if the username already exists
+    is_taken = username in users
+
+    return jsonify({'is_taken': is_taken})
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def reset_password():
@@ -562,10 +596,10 @@ def reset_password():
                     print(f"Error sending email: {str(e)}")
                     flash('An error occurred while sending the email. Please try again later.', 'danger')
                 
-                break
-
+                return jsonify({"message": "Valid", "redirect_url": url_for('login')})
+                
         if not user_found:
-            flash('Email address not found.', 'danger')
+            return jsonify({"message": "Invalid"})
 
         # Redirect to the login page or another confirmation page
         return redirect(url_for('login'))
@@ -1087,6 +1121,26 @@ def calculate_cart_totals(cart):
 
     return subtotal, sales_tax, total_amount
 
+# NEW METHOD 11/29/24 @12:56 PM
+@app.route('/validate_checkout', methods=['POST'])
+def validate_checkout():
+    user_id = session.get("user_id")
+    cart = []
+
+    if user_id:
+        # Retrieve cart data for the logged-in user
+        user_data = read_cart(user_id)
+        cart = user_data.get('cart_items', [])
+    else:
+        # Retrieve cart data for the guest user
+        cart = session.get('guest_cart', [])
+
+    if not cart or len(cart) == 0:
+        return jsonify({"message": "Empty"})  # Return error if cart is empty
+
+    return jsonify({"message": "Proceed", "redirect_url": url_for('checkout')})
+
+
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     user_id = session.get("user_id")
@@ -1164,8 +1218,6 @@ def checkout():
 
 
 
-
-
 @app.route('/api/order_history')
 def api_order_history():
     user_id = session.get('user_id')
@@ -1189,39 +1241,43 @@ def process_checkout():
     from datetime import datetime
 
     # Retrieve form data
-    name = request.form.get('name')
-    address = request.form.get('address')
-    city = request.form.get('city')
-    zip_code = request.form.get('zip')
-    to_email = request.form.get('email')  # Get the email entered in the form
-
-    print(f"Email submitted: {to_email}")
+    name = request.form.get('name', '').strip()
+    cvv = request.form.get('cvv','').strip()
+    exp_date = request.form.get('expiry','').strip()
+    cn = request.form.get('card_number','').strip()
+    address = request.form.get('address', '').strip()
+    city = request.form.get('city', '').strip()
+    zip_code = request.form.get('zip', '').strip()
+    to_email = request.form.get('email', '').strip()
+    
 
     # Validate required fields
-    if not all([name, address, city, zip_code, to_email]):
-        missing_fields = [field for field, value in {
-            'name': name,
-            'address': address,
-            'city': city,
-            'zip_code': zip_code,
-            'email': to_email
-        }.items() if not value]
-        flash(f"Missing required fields: {', '.join(missing_fields)}", "danger")
-        return redirect(url_for('checkout'))
+    missing_fields = [field for field, value in {
+        'Name on Card': name,
+        'Card Number':cn,
+        'Expiry Date':exp_date,
+        'CVV':cvv,
+        'Shipping Address': address,
+        'City': city,
+        'Zip Code': zip_code,
+        'Email': to_email,
+    }.items() if not value]
 
+    if missing_fields:
+        return jsonify({"message": "MissingFields", "errors": missing_fields})
+
+    # Get user or guest cart
     user_id = session.get("user_id")
     cart_data = read_cart(user_id) if user_id else {'cart_items': session.get('guest_cart', [])}
-
-    # Validate cart data
     cart_items = cart_data.get('cart_items', [])
-    if not cart_items:
-        flash("Your cart is empty. Please add items before checking out.", "warning")
-        return redirect(url_for('home'))
 
-    # Calculate subtotal, sales tax, and total price
+    if not cart_items:
+        return jsonify({"message": "EmptyCart"})
+
+    # Calculate totals
     subtotal, sales_tax, total_price = calculate_cart_totals(cart_items)
 
-    # Create the order object
+    # Create the order
     order = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "order_items": cart_items,
@@ -1236,15 +1292,16 @@ def process_checkout():
         }
     }
 
+    # Update user data or clear guest cart
     if user_id:
-        # Update registered user's order history
         users = load_user_storage()
         user_data = users.get(user_id, {})
         user_data.setdefault("order_history", []).append(order)
+        points_earned = int(subtotal * 3)  # Assuming 3x multiplier for points
+        user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned
         write_users(users)
-        write_cart(user_id, {'cart_items': []})  # Clear cart
+        write_cart(user_id, {'cart_items': []})
     else:
-        # Clear guest cart in session
         session['guest_cart'] = []
 
     # Reset cart count in session
@@ -1255,12 +1312,12 @@ def process_checkout():
     if to_email:
         try:
             send_postmark_order_confirmation(to_email, name, cart_items)
-            flash("Thank you for your order! A confirmation email has been sent.", "success")
         except Exception as e:
             print(f"Error sending confirmation email: {str(e)}")
-            flash("Order placed successfully, but there was an issue sending the confirmation email.", "warning")
+            return jsonify({"message": "EmailIssue"}), 500
 
-    return redirect(url_for('home'))
+    return jsonify({"message": "OrderComplete", "redirect_url": url_for('home')})
+
 
 
 
@@ -1488,4 +1545,4 @@ def view_saved_items():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
