@@ -800,42 +800,50 @@ def add_to_cart():
 from urllib.parse import unquote
 
 @app.route('/remove_item/<int:index>', methods=['POST'])
-@login_required
 def remove_item(index):
-    username = session.get('user_id')
+    user_id = session.get('user_id')  # Get the user_id from the session
 
-    if username:
-        # Retrieve the user's cart data (cart_items and saved_items)
-        user_data = read_cart(username)
-        cart = user_data.get('cart_items', [])
+    if user_id:
+        # Retrieve the user's cart data (cart_items)
+        user_cart_data = read_cart(user_id)
+        cart_items = user_cart_data.get('cart_items', [])
+
+        # Validate index range
+        if 0 <= index < len(cart_items):
+            cart_items.pop(index)  # Remove the item
+            user_cart_data['cart_items'] = cart_items
+            write_cart(user_id, user_cart_data)
+
+            # Update session cart count
+            session['cart_count'] = sum(item.get('quantity', 1) for item in cart_items)
+            session.modified = True
+            flash("Item removed from cart.", "success")
+        else:
+            flash("Invalid item index. Please try again.", "danger")
+    else:
+        # Handle guest cart
+        cart = session.get('guest_cart', [])
 
         # Validate index range
         if 0 <= index < len(cart):
-            cart.pop(index)  # Remove the item from the cart
-            write_cart(username, {'cart_items': cart, 'saved_items': user_data.get('saved_items', [])})
-
-            # Update cart count in session (sum of quantities)
+            cart.pop(index)  # Remove the item
+            session['guest_cart'] = cart
             session['cart_count'] = sum(item.get('quantity', 1) for item in cart)
             session.modified = True
             flash("Item removed from cart.", "success")
         else:
-            flash("Item not found in cart.", "danger")
-    else:
-        flash("User not logged in.", "danger")
+            flash("Invalid item index. Please try again.", "danger")
 
     return redirect(url_for('view_cart'))
 
 
 @app.route('/update_quantity/<int:index>/<operation>', methods=['POST'])
-@login_required
 def update_quantity(index, operation):
     user_id = session.get('user_id')  # Get the user_id from the session
 
     if user_id:
         # Retrieve the user's cart data from JSON
         user_cart_data = read_cart(user_id)
-
-        # Get cart_items from the retrieved cart data
         cart_items = user_cart_data.get('cart_items', [])
 
         # Ensure the index is within bounds
@@ -849,25 +857,38 @@ def update_quantity(index, operation):
                 item['quantity'] -= 1  # Decrement the quantity only if > 1
 
             # Update the user's cart data in JSON
-            user_cart_data['cart_items'] = cart_items  # Update the cart_items
+            user_cart_data['cart_items'] = cart_items
             write_cart(user_id, user_cart_data)
 
             # Recalculate the total cart count for the session
-            session['cart_count'] = sum(
-                item.get('quantity', 1) for item in cart_items
-            )  # Default to 1 if quantity is missing
-
-            # Mark the session as modified to ensure updates are saved
+            session['cart_count'] = sum(item.get('quantity', 1) for item in cart_items)
             session.modified = True
-
             flash("Item quantity updated successfully.", "success")
         else:
             flash("Invalid item index. Please try again.", "danger")
     else:
-        flash("User not found. Please log in again.", "danger")
+        # Handle guest cart
+        cart = session.get('guest_cart', [])
+
+        # Ensure the index is within bounds
+        if 0 <= index < len(cart):
+            item = cart[index]
+
+            # Handle quantity updates for guest cart
+            if operation == 'increase':
+                item['quantity'] += 1
+            elif operation == 'decrease' and item['quantity'] > 1:
+                item['quantity'] -= 1
+
+            # Update session cart
+            session['guest_cart'] = cart
+            session['cart_count'] = sum(item.get('quantity', 1) for item in cart)
+            session.modified = True
+            flash("Item quantity updated successfully.", "success")
+        else:
+            flash("Invalid item index. Please try again.", "danger")
 
     return redirect(url_for('view_cart'))
-
 
 @app.route('/cart')
 def view_cart():
@@ -1306,40 +1327,47 @@ def loyalty_rewards():
     user_id = session.get("user_id")
     user_data = read_user(user_id)
 
-    # Get loyalty points from user data or default to 0
-    loyalty_points = user_data.get("loyalty_points", 0)
-
-    # Define the initial tier and next tier points
-    tier = "Bronze"
-    next_tier_points = 1000
-
-    # Update tier based on loyalty points
-    if loyalty_points >= 1000:
-        tier = "Silver"
-        next_tier_points = 3000
-    if loyalty_points >= 3000:
-        tier = "Gold"
-        next_tier_points = 5000
-    if loyalty_points >= 5000:
-        tier = "Platinum"
-        next_tier_points = None
-
-    # Prepare rewards info
-    rewards_info = {
-        "points": loyalty_points,
-        "tier": tier,
-        "next_tier_points": next_tier_points,
-        "points_to_next_tier": next_tier_points - loyalty_points if next_tier_points else 0,
-    }
-
     # Get rewards history from user data (order history)
     rewards_history = user_data.get("order_history", [])
+
+    # Recalculate loyalty points from the order history
+    total_loyalty_points = sum(
+        int(order.get('points_earned', 0)) for order in rewards_history
+    )
 
     # Ensure every order in rewards history has 'points_earned'
     for order in rewards_history:
         if 'points_earned' not in order:
             # Calculate points earned for the order based on subtotal (example: 3x multiplier)
             order['points_earned'] = int(order.get('subtotal', 0) * 3)
+
+    # Update the user data with the calculated points if necessary
+    user_data["loyalty_points"] = total_loyalty_points
+    user_data["order_history"] = rewards_history
+    write_users({user_id: user_data})  # Save the updated user data
+
+    # Define the initial tier and next tier points
+    tier = "Bronze"
+    next_tier_points = 1000
+
+    # Update tier based on loyalty points
+    if total_loyalty_points >= 1000:
+        tier = "Silver"
+        next_tier_points = 3000
+    if total_loyalty_points >= 3000:
+        tier = "Gold"
+        next_tier_points = 5000
+    if total_loyalty_points >= 5000:
+        tier = "Platinum"
+        next_tier_points = None
+
+    # Prepare rewards info
+    rewards_info = {
+        "points": total_loyalty_points,
+        "tier": tier,
+        "next_tier_points": next_tier_points,
+        "points_to_next_tier": next_tier_points - total_loyalty_points if next_tier_points else 0,
+    }
 
     # Render the loyalty rewards page with the updated rewards info and history
     return render_template(
