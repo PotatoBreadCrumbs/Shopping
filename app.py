@@ -110,15 +110,30 @@ def send_postmark_order_confirmation(to_email, name, order_details):
 @app.route('/reset-password', methods=['POST'])
 def reset_password_page():
     try:
+        # Parse JSON data from the request
         data = request.get_json()
         if not data:
-            return jsonify({"message": "Invalid JSON payload"}), 400
+            return jsonify({"message": "Invalid JSON payload"})
 
         email = data.get('email')
         new_password = data.get('new_password')
 
         if not email or not new_password:
-            return jsonify({"message": "Email and new password are required."}), 400
+            return jsonify({"message": "Email and new password are required."})
+
+        # Validate the new password
+        if len(new_password) < 8:
+            return jsonify({"message": "Password must be at least 8 characters long."})
+        if not any(char.isupper() for char in new_password):
+            return jsonify({"message": "Password must contain an uppercase letter."})
+        if not any(char.isdigit() for char in new_password):
+            return jsonify({"message": "Password must contain a number."})
+        if not any(char.islower() for char in new_password):
+            return jsonify({"message": "Password must contain a lowercase letter."})
+        
+        special_char_pattern = r'[!@#$%^&*()\-_=+{}\[\]|\\:;"\'<>,.?/~`]'
+        if not re.search(special_char_pattern, new_password):
+            return jsonify({"message": "Password must contain at least one special character (@$!%*?&_-)"})
 
         # Load user data
         users = read_users()
@@ -135,14 +150,14 @@ def reset_password_page():
                 break
 
         if user_found:
-            write_users(users)
+            write_users(users)  # Save changes
             return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
         else:
-            return jsonify({"message": "Email not found. Please check and try again."}), 404
+            return jsonify({"message": "Email not found. Please check and try again."})
 
     except Exception as e:
         print(f"Error in /reset-password route: {str(e)}")
-        return jsonify({"message": "An internal server error occurred."}), 500
+        return jsonify({"message": "An internal server error occurred."})
 
 
     
