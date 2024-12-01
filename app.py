@@ -109,7 +109,7 @@ def send_postmark_order_confirmation(to_email, name, order_details):
 #good from here onwards, testing sg above now
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password_page():
-   if request.method == 'POST':
+    if request.method == 'POST':
         # Parse JSON data from the request
         data = request.get_json()  # Fixed: Get JSON payload
         email = data.get('email')
@@ -119,7 +119,7 @@ def reset_password_page():
         users = read_users()
         user_found = False
 
-        # Check if email is a key or within nested data
+        # Check if email exists and update password
         for key, user_info in users.items():
             if key == email or user_info.get('email') == email:
                 # Update the password
@@ -132,14 +132,12 @@ def reset_password_page():
         
         if user_found:
             write_users(users)  # Save changes
-            return jsonify({"message": "Password updated successfully!"})
+            return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
         else:
-            return jsonify({"message": "Email not found. Please check and try again."})
-
-
-        return redirect(url_for('login'))
+            return jsonify({"message": "Email not found. Please check and try again."}), 404  # Not found
 
     return render_template('reset_password_updated.html')
+    
 # We created a file to store user data (this simulates a database using mysql lite) x
 USER_FILE = 'user_storage.json'
 
