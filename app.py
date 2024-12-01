@@ -110,14 +110,16 @@ def send_postmark_order_confirmation(to_email, name, order_details):
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password_page():
     if request.method == 'POST':
-        email = request.form.get('email')
-        new_password = request.form.get('new_password')
+        # Parse JSON data from the request
+        data = request.get_json()  # Fixed: Get JSON payload
+        email = data.get('email')
+        new_password = data.get('new_password')
 
         # Load user data
         users = read_users()
         user_found = False
 
-        # Check if email is a key or within nested data
+        # Check if email exists and update password
         for key, user_info in users.items():
             if key == email or user_info.get('email') == email:
                 # Update the password
@@ -127,17 +129,54 @@ def reset_password_page():
                     user_info['password'] = new_password
                 user_found = True
                 break
-
+        
         if user_found:
-            # Save changes to user JSON
-            write_users(users)
-            flash('Password updated successfully!', 'success')
-        else:
-            flash('Email not found. Please check and try again.', 'danger')
-
-        return redirect(url_for('login'))
+            write_users(users)  # Save changes
+            return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
+        else:   
+            return jsonify({"message": "Email not found. Please check and try again."})
 
     return render_template('reset_password_updated.html')
+
+
+
+@app.route('/validate-reset-password', methods=['GET', 'POST'])
+def validate_reset_password_page():
+    data = request.get_json()  # Read JSON payload
+    new_password = data.get('new_password')
+    email = data.get('email')
+    users = read_users()
+    # Perform validation (this is a basic example)
+    if len(new_password) < 8:
+        return jsonify({"message": "Password must be at least 8 characters long."})
+    if not any(char.isupper() for char in new_password):
+        return jsonify({"message": "Password must contain an uppercase letter."})
+    if not any(char.isdigit() for char in new_password):
+        return jsonify({"message": "Password must contain a number."})
+    if not any(char.islower() for char in new_password):
+        return jsonify({"message": "Password must contain a lowercase letter."})
+    special_char_pattern = r'[!@#$%^&*()\-_=+{}\[\]|\\:;"\'<>,.?/~`]'
+    
+    # Check if password contains at least one special character
+    if not re.search(special_char_pattern, new_password):
+        return jsonify({"message": "Password must contain at least one special character (@$!%*?&_-)"})
+    # If all checks pass
+    for key, user_info in users.items():
+            if key == email or user_info.get('email') == email:
+                # Update the password
+                if key == email:
+                    users[key]['password'] = new_password
+                else:
+                    user_info['password'] = new_password
+                user_found = True
+                break
+        
+    if user_found:
+        write_users(users)  # Save changes
+        return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
+    else:
+        return jsonify({"message": "Email not found. Please check and try again."}), 404  # Not found
+
 # We created a file to store user data (this simulates a database using mysql lite) x
 USER_FILE = 'user_storage.json'
 
