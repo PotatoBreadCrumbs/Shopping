@@ -32,11 +32,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand img {
             width: 150px;
-            margin-right: 50px;
         }
 
         .nav-item .dropdown-toggle {
@@ -47,6 +47,8 @@
             display: flex;
             align-items: center;
             width: 50%;
+            margin-left: 20px;
+            margin-right: 20px;
         }
 
         .search-bar input {
@@ -57,21 +59,18 @@
         }
 
         .btn-search {
-            padding: 10px 20px;
+            padding: 10px;
             font-size: 1rem;
             display: flex;
             align-items: center;
         }
 
-        .nav-item .dropdown-menu {
-            left: 50%;
-            width: 200px;
-            transform: translateX(-55%);
+        .dropdown-menu {
+            min-width: 160px;
         }
 
-
         .content {
-            padding-top: 80px;
+            padding-top: 90px;
         }
 
         .accessibility-btn {
@@ -90,23 +89,34 @@
         }
 
         .accessibility-btn img {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
         }
 
         .username {
-            margin-right: 10px;
+            margin-right: 20px;
             font-weight: bold;
         }
-        .location-dropdown {
-            width: 250px;
-            margin-left: auto; /* Pushes the dropdown to the far right */
-            z-index: 1000; /* Ensures it stays above other elements */
+
+        .small-dropdown {
+            width: 150px;
         }
-                
+
+        .location-dropdown {
+            position: fixed; /* Fixes the element to the viewport */
+            top: 20px; /* Distance from the top of the viewport */
+            left: 1000px; /* Distance from the right of the viewport */
+            z-index: 500px; /* Ensures it appears above other elements */
+            width: 200px;
+            background-color: #fff; /* Optional: Adds a background color */
+            padding: 10px; /* Optional: Adds some padding for better appearance */
+            border-radius: 5px; /* Optional: Rounds the corners */
+          
+        }
+    
         .form-select-sm {
-            font-size: 12px; /* Adjusts text size */
-            padding: 4px; /* Reduces padding for a smaller dropdown */
+            font-size: 12px; /* Adjust font size for smaller screens */
+            padding: 4px; /* Maintain appropriate padding */
         }
     
         @media (max-width: 768px) {
@@ -116,37 +126,6 @@
                 right: 10px;
             }
         }
-
-        @media (max-width: 768px) {
-        /* Hide everything except logo and hamburger menu */
-        .search-bar,
-        .location-dropdown,
-        .nav-item,
-        .accessibility-btn {
-            display: none;
-        }
-
-        .navbar {
-            justify-content: space-between;
-        }
-
-        .hamburger-menu {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.5rem;
-            margin-left: auto; /* Pushes the icon to the right */
-            padding-right: 15px; /* Adds spacing from the right edge */
-            position: relative;
-        }
-
-    }
-
-    @media (min-width: 769px) {
-        .hamburger-menu {
-            display: none; /* Hide hamburger menu on larger screens */
-        }
-    }
     </style>
 </head>
 
@@ -156,14 +135,10 @@
     <nav id="stickyHeader" class="navbar">
         <div class="navbar-brand">
             <a href="{{ url_for('home') }}">
-                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 180px; height: auto;">
+                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo"style"width:250px;height:auto;">
             </a>
         </div>
-
-         <!-- Hamburger menu for smaller screens -->
-        <div class="hamburger-menu">
-            <i class="fas fa-bars"></i>
-        </div>
+        
 
         <!-- Search Bar with Category Dropdown -->
         <div class="search-bar">
@@ -259,6 +234,7 @@
         </ul>
     </div>
 </div>
+
 <style>
     .dropdown-menu-end {
         right: 5; /* Aligns the dropdown menu to the right */
@@ -274,7 +250,11 @@
         </div>
     </nav>
 
-    <div style="height: 150px;"></div> <!-- Adjust the height as needed -->
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Add your page content here -->
+      
+    </div>
 
     <!-- Bootstrap JS, Popper.js, 
      and Font Awesome JS -->
@@ -284,76 +264,163 @@
     <!-- Custom Script -->
     <script>
         let selectedCategory = 'All Categories';
-
+    
+        // Toggle dropdown visibility
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('categoryDropdownMenu');
+            dropdownMenu.classList.toggle('show');
+        }
+    
+        // Update selected category
         function selectCategory(category) {
             selectedCategory = category;
-            document.getElementById('categoryDropdownButton').textContent = category;
+            
+            // Update the dropdown button to display the selected category
+            const dropdownButton = document.getElementById('categoryDropdownButton');
+            dropdownButton.textContent = category;
+    
+            // Call the function to update the category title dynamically
+            updateCategoryTitle(category);
+        }
+    
+        // Update category title in the header
+        function updateCategoryTitle(category) {
+            const categoryTitle = document.getElementById('categoryTitle');
+            if (category === 'All Categories') {
+                categoryTitle.textContent = 'Search Results';
+            } else {
+                categoryTitle.textContent = category + ' Products';
+            }
         }
 
-        function searchItems() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-// Mapping categories to products
-const productMapping = {
-  "All Categories": [
-    // Meats
-    "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", "duck", "venison", "rabbit", "goose", 
-    "bison", "quail", "pheasant", "goat", "ox", "veal", "buffalo", "horsemeat", "kangaroo", "ostrich", "alligator", "frog legs",
-    
-    // Fruits
-    "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", "mango", 
-    "papaya", "pomegranate", "cherry", "watermelon", "melon", "cantaloupe", "dragon fruit", "lychee", "starfruit", "plum", 
-    "peach", "apricot", "nectarine", "fig", "date", "persimmon", "blackberry", "raspberry", "cranberry", "tamarind", "avocado",
-    
-    // Vegetables
-    "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
-    "cauliflower", "zucchini", "eggplant", "beet", "asparagus", "brussels sprouts", "cabbage", "radish", "turnip", "parsnip", 
-    "yam", "chard", "collard greens", "kale", "okra", "pumpkin", "butternut squash", "acorn squash", "watercress", "bamboo shoots",
-    
-    // Dairy and Desserts
-    "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", "sour cream", "kefir", "goat milk", "cottage cheese", 
-    "cream cheese", "ghee", "condensed milk", "evaporated milk", "lactose-free milk", "ricotta", "mascarpone", "paneer", 
-    "feta cheese", "parmesan", "mozzarella", "camembert", "brie", "cheddar", "gouda", "roquefort", "stilton", "swiss cheese",
-    "ice cream", "pudding", "custard", "cheesecake", "tiramisu", "flan", "yogurt parfait", "milkshake", "gelato", "panna cotta",
-    
-    // Breads and Bakery
-    "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", "sourdough", "rye bread", "whole wheat bread", 
-    "brioche", "focaccia", "ciabatta", "lavash", "chapati", "roti", "tortilla", "flatbread", "english muffin", "paratha", 
-    "biscuit", "doughnut", "danish", "pancake", "waffle", "pie", "cake", "cupcake", "brownie", "pastry", "scone", "pretzel", "shortbread",
-    
-    // Beverages
-    "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", "smoothie", "milkshake", "coconut water", "iced tea", 
-    "kombucha", "sports drink", "aloe vera drink", "sparkling water", "tonic water", "root beer", "ginger ale", "chai", 
-    "hot chocolate", "matcha", "mocha", "espresso", "latte", "cappuccino", "green tea", "black tea", "herbal tea", "yerba mate",
-    
-    // Frozen Foods
-    "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", "frozen berries", "frozen fish", "frozen shrimp", 
-    "frozen dumplings", "frozen spring rolls", "frozen waffles", "frozen yogurt", "frozen pie", "frozen burritos", "frozen meatballs", 
-    "frozen sausages", "frozen empanadas", "frozen falafel", "frozen samosas", "frozen chicken tenders", "frozen lasagna",
-    
-    // Canned Goods
-    "canned beans", "canned tomatoes", "canned soup", "canned corn", "canned peas", "canned carrots", "canned pineapple", 
-    "canned tuna", "canned salmon", "canned chicken", "canned coconut milk", "canned green beans", "canned peaches", 
-    "canned apricots", "canned sardines", "canned anchovies", "canned olives", "canned mushrooms", "canned chickpeas", 
-    "canned artichoke hearts", "canned pumpkin", "canned clams",
-    
-    // Snacks and Sweets
-    "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", "granola bar", "trail mix", "beef jerky", 
-    "pita chips", "rice cakes", "fruit snacks", "gummy bears", "licorice", "marshmallows", "peanut butter", "jelly", "honey", 
-    "jam", "caramel", "toffee", "nougat", "chewing gum", "hard candy", "cotton candy", "fruit leather", "yogurt raisins", "salsa",
-    "truffles", "fudge", "macarons", "baklava", "churros", "mousse", "tarts", "eclairs", "popsicles", "fruit pie", "cupcakes", "madeleines",
-    
-    // Personal Care
-    "shampoo", "conditioner", "soap", "toothpaste", "mouthwash", "lotion", "deodorant", "razor", "shaving cream", "toilet paper", 
-    "tissue", "hand sanitizer", "body wash", "facial cleanser", "body scrub", "face mask", "lip balm", "sunscreen", 
-    "hand lotion", "moisturizer", "face cream", "eye drops", "makeup remover", "cotton pads", "toothbrush", "hair gel", 
-    "hair spray", "nail polish", "hand soap", "essential oils", "bath salts", "foot cream", "body butter", "eye cream"
+    function searchItems() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+
+        // Mapping categories to products
+        const productMapping = {
+                    "All Categories": [
+                      "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", "duck", "venison", "rabbit", "goose", 
+                      "bison", "quail", "pheasant", "goat", "ox", "veal", "buffalo", "horsemeat", "kangaroo", "ostrich", "alligator", "frog legs",
+                      "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", "mango", 
+                      "papaya", "pomegranate", "cherry", "watermelon", "melon", "cantaloupe", "dragon fruit", "lychee", "starfruit", "plum", 
+                      "peach", "apricot", "nectarine", "fig", "date", "persimmon", "blackberry", "raspberry", "cranberry", "tamarind", "avocado",
+                      "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
+                      "cauliflower", "zucchini", "eggplant", "beet", "asparagus", "brussels sprouts", "cabbage", "radish", "turnip", "parsnip", 
+                      "yam", "chard", "collard greens", "kale", "okra", "pumpkin", "butternut squash", "acorn squash", "watercress", "bamboo shoots",
+                      "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", "sour cream", "kefir", "goat milk", "cottage cheese", 
+                      "cream cheese", "ghee", "condensed milk", "evaporated milk", "lactose-free milk", "ricotta", "mascarpone", "paneer", 
+                      "feta cheese", "parmesan", "mozzarella", "camembert", "brie", "cheddar", "gouda", "roquefort", "stilton", "swiss cheese",
+                      "ice cream", "pudding", "custard", "cheesecake", "tiramisu", "flan", "yogurt parfait", "milkshake", "gelato", "panna cotta",
+                      "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", "sourdough", "rye bread", "whole wheat bread", 
+                      "brioche", "focaccia", "ciabatta", "lavash", "chapati", "roti", "tortilla", "flatbread", "english muffin", "paratha", 
+                      "biscuit", "doughnut", "danish", "pancake", "waffle", "pie", "cake", "cupcake", "brownie", "pastry", "scone", "pretzel", "shortbread",
+                      "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", "smoothie", "milkshake", "coconut water", "iced tea", 
+                      "kombucha", "sports drink", "aloe vera drink", "sparkling water", "tonic water", "root beer", "ginger ale", "chai", 
+                      "hot chocolate", "matcha", "mocha", "espresso", "latte", "cappuccino", "green tea", "black tea", "herbal tea", "yerba mate",
+                      "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", "frozen berries", "frozen fish", "frozen shrimp", 
+                      "frozen dumplings", "frozen spring rolls", "frozen waffles", "frozen yogurt", "frozen pie", "frozen burritos", "frozen meatballs", 
+                      "frozen sausages", "frozen empanadas", "frozen falafel", "frozen samosas", "frozen chicken tenders", "frozen lasagna",
+                      "canned beans", "canned tomatoes", "canned soup", "canned corn", "canned peas", "canned carrots", "canned pineapple", 
+                      "canned tuna", "canned salmon", "canned chicken", "canned coconut milk", "canned green beans", "canned peaches", 
+                      "canned apricots", "canned sardines", "canned anchovies", "canned olives", "canned mushrooms", "canned chickpeas", 
+                      "canned artichoke hearts", "canned pumpkin", "canned clams",
+                      "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", "granola bar", "trail mix", "beef jerky", 
+                      "pita chips", "rice cakes", "fruit snacks", "gummy bears", "licorice", "marshmallows", "peanut butter", "jelly", "honey", 
+                      "jam", "caramel", "toffee", "nougat", "chewing gum", "hard candy", "cotton candy", "fruit leather", "yogurt raisins", "salsa",
+                      "truffles", "fudge", "macarons", "baklava", "churros", "mousse", "tarts", "eclairs", "popsicles", "fruit pie", "cupcakes", "madeleines",
+                      "shampoo", "conditioner", "soap", "toothpaste", "mouthwash", "lotion", "deodorant", "razor", "shaving cream", "toilet paper", 
+                      "tissue", "hand sanitizer", "body wash", "facial cleanser", "body scrub", "face mask", "lip balm", "sunscreen", 
+                      "hand lotion", "moisturizer", "face cream", "eye drops", "makeup remover", "cotton pads", "toothbrush", "hair gel", 
+                      "hair spray", "nail polish", "hand soap", "essential oils", "bath salts", "foot cream", "body butter", "eye cream"
+                    ],
+                    
+                    "Meats": [
+                      "chicken", "beef", "pork", "turkey", "bacon", "ham", "lamb", "sausage", "salami", "duck", "venison", "rabbit", "goose", 
+                      "bison", "quail", "pheasant", "goat", "ox", "veal", "buffalo", "horsemeat", "kangaroo", "ostrich", "alligator", "frog legs", 
+                      "ground beef", "chorizo", "duck breast", "liver", "beef steak", "pork chops", "spareribs", "bison burger", "bbq chicken", 
+                      "smoked salmon", "tuna steaks", "chicken wings", "duck confit", "salmon fillets", "turkey legs", "turkey breast", "brisket", 
+                      "beef ribs", "game meat", "mutton", "pork belly", "charcuterie", "bacon lardons"
+                    ],
+                    
+                    "Fruits": [
+                      "apple", "banana", "orange", "grapefruit", "grapes", "pear", "pineapple", "kiwi", "blueberries", "strawberries", "mango", 
+                      "papaya", "pomegranate", "cherry", "watermelon", "melon", "cantaloupe", "dragon fruit", "lychee", "starfruit", "plum", 
+                      "peach", "apricot", "nectarine", "fig", "date", "persimmon", "blackberry", "raspberry", "cranberry", "tamarind", "avocado",
+                      "clementine", "mandarin", "dragonfruit", "elderberries", "guava", "jambu", "carambola", "pummelo", "jackfruit", "soursop"
+                    ],
+                    
+                    "Vegetables": [
+                      "carrot", "broccoli", "spinach", "lettuce", "tomato", "cucumber", "onion", "garlic", "pepper", "potato", "sweet potato", 
+                      "cauliflower", "zucchini", "eggplant", "beet", "asparagus", "brussels sprouts", "cabbage", "radish", "turnip", "parsnip", 
+                      "yam", "chard", "collard greens", "kale", "okra", "pumpkin", "butternut squash", "acorn squash", "watercress", "bamboo shoots",
+                      "celery", "artichoke", "fennel", "daikon radish", "leeks", "chili peppers", "shallots", "snow peas", "snap peas", "water chestnuts",
+                      "bitter melon", "scallions", "chayote", "sweet corn", "ginger", "edamame", "broccoli rabe", "endive", "rutabaga", "kohlrabi"
+                    ],
+                    
+                    "Dairy": [
+                      "milk", "cheese", "yogurt", "butter", "cream", "eggs", "whipped cream", "sour cream", "kefir", "goat milk", "cottage cheese", 
+                      "cream cheese", "ghee", "condensed milk", "evaporated milk", "lactose-free milk", "ricotta", "mascarpone", "paneer", 
+                      "feta cheese", "parmesan", "mozzarella", "camembert", "brie", "cheddar", "gouda", "roquefort", "stilton", "swiss cheese",
+                      "ice cream", "frozen yogurt", "milkshake", "gelato", "custard", "flan", "buttermilk", "paneer", "eggnog", "chocolate milk"
+                    ],
+                    
+                    "Bread": [
+                      "bread", "bagel", "croissant", "bun", "roll", "muffin", "pita", "naan", "sourdough", "rye bread", "whole wheat bread", 
+                      "brioche", "focaccia", "ciabatta", "lavash", "chapati", "roti", "tortilla", "flatbread", "english muffin", "paratha", 
+                      "biscuit", "doughnut", "danish", "pancake", "waffle", "pie", "cake", "cupcake", "brownie", "pastry", "scone", "pretzel", "shortbread",
+                      "eclairs", "tarts", "baklava", "churros", "shortbreads", "babka", "madeleines", "cinnamon rolls", "savory rolls", "gluten-free bread"
+                    ],
+                    
+                    "Drinks": [
+                      "soda", "water", "juice", "lemonade", "coffee", "tea", "energy drink", "smoothie", "milkshake", "coconut water", "iced tea", 
+                      "kombucha", "sports drink", "aloe vera drink", "sparkling water", "tonic water", "root beer", "ginger ale", "chai", 
+                      "hot chocolate", "matcha", "mocha", "espresso", "latte", "cappuccino", "green tea", "black tea", "herbal tea", "yerba mate", 
+                      "cold brew", "iced coffee", "chai latte", "fruit juice", "coconut milk", "lemon iced tea", "herbal iced tea", 
+                      "Coca-Cola", "Pepsi", "Sprite", "Dr. Pepper", "Fanta", "Mountain Dew", "7UP", "Root Beer (A&W)", "Canada Dry", "Schweppes", 
+                      "Lipton Iced Tea", "Arizona Iced Tea", "Red Bull", "Monster Energy", "Gatorade", "Powerade", "Tropicana", "Simply Orange", 
+                     "Ocean Spray Cranberry Juice", "Vita Coco", "Perrier", "LaCroix", "San Pellegrino", "Nestea", "Hawaiian Punch", "Snapple", 
+                     "Celsius", "PepsiCo's Aquafina", "Dasani", "Smartwater", "Coconut Water (Zico)", "Gatorade Zero", "Monster Ultra", "Starbucks Frappuccino", 
+                     "Calypso Lemonade", "Pure Leaf Tea", "Dr. Brown's Soda", "Sunkist", "Barq's Root Beer", "Pibb Xtra", "Crush", "Bundaberg", 
+                     "Coconut Water (Harmless Harvest)", "Mio Liquid Water Enhancer", "Vitaminwater", "Sobe Lifewater", "Bang Energy", "Celsius Sparkling Energy"
 ]
-
-};
-
-
+,
+                    
+                    "Frozen": [
+                      "ice cream", "frozen pizza", "frozen fries", "frozen vegetables", "frozen meals", "frozen berries", "frozen fish", "frozen shrimp", 
+                      "frozen dumplings", "frozen spring rolls", "frozen waffles", "frozen yogurt", "frozen pie", "frozen burritos", "frozen meatballs", 
+                      "frozen sausages", "frozen empanadas", "frozen falafel", "frozen samosas", "frozen chicken tenders", "frozen lasagna",
+                      "frozen corn", "frozen peas", "frozen spinach", "frozen mushrooms", "frozen broccoli", "frozen tofu", "frozen fruit", "frozen bread"
+                    ],
+                    
+                    "Canned": [
+                    "beans", "tomatoes", "soup", "corn", "peas", "carrots", "pineapple", 
+                    "tuna", "salmon", "chicken", "coconut milk", "green beans", "peaches", 
+                    "apricots", "sardines", "anchovies", "olives", "mushrooms", "chickpeas", 
+                    "artichoke hearts", "pumpkin", "clams", "chili", "spaghetti", "refried beans", 
+                    "ravioli", "fruit cocktail", "beans with ham", "roasted red peppers", 
+                    "tomato paste", "sauerkraut", "pickles", "jelly", "baked beans", 
+                    "vegetable medley", "stewed tomatoes", "beef stew", "hominy", "sweet corn", 
+                    "green chili", "black beans", "pinto beans", "kidney beans", "tomato sauce", 
+                    "roasted tomatoes", "coconut cream", "mango chutney", "bell peppers", 
+                    "french fries", "applesauce", "pickled onions", "pickled beets", 
+                    "jalapeños", "artichokes", "pimentos", "vegetable broth", "potato salad", 
+                    "pea soup", "cabbage rolls", "gravy", "cream of mushroom soup", "cream of chicken soup", 
+                    "chicken broth", "beef broth", "tomato soup", "clam chowder", "sauerkraut"
+                  ],
+                    
+                    "Snacks": [
+                      "chips", "cookies", "popcorn", "crackers", "pretzels", "chocolate", "candy", "granola bar", "trail mix", "beef jerky", 
+                      "pita chips", "rice cakes", "fruit snacks", "gummy bears", "licorice", "marshmallows", "peanut butter", "jelly", "honey", 
+                      "jam", "caramel", "toffee", "nougat", "chewing gum", "hard candy", "cotton candy", "fruit leather", "yogurt raisins", "salsa",
+                      "truffles", "fudge", "macarons", "baklava", "churros", "mousse", "tarts", "eclairs", "popsicles", "fruit pie", "cupcakes", "madeleines", 
+                      "marzipan", "licorice allsorts", "chocolate truffles", "candied almonds", "chocolate bark", "fruit pies", "caramel popcorn"
+                    ]
+            
+                  
+            };
+        
             let isItemFound = false;
-
+        
             // Check if the query exists in the selected category
             if (selectedCategory === 'All Categories') {
                 // Check across all categories
@@ -365,19 +432,20 @@ const productMapping = {
                     }
                 }
             } else {
-                // Check within the selected category
-                if (productMapping[selectedCategory] && productMapping[selectedCategory].includes(query)) {
+                // Check only the selected category
+                if (productMapping[selectedCategory].includes(query)) {
                     window.location.href = `/products/${selectedCategory}?query=${query}`;
                     isItemFound = true;
                 }
             }
-
-            // If no match found
+            
+        
             if (!isItemFound) {
-                alert(`"${query}" is not available in the selected category "${selectedCategory}".`);
+                alert("Item Not in Valid Category");
             }
         }
-
+        
+        
         // Sticky header functionality
         let lastScrollPosition = 0;
         const header = document.getElementById('stickyHeader');
@@ -387,7 +455,7 @@ const productMapping = {
 
             if (currentScrollPosition > lastScrollPosition) {
                 // Scroll down, hide header
-                header.style.top = '-150px';
+                header.style.top = '-60px';
             } else {
                 // Scroll up, show header
                 header.style.top = '0';
