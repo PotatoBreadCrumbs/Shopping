@@ -17,19 +17,6 @@
             padding-bottom: 70px;
         }
 
-        #topheader {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 9999; /* Always on top */
-            background-color: white; /* Prevent transparency issues */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
-        }
-
-        body {
-            margin-top: 70px; /* Prevent content overlap with header */
-        }
-
         .category-container {
             display: flex;
             flex-wrap: wrap;
@@ -68,9 +55,7 @@
     </style>
 </head>
 <body>
-    <div id="topheader">
-        {% include 'topheader.html' %}
-    </div>
+    {% include 'topheader.html' %}
 
     <div class="container mt-5">
         <h2 class="text-center">Discounted Categories</h2>
@@ -87,18 +72,52 @@
                 <img src="/static/img/fruits.png" alt="Fruits">
                 <h4>Fruits</h4>
             </a>
+            <a href="/discounts/Drinks" class="category-card">
+                <img src="/static/img/drinks.png" alt="Drinks">
+                <h4>Drinks</h4>
+            </a>
+            <a href="/discounts/Frozen" class="category-card">
+                <img src="/static/img/frozen.png" alt="Frozen">
+                <h4>Frozen</h4>
+            </a>
+        </div>
+        <div class="category-container">
+            <a href="/discounts/Dairy" class="category-card">
+                <img src="/static/img/milk.png" alt="Dairy">
+                <h4>Dairy</h4>
+            </a>
+            <a href="/discounts/Bread" class="category-card">
+                <img src="/static/img/bread.png" alt="Bread">
+                <h4>Bread</h4>
+            </a>
+            <a href="/discounts/Canned" class="category-card">
+                <img src="/static/img/canned_foods.png" alt="Canned Foods">
+                <h4>Canned Foods</h4>
+            </a>
+            <a href="/discounts/Snacks" class="category-card">
+                <img src="/static/img/snacks.png" alt="Snacks">
+                <h4>Snacks</h4>
+            </a>
+            <a href="/discounts/PersonalCare" class="category-card">
+                <img src="/static/img/personalcare.png" alt="Personal Care">
+                <h4>Personal Care</h4>
+            </a>
         </div>
     </div>
-
     {% include 'footer.html' %}
+    {% include 'bottom_navigation.html' %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Ensure Bootstrap JavaScript is dynamically loaded -->
     <script>
-        document.querySelectorAll('#topheader a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                console.log(`Clicked: ${this.href}`);
-            });
-        });
+        // Check if Bootstrap is already loaded
+        if (!window.bootstrap) {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js';
+            script.onload = () => console.log('Bootstrap loaded dynamically');
+            document.head.appendChild(script);
+        } else {
+            console.log('Bootstrap already loaded');
+        }
     </script>
 </body>
 </html>
