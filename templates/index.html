@@ -184,42 +184,7 @@
     </div>
 
     {% include 'footer.html' %}
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item">
-            <a href="{{ url_for('home') }}">
-                <div class="nav-icon nav-home">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/home.png" alt="Home Icon" />
-                </div>
-                <span>Home</span>
-            </a>
-        </div>
-        <div class="nav-item">
-            <a href="{{ url_for('view_favorites') }}">
-                <div class="nav-icon nav-favorites">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/star--v1.png" alt="Favorites Icon" />
-                </div>
-                <span>Favorites</span>
-            </a>
-        </div>
-        <div class="nav-item">
-            <a href="{{ url_for('discounts') }}">
-                <div class="nav-icon nav-discounts">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/discount.png" alt="Discounts Icon" />
-                </div>
-                <span>Discounts</span>
-            </a>
-        </div>
-        <div class="nav-item">
-            <a href="{{ url_for('view_cart') }}">
-                <div class="nav-icon nav-cart">
-                    <img src="https://img.icons8.com/ios-filled/50/000000/shopping-cart.png" alt="Cart Icon" />
-                </div>
-                <span>Cart ({{ cart_count }})</span>
-            </a>
-        </div>
-    </div>
+    {% include 'bottom_navigation.html' %}
 
     <!-- JavaScript to Hide Navbar on Scroll -->
     <script>
