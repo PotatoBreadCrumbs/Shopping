@@ -37,7 +37,6 @@
 
         .navbar-brand img {
             width: 150px;
-            margin-right: 50px;
         }
 
         .nav-item .dropdown-toggle {
@@ -60,20 +59,18 @@
         }
 
         .btn-search {
-            padding: 10px 20px;
+            padding: 10px;
             font-size: 1rem;
             display: flex;
             align-items: center;
         }
 
-        .nav-item .dropdown-menu {
-            left: 50%;
-            width: 200px;
-            transform: translateX(-55%);
-       }
+        .dropdown-menu {
+            min-width: 160px;
+        }
 
         .content {
-            padding-top: 80px;
+            padding-top: 90px;
         }
 
         .accessibility-btn {
@@ -86,29 +83,40 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            margin-left: 15px; 
+            margin-left: 15px;
             background-color: transparent !important; /* Explicitly remove background */
             margin-right: 15px;
         }
 
         .accessibility-btn img {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
         }
 
         .username {
-            margin-right: 10px;
+            margin-right: 20px;
             font-weight: bold;
         }
-        .location-dropdown {
-            width: 250px;
-            margin-left: auto; /* Pushes the dropdown to the far right */
-            z-index: 1000; /* Ensures it stays above other elements */
+
+        .small-dropdown {
+            width: 150px;
         }
-                
+
+        .location-dropdown {
+            position: fixed; /* Fixes the element to the viewport */
+            top: 20px; /* Distance from the top of the viewport */
+            left: 1000px; /* Distance from the right of the viewport */
+            z-index: 500px; /* Ensures it appears above other elements */
+            width: 200px;
+            background-color: #fff; /* Optional: Adds a background color */
+            padding: 10px; /* Optional: Adds some padding for better appearance */
+            border-radius: 5px; /* Optional: Rounds the corners */
+          
+        }
+    
         .form-select-sm {
-            font-size: 12px; /* Adjusts text size */
-            padding: 4px; /* Reduces padding for a smaller dropdown */
+            font-size: 12px; /* Adjust font size for smaller screens */
+            padding: 4px; /* Maintain appropriate padding */
         }
     
         @media (max-width: 768px) {
@@ -118,37 +126,6 @@
                 right: 10px;
             }
         }
-
-        @media (max-width: 768px) {
-        /* Hide everything except logo and hamburger menu */
-        .search-bar,
-        .location-dropdown,
-        .nav-item,
-        .accessibility-btn {
-            display: none;
-        }
-
-        .navbar {
-            justify-content: space-between;
-        }
-
-        .hamburger-menu {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.5rem;
-            margin-left: auto; /* Pushes the icon to the right */
-            padding-right: 15px; /* Adds spacing from the right edge */
-            position: relative;
-        }
-
-    }
-
-    @media (min-width: 769px) {
-        .hamburger-menu {
-            display: none; /* Hide hamburger menu on larger screens */
-        }
-    }
     </style>
 </head>
 
@@ -158,14 +135,11 @@
     <nav id="stickyHeader" class="navbar">
         <div class="navbar-brand">
             <a href="{{ url_for('home') }}">
-                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 180px; height: auto;">
+                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo"style"width:250px;height:auto;">
             </a>
         </div>
+        
 
-         <!-- Hamburger menu for smaller screens -->
-        <div class="hamburger-menu">
-            <i class="fas fa-bars"></i>
-        </div>
         <!-- Search Bar with Category Dropdown -->
         <div class="search-bar">
             <div class="input-group">
@@ -236,7 +210,7 @@
         <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
             {{ username if session.get('user_id') and session.get('user_id') != 'guest' else "Guest" }}
         </button>
-        <!-- Dropdown Menu -->
+         <!-- Dropdown Menu -->
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
             {% if session.get('user_id') and session.get('user_id') != 'guest' %}
                 <li><a class="dropdown-item" href="{{ url_for('account_info') }}">Account Information</a></li>
@@ -247,7 +221,7 @@
                 <li><a class="dropdown-item" href="{{ url_for('login') }}">Order History</a></li>
                 <li><a class="dropdown-item" href="{{ url_for('login') }}">Loyalty and Rewards</a></li>
             {% endif %}
-            <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
+           <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
             <li>
                 {% if session.get('user_id') and session.get('user_id') != 'guest' %}
                     <form action="{{ url_for('logout') }}" method="POST">
@@ -256,11 +230,10 @@
                 {% else %}
                     <a class="dropdown-item" href="{{ url_for('login') }}">Sign In</a>
                 {% endif %}
-            </li>
+           </li>
         </ul>
     </div>
 </div>
-
 <style>
     .dropdown-menu-end {
         right: 5; /* Aligns the dropdown menu to the right */
@@ -276,8 +249,11 @@
         </div>
     </nav>
 
-    <div style="height: 150px;"></div> <!-- Adjust the height as needed -->
-
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Add your page content here -->
+      
+    </div>
 
     <!-- Bootstrap JS, Popper.js, 
      and Font Awesome JS -->
@@ -295,7 +271,7 @@
         }
     
         // Update selected category
-        function selectCategory(category) {
+       function selectCategory(category) {
             selectedCategory = category;
             
             // Update the dropdown button to display the selected category
@@ -304,20 +280,10 @@
     
             // Call the function to update the category title dynamically
             updateCategoryTitle(category);
-        }
-    
-        // Update category title in the header
-        function updateCategoryTitle(category) {
-            const categoryTitle = document.getElementById('categoryTitle');
-            if (category === 'All Categories') {
-                categoryTitle.textContent = 'Search Results';
-            } else {
-                categoryTitle.textContent = category + ' Products';
-            }
-        }
+       }
 
-    function searchItems() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
+        function searchItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
 
         // Mapping categories to products
         const productMapping = {
@@ -443,7 +409,7 @@
             };
         
             let isItemFound = false;
-        
+
             // Check if the query exists in the selected category
             if (selectedCategory === 'All Categories') {
                 // Check across all categories
@@ -461,14 +427,13 @@
                     isItemFound = true;
                 }
             }
-            
-        
+
+            // If no match found
             if (!isItemFound) {
                 alert("Item Not in Valid Category");
             }
         }
-        
-        
+
         // Sticky header functionality
         let lastScrollPosition = 0;
         const header = document.getElementById('stickyHeader');
