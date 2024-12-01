@@ -16,6 +16,10 @@
             color: #333;
             padding-bottom: 70px;
         }
+        .topheader {
+            position: relative;
+            z-index: 1000; /* Make sure the top header is above other elements */
+        }
 
         .category-container {
             display: flex;
@@ -46,15 +50,6 @@
             height: 100px;
             object-fit: cover;
             margin-bottom: 10px;
-        }
-
-        #topheader {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 9999;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         body {
