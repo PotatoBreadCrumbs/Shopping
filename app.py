@@ -540,7 +540,7 @@ def validate():
         return jsonify({"message": "Password must contain a number."})
     if not any(char.islower() for char in password):
         return jsonify({"message": "Password must contain a lowercase letter."})
-    special_char_pattern = r'[@$!%*?&_-]'
+    special_char_pattern = r'[!@#$%^&*()\-_=+{}\[\]|\\:;"\'<>,.?/~`]'
     
     # Check if password contains at least one special character
     if not re.search(special_char_pattern, password):
