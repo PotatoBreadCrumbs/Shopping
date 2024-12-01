@@ -146,13 +146,13 @@ def validate_reset_password_page():
         # Parse JSON payload
         data = request.get_json()
         if not data:
-            return jsonify({"message": "Invalid JSON payload"}), 400
+            return jsonify({"message": "Invalid JSON payload"})
 
         email = data.get('email')
         new_password = data.get('new_password')
 
         if not email or not new_password:
-            return jsonify({"message": "Email and new password are required."}), 400
+            return jsonify({"message": "Email and new password are required."})
 
         # Validate the new password
         if len(new_password) < 8:
@@ -185,7 +185,7 @@ def validate_reset_password_page():
             write_users(users)  # Save changes
             return jsonify({"message": "Valid", "redirect_url": url_for('login')})
         else:
-            return jsonify({"message": "Email not found. Please check and try again."}), 404
+            return jsonify({"message": "Email not found. Please check and try again."})
 
     except Exception as e:
         print(f"Error in /validate-reset-password: {str(e)}")
