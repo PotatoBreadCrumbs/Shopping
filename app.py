@@ -110,8 +110,8 @@ def send_postmark_order_confirmation(to_email, name, order_details):
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password_page():
     if request.method == 'POST':
-        email = request.form.get('email')
-        new_password = request.form.get('new_password')
+        email = data.get('email')
+        new_password = data.get('new_password')
 
         # Load user data
         users = read_users()
@@ -528,8 +528,9 @@ def register():
 @app.route('/validate', methods=['POST'])
 def validate():
     # Access form data from JavaScript
-    username = request.form.get('username')
-    password = request.form.get('password')
+    data = request.get_json()  # Read JSON payload
+    username = data.get('username')
+    password = data.get('password')
     users = read_users()
     # Perform validation (this is a basic example)
     if len(password) < 8:
