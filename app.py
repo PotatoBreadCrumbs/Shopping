@@ -109,7 +109,9 @@ def send_postmark_order_confirmation(to_email, name, order_details):
 #good from here onwards, testing sg above now
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password_page():
-    if request.method == 'POST':
+   if request.method == 'POST':
+        # Parse JSON data from the request
+        data = request.get_json()  # Fixed: Get JSON payload
         email = data.get('email')
         new_password = data.get('new_password')
 
