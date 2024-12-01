@@ -17,152 +17,68 @@
             padding-bottom: 70px;
         }
 
-        /* Ensure the header stays fixed and clickable */
         #topheader {
             position: fixed;
             top: 0;
             width: 100%;
-            z-index: 9999 !important; /* Ensure the header is above all other elements */
-            background-color: white; /* Add a background to prevent transparency issues */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for aesthetics */
-            pointer-events: auto; /* Allow pointer interactions */
+            z-index: 9999 !important;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            pointer-events: auto;
         }
 
         body {
-            margin-top: 70px; /* Offset body content to account for the fixed header */
-        }
-
-        .category-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 0 20px;
-        }
-
-        .category-card {
-            background-color: #d9d9d9;
-            width: 180px;
-            margin: 15px;
-            text-align: center;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            text-decoration: none;
-        }
-
-        .category-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .category-card img {
-            width: 130px;
-            height: 100px;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-
-        .category-card h4 {
-            font-size: 16px;
-            color: #333;
+            margin-top: 70px;
         }
     </style>
 </head>
 <body>
-    <!-- Include the top header -->
+    <!-- Include Top Header -->
     <div id="topheader">
         {% include 'topheader.html' %}
+        <!-- Example User Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                User
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+        <!-- Example "All Categories" Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="categoriesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                All Categories
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                <li><a class="dropdown-item" href="/category/vegetables">Vegetables</a></li>
+                <li><a class="dropdown-item" href="/category/meats">Meats</a></li>
+                <li><a class="dropdown-item" href="/category/fruits">Fruits</a></li>
+                <li><a class="dropdown-item" href="/category/snacks">Snacks</a></li>
+            </ul>
+        </div>
     </div>
 
     <div class="container mt-5">
         <h2 class="text-center">Discounted Categories</h2>
-        <div class="category-container">
-            <a href="/discounts/Vegetables" class="category-card">
-                <img src="/static/img/vegetables.png" alt="Vegetables">
-                <h4>Vegetables</h4>
-            </a>
-            <a href="/discounts/Meats" class="category-card">
-                <img src="/static/img/meats.png" alt="Meats">
-                <h4>Meats</h4>
-            </a>
-            <a href="/discounts/Fruits" class="category-card">
-                <img src="/static/img/fruits.png" alt="Fruits">
-                <h4>Fruits</h4>
-            </a>
-            <a href="/discounts/Drinks" class="category-card">
-                <img src="/static/img/drinks.png" alt="Drinks">
-                <h4>Drinks</h4>
-            </a>
-            <a href="/discounts/Frozen" class="category-card">
-                <img src="/static/img/frozen.png" alt="Frozen">
-                <h4>Frozen</h4>
-            </a>
-        </div>
-        <div class="category-container">
-            <a href="/discounts/Dairy" class="category-card">
-                <img src="/static/img/milk.png" alt="Dairy">
-                <h4>Dairy</h4>
-            </a>
-            <a href="/discounts/Bread" class="category-card">
-                <img src="/static/img/bread.png" alt="Bread">
-                <h4>Bread</h4>
-            </a>
-            <a href="/discounts/Canned" class="category-card">
-                <img src="/static/img/canned_foods.png" alt="Canned Foods">
-                <h4>Canned Foods</h4>
-            </a>
-            <a href="/discounts/Snacks" class="category-card">
-                <img src="/static/img/snacks.png" alt="Snacks">
-                <h4>Snacks</h4>
-            </a>
-            <a href="/discounts/PersonalCare" class="category-card">
-                <img src="/static/img/personalcare.png" alt="Personal Care">
-                <h4>Personal Care</h4>
-            </a>
-        </div>
+        <!-- Category Content -->
     </div>
 
-    {% include 'footer.html' %}
-    {% include 'bottom_navigation.html' %}
-
-    <!-- Dynamically Load Bootstrap if Missing -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        (function ensureBootstrap() {
-            const bootstrapScriptUrl = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js';
-
-            // Check if Bootstrap is already loaded
-            const existingBootstrapScript = Array.from(document.scripts).find(script => script.src === bootstrapScriptUrl);
-
-            if (!existingBootstrapScript) {
-                const script = document.createElement('script');
-                script.src = bootstrapScriptUrl;
-
-                // Handle successful load
-                script.onload = () => console.log('Bootstrap loaded successfully.');
-
-                // Handle errors
-                script.onerror = () => {
-                    console.error('Failed to load Bootstrap from CDN. Loading fallback...');
-                    
-                    // Load fallback from local
-                    const fallbackScript = document.createElement('script');
-                    fallbackScript.src = '/static/js/bootstrap.bundle.min.js'; // Local fallback
-                    document.head.appendChild(fallbackScript);
-                };
-
-                // Append the script
-                document.head.appendChild(script);
+        // Debug Dropdown Initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdownElements = document.querySelectorAll('.dropdown-toggle');
+            if (dropdownElements.length === 0) {
+                console.error('No dropdown elements found.');
             } else {
-                console.log('Bootstrap already loaded.');
+                console.log(`${dropdownElements.length} dropdowns found.`);
+                dropdownElements.forEach(dropdown => {
+                    new bootstrap.Dropdown(dropdown); // Manually initialize
+                });
             }
-        })();
-
-        // Debug header links
-        document.querySelectorAll('#topheader a').forEach(link => {
-            link.addEventListener('click', () => {
-                console.log(`Navigating to: ${link.href}`);
-            });
         });
     </script>
 </body>
