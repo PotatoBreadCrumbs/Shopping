@@ -304,25 +304,26 @@ class LogoutForm(FlaskForm):
 @app.route('/update_user', methods=['POST'])
 @login_required
 def update_user():
-    # Get current user's ID and read their data
-    username = current_user.id
+    # Get user ID
+    user_id = current_user.id
+
+#Read all users
     users = read_users()
-    
-    if username in users:
-        # Update user information from form data
-        users[username]['name'] = request.form['name']
-        users[username]['email'] = request.form['email']
-        users[username]['phone'] = request.form['phone']
-        users[username]['address'] = request.form['address']
-        
-        # Write updated user data back to JSON file
-        write_users(users)
-        
-        flash("User details updated successfully!", "success")
-    else:
-        flash("User not found.", "danger")
-    
-    return redirect(url_for('settings'))
+    user_data = users.get(user_id, {})
+
+#Update user data with form data
+    user_data['name'] = request.form.get('name', '').strip()
+    user_data['email'] = request.form.get('email', '').strip()
+    user_data['phone'] = request.form.get('phone', '').strip()
+    user_data['address'] = request.form.get('address', '').strip()
+
+#Write updated data back to storage
+    users[user_id] = user_data
+    write_users(users)
+
+#Flash success message and redirect back to account_info
+    flash('Account information updated successfully.', 'success')
+    return redirect(url_for('account_info'))
 
 
 @app.route('/order_history')
@@ -1246,14 +1247,13 @@ def process_checkout():
     city = request.form.get('city', '').strip()
     zip_code = request.form.get('zip', '').strip()
     to_email = request.form.get('email', '').strip()
-    
 
     # Validate required fields
     missing_fields = [field for field, value in {
         'Name on Card': name,
-        'Card Number':cn,
-        'Expiry Date':exp_date,
-        'CVV':cvv,
+        'Card Number': cn,
+        'Expiry Date': exp_date,
+        'CVV': cvv,
         'Shipping Address': address,
         'City': city,
         'Zip Code': zip_code,
@@ -1274,6 +1274,9 @@ def process_checkout():
     # Calculate totals
     subtotal, sales_tax, total_price = calculate_cart_totals(cart_items)
 
+    # Calculate points earned
+    points_earned = int(subtotal * 3)  # Assuming 3x multiplier for points
+
     # Create the order
     order = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -1281,6 +1284,7 @@ def process_checkout():
         "subtotal": subtotal,
         "sales_tax": sales_tax,
         "total_price": total_price,
+        "points_earned": points_earned,
         "shipping_details": {
             "name": name,
             "address": address,
@@ -1294,11 +1298,16 @@ def process_checkout():
         users = load_user_storage()
         user_data = users.get(user_id, {})
         user_data.setdefault("order_history", []).append(order)
-        points_earned = int(subtotal * 3)  # Assuming 3x multiplier for points
+
+        # Update loyalty points
         user_data["loyalty_points"] = user_data.get("loyalty_points", 0) + points_earned
+
+        # Save updated data
+        users[user_id] = user_data
         write_users(users)
         write_cart(user_id, {'cart_items': []})
     else:
+        # Clear guest cart
         session['guest_cart'] = []
 
     # Reset cart count in session
@@ -1313,7 +1322,9 @@ def process_checkout():
             print(f"Error sending confirmation email: {str(e)}")
             return jsonify({"message": "EmailIssue"}), 500
 
+    flash("Order placed successfully! You earned points immediately.", "success")
     return jsonify({"message": "OrderComplete", "redirect_url": url_for('home')})
+
 @app.route('/account_info')
 @login_required
 def account_info():
