@@ -110,22 +110,18 @@ def send_postmark_order_confirmation(to_email, name, order_details):
 @app.route('/reset-password', methods=['POST'])
 def reset_password_page():
     try:
-        # Parse JSON data from the request
         data = request.get_json()
         if not data:
-            return jsonify({"message": "Invalid JSON payload"})
+            return jsonify({"message": "Invalid JSON payload"}), 400
 
         email = data.get('email')
         new_password = data.get('new_password')
 
         if not email or not new_password:
-            return jsonify({"message": "Email and new password are required."})
+            return jsonify({"message": "Email and new password are required."}), 400
 
         # Load user data
         users = read_users()
-        if not isinstance(users, dict):
-            return jsonify({"message": "Failed to load user data."})
-
         user_found = False
 
         # Check if email exists and update password
@@ -142,11 +138,12 @@ def reset_password_page():
             write_users(users)
             return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
         else:
-            return jsonify({"message": "Email not found. Please check and try again."})
+            return jsonify({"message": "Email not found. Please check and try again."}), 404
 
     except Exception as e:
         print(f"Error in /reset-password route: {str(e)}")
-        return jsonify({"message": "An internal server error occurred."})
+        return jsonify({"message": "An internal server error occurred."}), 500
+
 
     
 # We created a file to store user data (this simulates a database using mysql lite) x
