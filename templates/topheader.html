@@ -37,6 +37,7 @@
 
         .navbar-brand img {
             width: 150px;
+            margin-right: 50px;
         }
 
         .nav-item .dropdown-toggle {
@@ -59,18 +60,20 @@
         }
 
         .btn-search {
-            padding: 10px;
+            padding: 10px 20px;
             font-size: 1rem;
             display: flex;
             align-items: center;
         }
 
-        .dropdown-menu {
-            min-width: 160px;
-        }
+        .nav-item .dropdown-menu {
+            left: 50%;
+            width: 200px;
+            transform: translateX(-55%);
+       }
 
         .content {
-            padding-top: 90px;
+            padding-top: 80px;
         }
 
         .accessibility-btn {
@@ -89,34 +92,23 @@
         }
 
         .accessibility-btn img {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
         }
 
         .username {
-            margin-right: 20px;
+            margin-right: 10px;
             font-weight: bold;
         }
-
-        .small-dropdown {
-            width: 150px;
-        }
-
         .location-dropdown {
-            position: fixed; /* Fixes the element to the viewport */
-            top: 20px; /* Distance from the top of the viewport */
-            left: 1000px; /* Distance from the right of the viewport */
-            z-index: 500px; /* Ensures it appears above other elements */
-            width: 200px;
-            background-color: #fff; /* Optional: Adds a background color */
-            padding: 10px; /* Optional: Adds some padding for better appearance */
-            border-radius: 5px; /* Optional: Rounds the corners */
-          
+            width: 250px;
+            margin-left: auto; /* Pushes the dropdown to the far right */
+            z-index: 1000; /* Ensures it stays above other elements */
         }
-    
+                
         .form-select-sm {
-            font-size: 12px; /* Adjust font size for smaller screens */
-            padding: 4px; /* Maintain appropriate padding */
+            font-size: 12px; /* Adjusts text size */
+            padding: 4px; /* Reduces padding for a smaller dropdown */
         }
     
         @media (max-width: 768px) {
@@ -126,6 +118,37 @@
                 right: 10px;
             }
         }
+
+        @media (max-width: 768px) {
+        /* Hide everything except logo and hamburger menu */
+        .search-bar,
+        .location-dropdown,
+        .nav-item,
+        .accessibility-btn {
+            display: none;
+        }
+
+        .navbar {
+            justify-content: space-between;
+        }
+
+        .hamburger-menu {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            margin-left: auto; /* Pushes the icon to the right */
+            padding-right: 15px; /* Adds spacing from the right edge */
+            position: relative;
+        }
+
+    }
+
+    @media (min-width: 769px) {
+        .hamburger-menu {
+            display: none; /* Hide hamburger menu on larger screens */
+        }
+    }
     </style>
 </head>
 
@@ -135,11 +158,14 @@
     <nav id="stickyHeader" class="navbar">
         <div class="navbar-brand">
             <a href="{{ url_for('home') }}">
-                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo"style"width:250px;height:auto;">
+                <img src="/static/img/GreenGrocer-removebg-preview.png" alt="GreenGrocer Logo" style="width: 180px; height: auto;">
             </a>
         </div>
-        
 
+         <!-- Hamburger menu for smaller screens -->
+        <div class="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </div>
         <!-- Search Bar with Category Dropdown -->
         <div class="search-bar">
             <div class="input-group">
@@ -250,11 +276,8 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="content">
-        <!-- Add your page content here -->
-      
-    </div>
+    <div style="height: 150px;"></div> <!-- Adjust the height as needed -->
+
 
     <!-- Bootstrap JS, Popper.js, 
      and Font Awesome JS -->
