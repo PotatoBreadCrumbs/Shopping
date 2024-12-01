@@ -127,13 +127,13 @@ def reset_password_page():
                     user_info['password'] = new_password
                 user_found = True
                 break
-
+        
         if user_found:
-            # Save changes to user JSON
-            write_users(users)
-            flash('Password updated successfully!', 'success')
+            write_users(users)  # Save changes
+            return jsonify({"message": "Password updated successfully!"})
         else:
-            flash('Email not found. Please check and try again.', 'danger')
+            return jsonify({"message": "Email not found. Please check and try again."})
+
 
         return redirect(url_for('login'))
 
