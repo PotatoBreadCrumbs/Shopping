@@ -134,7 +134,7 @@ def reset_password_page():
             write_users(users)  # Save changes
             return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
         else:
-            return jsonify({"message": "Email not found. Please check and try again."}), 404  # Not found
+            return jsonify({"message": "Email not found. Please check and try again."}),  # Not found
 
     return render_template('reset_password_updated.html')
     
