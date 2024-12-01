@@ -662,7 +662,7 @@ function checkPasswordCriteria() {
     }
 
     // Check if there is at least one special character
-    if (/[!@#$%^&*(),.?":_{}|<>-]/.test(pwdValue)) {
+    if (/[!@#$%^&*()\-_=+{}\[\]|\\:;"\'<>,.?/~`]/.test(pwdValue)) {
         mark5.src = checkmark;
         cl5.classList.add('cl-success');
         cl5.classList.remove('cl-error');
