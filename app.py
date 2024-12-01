@@ -161,6 +161,7 @@ def validate_reset_password_page():
     if not re.search(special_char_pattern, new_password):
         return jsonify({"message": "Password must contain at least one special character (@$!%*?&_-)"})
     # If all checks pass
+    
     for key, user_info in users.items():
             if key == email or user_info.get('email') == email:
                 # Update the password
@@ -173,7 +174,7 @@ def validate_reset_password_page():
         
     if user_found:
         write_users(users)  # Save changes
-        return jsonify({"message": "Password updated successfully!", "redirect_url": url_for('login')})
+        return jsonify({"message": "Valid","redirect_url": url_for('login')})
     else:
         return jsonify({"message": "Email not found. Please check and try again."}), 404  # Not found
 
