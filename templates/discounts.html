@@ -17,20 +17,11 @@
             padding-bottom: 70px;
         }
 
-        .topheader {
-            position: relative;
-            z-index: 1000; /* Ensure the top header is above all other elements */
-            pointer-events: auto; /* Ensure the header can be interacted with */
-        }
-
         .category-container {
-            position: relative;
-            z-index: 10; /* Ensure it doesn't overlap the top header */
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
             padding: 0 20px;
-            margin-top: 120px; /* Ensure there's enough space between header and categories */
         }
 
         .category-card {
@@ -43,9 +34,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
             text-decoration: none;
-            position: relative;
-            z-index: 5;
-            pointer-events: auto; /* Ensure the category cards can be clicked */
         }
 
         .category-card:hover {
@@ -67,9 +55,7 @@
     </style>
 </head>
 <body>
-    <div class="topheader">
-        {% include 'topheader.html' %}
-    </div>
+    {% include 'topheader.html' %}
 
     <div class="container mt-5">
         <h2 class="text-center">Discounted Categories</h2>
@@ -118,7 +104,6 @@
             </a>
         </div>
     </div>
-
     {% include 'footer.html' %}
     {% include 'bottom_navigation.html' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
