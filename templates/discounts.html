@@ -17,18 +17,17 @@
             padding-bottom: 70px;
         }
 
-        /* Ensure topheader is always on top */
         #topheader {
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 9999;
             background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for aesthetics */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         body {
-            margin-top: 70px; /* Prevent content from overlapping the fixed header */
+            margin-top: 70px;
         }
 
         .category-container {
@@ -69,7 +68,7 @@
     </style>
 </head>
 <body>
-    <!-- Ensure topheader is included -->
+    <!-- Include the top header -->
     <div id="topheader">
         {% include 'topheader.html' %}
     </div>
@@ -125,33 +124,37 @@
     {% include 'footer.html' %}
     {% include 'bottom_navigation.html' %}
 
-    <!-- Dynamically Ensure Bootstrap JavaScript -->
+    <!-- Dynamic Bootstrap Script Loading -->
     <script>
-        // Ensure Bootstrap is dynamically loaded
         (function ensureBootstrap() {
             const bootstrapScriptUrl = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js';
-            
+
             // Check if Bootstrap is already loaded
             const existingBootstrapScript = Array.from(document.scripts).find(script => script.src === bootstrapScriptUrl);
 
             if (!existingBootstrapScript) {
-                // Dynamically add the script
                 const script = document.createElement('script');
                 script.src = bootstrapScriptUrl;
-                script.onload = () => console.log('Bootstrap dynamically loaded.');
-                script.onerror = () => console.error('Failed to load Bootstrap.');
+
+                // Handle successful load
+                script.onload = () => console.log('Bootstrap loaded successfully.');
+
+                // Handle errors
+                script.onerror = () => {
+                    console.error('Failed to load Bootstrap from CDN. Loading fallback...');
+                    
+                    // Load fallback from local
+                    const fallbackScript = document.createElement('script');
+                    fallbackScript.src = '/static/js/bootstrap.bundle.min.js'; // Local fallback
+                    document.head.appendChild(fallbackScript);
+                };
+
+                // Append the script
                 document.head.appendChild(script);
             } else {
                 console.log('Bootstrap already loaded.');
             }
         })();
-
-        // Debugging helper for header links
-        document.querySelectorAll('#topheader a').forEach(link => {
-            link.addEventListener('click', function () {
-                console.log(`Navigating to: ${this.href}`);
-            });
-        });
     </script>
 </body>
 </html>
