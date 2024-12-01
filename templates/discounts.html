@@ -20,6 +20,7 @@
         .topheader {
             position: relative;
             z-index: 1000; /* Ensure the top header is above all other elements */
+            pointer-events: auto; /* Ensure the header can be interacted with */
         }
 
         .category-container {
@@ -29,7 +30,7 @@
             flex-wrap: wrap;
             justify-content: space-around;
             padding: 0 20px;
-            margin-top: 100px; /* Ensure there's enough space between header and categories */
+            margin-top: 120px; /* Ensure there's enough space between header and categories */
         }
 
         .category-card {
@@ -43,7 +44,8 @@
             transition: transform 0.3s ease;
             text-decoration: none;
             position: relative;
-            z-index: 10;
+            z-index: 5;
+            pointer-events: auto; /* Ensure the category cards can be clicked */
         }
 
         .category-card:hover {
