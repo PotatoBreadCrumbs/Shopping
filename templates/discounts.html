@@ -17,14 +17,49 @@
             padding-bottom: 70px;
         }
 
+        .category-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 0 20px;
+        }
+
+        .category-card {
+            background-color: #d9d9d9;
+            width: 180px;
+            margin: 15px;
+            text-align: center;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .category-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-card img {
+            width: 130px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .category-card h4 {
+            font-size: 16px;
+            color: #333;
+        }
+
         #topheader {
             position: fixed;
             top: 0;
             width: 100%;
-            z-index: 9999 !important;
+            z-index: 9999;
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            pointer-events: auto;
         }
 
         body {
@@ -33,50 +68,74 @@
     </style>
 </head>
 <body>
-    <!-- Include Top Header -->
-    <div id="topheader">
-        {% include 'topheader.html' %}
-        <!-- Example User Dropdown -->
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                User
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                <li><a class="dropdown-item" href="/settings">Settings</a></li>
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
-        </div>
-        <!-- Example "All Categories" Dropdown -->
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="categoriesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                All Categories
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                <li><a class="dropdown-item" href="/category/vegetables">Vegetables</a></li>
-                <li><a class="dropdown-item" href="/category/meats">Meats</a></li>
-                <li><a class="dropdown-item" href="/category/fruits">Fruits</a></li>
-                <li><a class="dropdown-item" href="/category/snacks">Snacks</a></li>
-            </ul>
-        </div>
-    </div>
+    <!-- Include the top header -->
+    {% include 'topheader.html' %}
 
+    <!-- Main Content -->
     <div class="container mt-5">
         <h2 class="text-center">Discounted Categories</h2>
-        <!-- Category Content -->
+        <div class="category-container">
+            <a href="/discounts/Vegetables" class="category-card">
+                <img src="/static/img/vegetables.png" alt="Vegetables">
+                <h4>Vegetables</h4>
+            </a>
+            <a href="/discounts/Meats" class="category-card">
+                <img src="/static/img/meats.png" alt="Meats">
+                <h4>Meats</h4>
+            </a>
+            <a href="/discounts/Fruits" class="category-card">
+                <img src="/static/img/fruits.png" alt="Fruits">
+                <h4>Fruits</h4>
+            </a>
+            <a href="/discounts/Drinks" class="category-card">
+                <img src="/static/img/drinks.png" alt="Drinks">
+                <h4>Drinks</h4>
+            </a>
+            <a href="/discounts/Frozen" class="category-card">
+                <img src="/static/img/frozen.png" alt="Frozen">
+                <h4>Frozen</h4>
+            </a>
+        </div>
+        <div class="category-container">
+            <a href="/discounts/Dairy" class="category-card">
+                <img src="/static/img/milk.png" alt="Dairy">
+                <h4>Dairy</h4>
+            </a>
+            <a href="/discounts/Bread" class="category-card">
+                <img src="/static/img/bread.png" alt="Bread">
+                <h4>Bread</h4>
+            </a>
+            <a href="/discounts/Canned" class="category-card">
+                <img src="/static/img/canned_foods.png" alt="Canned Foods">
+                <h4>Canned Foods</h4>
+            </a>
+            <a href="/discounts/Snacks" class="category-card">
+                <img src="/static/img/snacks.png" alt="Snacks">
+                <h4>Snacks</h4>
+            </a>
+            <a href="/discounts/PersonalCare" class="category-card">
+                <img src="/static/img/personalcare.png" alt="Personal Care">
+                <h4>Personal Care</h4>
+            </a>
+        </div>
     </div>
 
+    <!-- Footer -->
+    {% include 'footer.html' %}
+    {% include 'bottom_navigation.html' %}
+
+    <!-- Bootstrap and Compatibility Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Debug Dropdown Initialization
         document.addEventListener('DOMContentLoaded', function () {
-            const dropdownElements = document.querySelectorAll('.dropdown-toggle');
-            if (dropdownElements.length === 0) {
+            // Debug dropdown functionality
+            const dropdowns = document.querySelectorAll('.dropdown-toggle');
+            if (dropdowns.length === 0) {
                 console.error('No dropdown elements found.');
             } else {
-                console.log(`${dropdownElements.length} dropdowns found.`);
-                dropdownElements.forEach(dropdown => {
-                    new bootstrap.Dropdown(dropdown); // Manually initialize
+                dropdowns.forEach(dropdown => {
+                    new bootstrap.Dropdown(dropdown); // Ensure all dropdowns are initialized
+                    console.log(`Initialized dropdown: ${dropdown.id}`);
                 });
             }
         });
