@@ -22,6 +22,7 @@
             top: 0;
             width: 100%;
             z-index: 9999;
+            pointer-events: auto;
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -88,73 +89,42 @@
                 <img src="/static/img/fruits.png" alt="Fruits">
                 <h4>Fruits</h4>
             </a>
-            <a href="/discounts/Drinks" class="category-card">
-                <img src="/static/img/drinks.png" alt="Drinks">
-                <h4>Drinks</h4>
-            </a>
-            <a href="/discounts/Frozen" class="category-card">
-                <img src="/static/img/frozen.png" alt="Frozen">
-                <h4>Frozen</h4>
-            </a>
-        </div>
-        <div class="category-container">
-            <a href="/discounts/Dairy" class="category-card">
-                <img src="/static/img/milk.png" alt="Dairy">
-                <h4>Dairy</h4>
-            </a>
-            <a href="/discounts/Bread" class="category-card">
-                <img src="/static/img/bread.png" alt="Bread">
-                <h4>Bread</h4>
-            </a>
-            <a href="/discounts/Canned" class="category-card">
-                <img src="/static/img/canned_foods.png" alt="Canned Foods">
-                <h4>Canned Foods</h4>
-            </a>
-            <a href="/discounts/Snacks" class="category-card">
-                <img src="/static/img/snacks.png" alt="Snacks">
-                <h4>Snacks</h4>
-            </a>
-            <a href="/discounts/PersonalCare" class="category-card">
-                <img src="/static/img/personalcare.png" alt="Personal Care">
-                <h4>Personal Care</h4>
-            </a>
         </div>
     </div>
 
     {% include 'footer.html' %}
     {% include 'bottom_navigation.html' %}
 
-    <!-- Dynamic Bootstrap Script Loading -->
+    <!-- Ensure Bootstrap is dynamically loaded -->
     <script>
         (function ensureBootstrap() {
             const bootstrapScriptUrl = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js';
-
-            // Check if Bootstrap is already loaded
             const existingBootstrapScript = Array.from(document.scripts).find(script => script.src === bootstrapScriptUrl);
 
             if (!existingBootstrapScript) {
                 const script = document.createElement('script');
                 script.src = bootstrapScriptUrl;
 
-                // Handle successful load
                 script.onload = () => console.log('Bootstrap loaded successfully.');
-
-                // Handle errors
                 script.onerror = () => {
-                    console.error('Failed to load Bootstrap from CDN. Loading fallback...');
-                    
-                    // Load fallback from local
-                    const fallbackScript = document.createElement('script');
-                    fallbackScript.src = '/static/js/bootstrap.bundle.min.js'; // Local fallback
-                    document.head.appendChild(fallbackScript);
+                    console.error('Failed to load Bootstrap. Ensure it’s accessible.');
                 };
 
-                // Append the script
                 document.head.appendChild(script);
             } else {
                 console.log('Bootstrap already loaded.');
             }
         })();
+
+        // Debug header links
+        document.addEventListener('DOMContentLoaded', function () {
+            const topHeaderLinks = document.querySelectorAll('#topheader a');
+            topHeaderLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    console.log(`Navigating to: ${this.href}`);
+                });
+            });
+        });
     </script>
 </body>
 </html>
