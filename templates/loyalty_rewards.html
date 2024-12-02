@@ -11,85 +11,154 @@
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: #f9f9f9;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('/static/img/pixelcut-export-gold.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
             color: #333;
         }
+
         .container {
-            padding-top: 30px;
+            padding-top: 20px;
             max-width: 800px;
             margin: auto;
         }
+
+        .progress-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .progress-container svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-container circle {
+            fill: none;
+            stroke-width: 15;
+        }
+
+        .background-circle {
+            stroke: #e6e6e6; /* Light gray background */
+        }
+
+        .progress-circle {
+            stroke: url(#gradient);
+            stroke-dasharray: 565.48; /* Circumference of the circle */
+            stroke-dashoffset: 565.48; /* Initial offset for animation */
+            transition: stroke-dashoffset 2s ease-out;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .points-text {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #555;
+            margin-top: 20px;
+        }
+
         h1 {
             font-size: 2rem;
-            margin-bottom: 20px;
             color: #218838;
             text-align: center;
+            margin-bottom: 30px;
         }
-        .points-balance, .tier-status {
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        .next-tier-info {
-            font-size: 1rem;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #555;
+
+        .card-body {
+            padding: 20px;
         }
-        .rewards-history {
+
+        .tier-rewards, .rewards-history {
             margin-top: 30px;
         }
-        .rewards-history h2 {
+
+        .tier-rewards h3, .rewards-history h3 {
             font-size: 1.5rem;
             margin-bottom: 15px;
             color: #333;
         }
+
         .reward-item {
             padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background-color: #fff;
+            border-radius: 10px;
+            background: #fff;
+            margin-bottom: 15px;
         }
-        .reward-item p {
-            margin: 0;
-        }
-        .tier-rewards {
-            margin-top: 30px;
-        }
-        .tier-rewards h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            color: #218838;
-        }
-        .tier-rewards ul {
-            list-style-type: none;
+
+        ul.list-group {
             padding: 0;
         }
-        .tier-rewards li {
-            margin-bottom: 5px;
+
+        ul.list-group li {
+            border: none;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
     {% include 'topheader.html' %}
-    <div class="container mt-5">
-        <h2>Loyalty and Rewards</h2>
+    <h1>Loyalty and Rewards</h1>
+    <!-- Curved Progress Bar -->
+    <div class="progress-container">
+        <svg width="300" height="300" viewBox="0 0 300 300">
+            <!-- Background circle -->
+            <circle class="background-circle" cx="150" cy="150" r="90"></circle>
+
+            <!-- Progress circle -->
+            <circle class="progress-circle" cx="150" cy="150" r="90"></circle>
+
+            <!-- Gradient definition -->
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="orange"/>
+                    <stop offset="100%" stop-color="green"/>
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <!-- Display points in the center -->
+        <div class="progress-text" id="points-display">0</div>
+    </div>
+
+    <div class="container">
         {% if rewards_info %}
-            <div class="card mb-4">
+            <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Your Loyalty Points: {{ rewards_info.points }}</h5>
-                    <p class="card-text">Current Tier: {{ rewards_info.tier }}</p>
+                    <p>Current Tier: {{ rewards_info.tier }}</p>
                     {% if rewards_info.next_tier_points %}
-                        <p class="card-text">
-                            Points to Next Tier ({{ rewards_info.next_tier_name }}): {{ rewards_info.points_to_next_tier }}
+                        <p>
+                            Points to Next Tier: {{ rewards_info.points_to_next_tier }}
                         </p>
                     {% else %}
-                        <p class="card-text">You are at the highest tier!</p>
+                        <p>You are at the highest tier!</p>
                     {% endif %}
                 </div>
             </div>
+
             <div class="tier-rewards">
                 <h3>Available Rewards</h3>
                 {% if rewards_info.tier == "Bronze" %}
@@ -118,26 +187,61 @@
                 <ul>
                     <li>6000 points: $200 off coupon</li>
                     <li>7500 points: Free 1-year subscription to our Coupons Book</li>
-                    <li>10,000 points: 1000 Dollar Off</li>
+                    <li>10,000 points: $1000 Off</li>
                 </ul>
                 {% endif %}
             </div>
-            <h3>Rewards History</h3>
-            <ul class="list-group">
-                {% for reward in rewards_history %}
-                    <li class="list-group-item">
-                        <strong>{{ reward.date }}</strong>: {{ reward.description }} 
-                        (<strong>Points Used:</strong> {{ reward.points_used or 0 }} points 
-                        | <strong>Points Earned:</strong> {{ reward.points_earned or 0 }} points)
-                    </li>
-                {% endfor %}
-            </ul>
+
+            <div class="rewards-history">
+                <h3>Rewards History</h3>
+                <ul class="list-group">
+                    {% for reward in rewards_history %}
+                        <li>
+                            <strong>{{ reward.date }}</strong>: {{ reward.description }} 
+                            (<strong>Points Used:</strong> {{ reward.points_used or 0 }} 
+                            | <strong>Points Earned:</strong> {{ reward.points_earned or 0 }})
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% else %}
             <p class="text-muted">No loyalty points or rewards history available.</p>
         {% endif %}
     </div>
-</body> 
+    
+    {% include 'footer.html' %}
+    {% include 'bottom_navigation.html' %}
+
+    <!-- JavaScript for Progress Bar Animation -->
+    <script>
+        const totalPoints = {{ rewards_info.next_tier_points if rewards_info.next_tier_points else 1500 }}; // Total points for next tier
+        const userPoints = {{ rewards_info.points }}; // Dynamic user points
+    
+        const circle = document.querySelector('.progress-circle');
+        const pointsDisplay = document.getElementById('points-display');
+    
+        const percentage = (userPoints / totalPoints) * 100;
+        const circumference = 2 * Math.PI * 90;  // Circumference of the circle
+        const offset = circumference - (percentage / 100) * circumference;
+    
+        setTimeout(() => {
+            circle.style.strokeDashoffset = offset;
+        }, 500);
+    
+        let currentPoints = 0;
+        const intervalTime = 50;
+        const increment = userPoints / (2000 / intervalTime); // Adjust the interval for animation
+    
+        const interval = setInterval(() => {
+            currentPoints += increment;
+            if (currentPoints >= userPoints) {
+                currentPoints = userPoints;
+                clearInterval(interval);
+            }
+            pointsDisplay.textContent = Math.round(currentPoints);  // Update displayed points
+        }, intervalTime);
+    </script>
+    
+</body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-{% include 'footer.html' %}
-{% include 'bottom_navigation.html' %}
 </html>
