@@ -50,7 +50,7 @@
         transition: transform 0.3s ease;
     }
     body {
-        padding-bottom: 125px;
+        padding-bottom: 0px;
     }
     .nav-item {
         flex-grow: 1;
@@ -102,6 +102,36 @@
     .bottom-nav {
         transform: translateY(0);
     }
+    /* Add this to your existing CSS */
+    body.dark-mode {
+        background-color: #121212; /* Dark background */
+        color: #ffffff; /* White text */
+    }
+
+    body.dark-mode .bottom-nav {
+        background-color: #333333; /* Dark background for the bottom navigation */
+    }
+
+    body.dark-mode .nav-item a {
+        color: #ffffff; /* White text for links */
+    }
+
+    body.dark-mode .nav-item a:hover {
+        color: #ffffff; /* White text on hover */
+    }
+
+    body.dark-mode .nav-icon {
+        background-color: #333333; /* Dark background for icons */
+    }
+
+    body.dark-mode .nav-item a:hover .nav-icon {
+        background-color: #28a745; /* Optionally keep green highlight on hover */
+    }
+
+    body.dark-mode .nav-item img {
+        filter: brightness(0) invert(1); /* White icons when in dark mode */
+    }
+
 </style>
 
 <script>
