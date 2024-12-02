@@ -103,7 +103,7 @@
         }
 
         .location-dropdown {
-            width: 250px;
+            width: 175px;
 
             margin-left: auto; /* Pushes the dropdown to the far right */
 
@@ -225,7 +225,7 @@
                         <button class="dropdown-item text-center" type="submit" style="color: red; display: block; width: 100%; text-align: center;">Sign Out</button>
                     </form>
                 {% else %}
-                       <button class="dropdown-item text-center" type="submit" style="color: #218838; display: block; width: 100%; text-align: center;">Sign In</button>
+                    <a href="{{ url_for('login') }}" class="dropdown-item text-center" style="color: #218838; display: block; width: 100%; text-align: center;">Sign In</a>
                 {% endif %}
            </li>
         </ul>
