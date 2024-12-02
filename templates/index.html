@@ -115,11 +115,11 @@
 
         .category-card img {
             width: 130px;
-            height: 100px;
-            object-fit: cover;
+            height: 130px; /* Ensure the height matches the width to maintain aspect ratio /
+            object-fit: cover; / This ensures the image is cropped properly while covering the area /
+            object-position: center; / Ensures the image is centered */
             margin-bottom: 10px;
         }
-
         .category-card h4 {
             font-size: 16px;
             color: #333;
