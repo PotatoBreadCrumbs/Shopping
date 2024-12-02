@@ -222,10 +222,10 @@
             <li>
                 {% if session.get('user_id') and session.get('user_id') != 'guest' %}
                     <form action="{{ url_for('logout') }}" method="POST">
-                        <button class="dropdown-item" type="submit">Sign Out</button>
+                        <button class="dropdown-item text-center" type="submit" style="color: red; display: block; width: 100%; text-align: center;">Sign Out</button>
                     </form>
                 {% else %}
-                    <a class="dropdown-item" href="{{ url_for('login') }}">Sign In</a>
+                       <button class="dropdown-item text-center" type="submit" style="color: #218838; display: block; width: 100%; text-align: center;">Sign In</button>
                 {% endif %}
            </li>
         </ul>
