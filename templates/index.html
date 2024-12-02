@@ -111,13 +111,22 @@
            
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
-
+        
         .category-card img {
+            width: 100%;  /* This will make the image fit within the container */
+            height: 120px; /* Adjust this based on your desired image height */
+            object-fit: cover;  /* This ensures the image doesn't stretch */
+            display: block;
+            margin: 0 auto 10px auto;  /* Centers the image and adds a margin at the bottom */
+        }
+
+       /* .category-card img {
             width: 130px;
             height: 100px;
             object-fit: cover;
             margin-bottom: 10px;
         }
+        */
 
         .category-card h4 {
             font-size: 16px;
