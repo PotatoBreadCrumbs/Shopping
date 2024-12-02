@@ -113,20 +113,12 @@
         }
         
         .category-card img {
-            width: 100%;  /* This will make the image fit within the container */
-            height: 120px; /* Adjust this based on your desired image height */
-            object-fit: cover;  /* This ensures the image doesn't stretch */
-            display: block;
-            margin: 0 auto 10px auto;  /* Centers the image and adds a margin at the bottom */
-        }
-
-       /* .category-card img {
             width: 130px;
-            height: 100px;
-            object-fit: cover;
+            height: 130px; /* Ensure the height matches the width to maintain aspect ratio */
+            object-fit: cover; /* This ensures the image is cropped properly while covering the area */
+            object-position: center; /* Ensures the image is centered */
             margin-bottom: 10px;
         }
-        */
 
         .category-card h4 {
             font-size: 16px;
