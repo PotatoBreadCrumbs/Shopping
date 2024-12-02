@@ -25,7 +25,7 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 
-# Redis and Flask-Session configuration
+# Redis and Flask-Session configuration for heroku deployment
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
@@ -36,10 +36,8 @@ if not redis_url:
 app.config['SESSION_REDIS'] = redis.from_url(redis_url)
 
 
-# Initialize server-side session handling
+# Initialize server-side session handling for heroku and ngrok local testing
 Session(app)
-
-# Add other app routes and functionalities below this line
 
 from dotenv import load_dotenv
 
@@ -154,7 +152,7 @@ def validate_reset_password_page():
         if not email or not new_password:
             return jsonify({"message": "Email and new password are required."})
 
-        # Validate the new password
+        # Validating the new password
         if len(new_password) < 8:
             return jsonify({"message": "Password must be at least 8 characters long."})
         if not any(char.isupper() for char in new_password):
@@ -167,7 +165,7 @@ def validate_reset_password_page():
         if not re.search(special_char_pattern, new_password):
             return jsonify({"message": "Password must contain at least one special character (@$!%*?&_-)"})
 
-        # Load user data
+        # Loading user data
         users = read_users()
         user_found = False  # Initialize the variable
 
@@ -264,10 +262,10 @@ def fetch_locations():
         'filter.radiusInMiles': 50,  # Adjusted radius
         'filter.limit': 250          # Limit to 250 locations
     }
-    # Make the API call
+    # Making the API call
     response = requests.get(location_url, headers=headers, params=params)
     
-    # Logging response for debugging
+    # Logging response for testing and callback data errors
     print("Status Code:", response.status_code)
     print("Response Text:", response.text)
 
@@ -279,7 +277,7 @@ def fetch_locations():
         flash("Error fetching locations.", "danger")
         return redirect(url_for('home'))
 
-# Disable CSRF for testing
+# Here we implemented a function for disabling csfr for testing
 app.config['WTF_CSRF_ENABLED'] = False
 # implemented a helper functions to manage user data in a file
 def read_users(source='regular'):
@@ -340,7 +338,7 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id)
 
-# Now we will try to create the Form class for login and registration
+# Now we will try to create the Form class for login and registration :)
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -354,28 +352,46 @@ class RegistrationForm(FlaskForm):
 # Form for the logout button 
 class LogoutForm(FlaskForm):
     submit = SubmitField('Sign Out')
-    
+# This Route essentially updates the user Information through the account and checkout page :)    
 @app.route('/update_user', methods=['POST'])
 @login_required
 def update_user():
     # Get user ID
     user_id = current_user.id
 
-#Read all users
+    # Read all users
     users = read_users()
     user_data = users.get(user_id, {})
 
-#Update user data with form data
-    user_data['name'] = request.form.get('name', '').strip()
-    user_data['email'] = request.form.get('email', '').strip()
-    user_data['phone'] = request.form.get('phone', '').strip()
-    user_data['address'] = request.form.get('address', '').strip()
+    # Retrieve form data
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip().lower()  # Normalize email
+    phone = request.form.get('phone', '').strip()
+    address = request.form.get('address', '').strip()
 
-#Write updated data back to storage
+    # Validate email format using regex
+    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    if not re.match(email_regex, email):
+        flash("Invalid email format.", "danger")
+        return redirect(url_for('account_info'))
+
+    # Check if the new email is already registered to another user
+    for uid, user in users.items():
+        if uid != user_id and user.get('email') == email:
+            flash("Email already registered to another account.", "danger")
+            return redirect(url_for('account_info'))
+
+    # Update user data with validated and sanitized inputs
+    user_data['name'] = name
+    user_data['email'] = email
+    user_data['phone'] = phone
+    user_data['address'] = address
+
+    # Write updated data back to storage
     users[user_id] = user_data
     write_users(users)
 
-#Flash success message and redirect back to account_info
+    # Flash success message and redirect back to account_info
     flash('Account information updated successfully.', 'success')
     return redirect(url_for('account_info'))
 
@@ -1290,13 +1306,11 @@ def api_order_history():
 
 @app.route('/process_checkout', methods=['POST'])
 def process_checkout():
-    from datetime import datetime
-
     # Retrieve form data
     name = request.form.get('name', '').strip()
-    cvv = request.form.get('cvv','').strip()
-    exp_date = request.form.get('expiry','').strip()
-    cn = request.form.get('card_number','').strip()
+    cvv = request.form.get('cvv', '').strip()
+    exp_date = request.form.get('expiry', '').strip()
+    cn = request.form.get('card_number', '').strip()
     address = request.form.get('address', '').strip()
     city = request.form.get('city', '').strip()
     zip_code = request.form.get('zip', '').strip()
@@ -1315,7 +1329,7 @@ def process_checkout():
     }.items() if not value]
 
     if missing_fields:
-        return jsonify({"message": "MissingFields", "errors": missing_fields})
+        return jsonify({"message": "MissingFields", "errors": missing_fields}), 400
 
     # Get user or guest cart
     user_id = session.get("user_id")
@@ -1323,7 +1337,37 @@ def process_checkout():
     cart_items = cart_data.get('cart_items', [])
 
     if not cart_items:
-        return jsonify({"message": "EmptyCart"})
+        return jsonify({"message": "EmptyCart"}), 400
+
+    # If user is logged in, update their email
+    if user_id:
+        users = read_users()
+        user_data = users.get(user_id, {})
+
+        # Validate email format using regex
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, to_email.lower()):
+            return jsonify({"message": "InvalidEmailFormat"}), 400
+
+        # Check if the new email is already registered to another user
+        email_exists = False
+        for uid, user in users.items():
+            if uid != user_id and user.get('email') == to_email.lower():
+                email_exists = True
+                break
+
+        if email_exists:
+            return jsonify({"message": "EmailExists"}), 400
+
+        # Update the user's email
+        user_data['email'] = to_email.lower()
+
+        # Update user data with the new email
+        users[user_id] = user_data
+        write_users(users)
+    else:
+        # For guests, no email update is needed beyond order confirmation
+        pass
 
     # Calculate totals
     subtotal, sales_tax, total_price = calculate_cart_totals(cart_items)
@@ -1331,7 +1375,7 @@ def process_checkout():
     # Calculate points earned
     points_earned = int(subtotal * 3)  # Assuming 3x multiplier for points
 
-    # Create the order
+    # Create the order object
     order = {
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "order_items": cart_items,
@@ -1349,7 +1393,7 @@ def process_checkout():
 
     # Update user data or clear guest cart
     if user_id:
-        users = load_user_storage()
+        users = read_users()
         user_data = users.get(user_id, {})
         user_data.setdefault("order_history", []).append(order)
 
@@ -1379,13 +1423,22 @@ def process_checkout():
     flash("Order placed successfully! You earned points immediately.", "success")
     return jsonify({"message": "OrderComplete", "redirect_url": url_for('home')})
 
+
 @app.route('/account_info')
 @login_required
 def account_info():
     users = read_users()
-    user_data = users.get(current_user.id, {})
-    return render_template('account_info.html', user_data=user_data)
+    user_id = current_user.id
+    user_data = users.get(user_id, {})
+    
+    # Ensuring that all necessary fields are present so say
+    # if a field is missing, initialize it with a default value
+    required_fields = ['name', 'email', 'phone', 'address']
+    for field in required_fields:
+        if field not in user_data:
+            user_data[field] = ''
 
+    return render_template('account_info.html', user_data=user_data)
 @app.route('/set_location')
 def set_location():
     location_id = request.args.get('location_id')
@@ -1533,7 +1586,6 @@ oauth.register(
     server_metadata_url=CONF_URL,
     client_kwargs={'scope': 'openid email profile'}
 )
-
 
 # Google Authentication
 @app.route('/google/')
