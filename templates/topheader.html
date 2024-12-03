@@ -65,12 +65,27 @@
             align-items: center;
         }
 
-        .dropdown-menu {
-            min-width: 160px;
+        .nav-item .dropdown-menu {
+            left: 50%;
+            width: 200px; /* Adjust this to make it larger */
+            transform: translateX(-55%); /* Center dropdown based on its width */
         }
 
+        .small-dropdown {
+            width: 150px; /* Maintain uniform width */
+        }
+
+
+
         .content {
-            padding-top: 90px;
+            padding-top: 80px;
+        }
+
+
+        .form-select-sm {
+            font-size: 12px;
+            padding: 6px 8px;
+            line-height: 1.5;
         }
 
         .accessibility-btn {
