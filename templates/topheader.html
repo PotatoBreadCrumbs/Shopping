@@ -221,13 +221,14 @@
            <li><a class="dropdown-item" href="{{ url_for('faq') }}">FAQ</a></li>
             <li>
                 {% if session.get('user_id') and session.get('user_id') != 'guest' %}
-                    <form action="{{ url_for('logout') }}" method="POST">
-                        <button class="dropdown-item text-center" type="submit" style="color: red; display: block; width: 100%; text-align: center;">Sign Out</button>
+                    <form action="{{ url_for('logout') }}" method="POST" style="margin: 0;">
+                        <button class="dropdown-item text-center" type="submit" style="color: red; text-align: center;">Sign Out</button>
                     </form>
                 {% else %}
-                        <a  class="dropdown-item text-center" href="{{ url_for('login') }}" style="color: #218838; display: block; width: 100%; text-align: center;">Sign In</a>
+                    <a class="dropdown-item text-center" href="{{ url_for('login') }}" style="color: #218838; text-align: center;">Sign In</a>
                 {% endif %}
-           </li>
+            </li>
+
         </ul>
     </div>
 </div>
